@@ -1,0 +1,27 @@
+{
+    "rules": {
+        "rooms": {
+            ".read": "auth != null && query.orderByChild == 'status' && query.equalTo == 'waiting'",
+            ".indexOn": [
+                "status"
+            ],
+            "$roomId": {
+                ".read": "auth != null",
+                ".write": "auth != null && data.child('status').val() == 'waiting' && data.child('hostId').val() == auth.uid",
+                "presence": {
+                    "$playerId": {
+                        ".write": "auth != null",
+                        ".validate": "newData.isBoolean()"
+                    }
+                },
+                "players": {
+                    "$playerId": {
+                        ".write": "auth != null && $playerId == auth.uid && root.child('rooms').child($roomId).child('status').val() == 'waiting'"
+                    }
+                }
+            }
+        },
+        ".read": false,
+        ".write": false
+    }
+}
