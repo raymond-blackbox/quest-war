@@ -107,8 +107,13 @@ class ApiService {
     }
 
     // Leaderboard
-    async getLeaderboard() {
-        return this.request('/leaderboard');
+    async getLeaderboard(category = 'balance') {
+        return this.request(`/leaderboard?category=${category}`);
+    }
+
+    // Transactions
+    async getTransactions(playerId, limit = 50, offset = 0) {
+        return this.request(`/transactions/${playerId}?limit=${limit}&offset=${offset}`);
     }
 }
 

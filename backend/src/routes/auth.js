@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import { getFirestore, admin } from '../services/firebase.js';
+import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
 
 const router = express.Router();
 
@@ -127,7 +128,7 @@ router.post('/google', async (req, res) => {
             }
 
             const newUsername = await generateUniqueUsername(name || email || 'adventurer');
-            const playerRef = playersRef.doc();
+            const playerRef = playersRef.doc(uid); // Use Google UID as the document ID
             const fallbackName = name || email || 'Adventurer';
             const resolvedDisplayName = sanitizeDisplayName(fallbackName) || newUsername;
             await playerRef.set({
@@ -143,7 +144,8 @@ router.post('/google', async (req, res) => {
             playerDoc = await playerRef.get();
         }
 
-        // Mint custom token with player ID as UID (even for Google users)
+        // Mint custom token with player ID as UID. 
+        // For Google users, this now matches their Google UID.
         const firebaseCustomToken = await admin.auth().createCustomToken(playerDoc.id);
 
         res.json({
@@ -236,7 +238,22 @@ router.patch('/profile/:playerId', async (req, res) => {
             }
         });
 
+        // Log spending transaction outside the transaction for simplicity
+        // Only logs if name was actually changed (checked above)
         const updatedDoc = await playerRef.get();
+        const oldTokens = Number(updatedDoc.data().tokens || 0) + NAME_CHANGE_COST;
+        const newTokens = Number(updatedDoc.data().tokens || 0);
+
+        if (oldTokens !== newTokens) {
+            await logTransaction(getFirestore(), {
+                playerId,
+                type: TRANSACTION_TYPES.SPEND,
+                amount: NAME_CHANGE_COST,
+                reason: TRANSACTION_REASONS.NAME_CHANGE,
+                roomId: null
+            });
+        }
+
         res.json(toPlayerResponse(updatedDoc));
     } catch (error) {
         console.error('Profile update error:', error);

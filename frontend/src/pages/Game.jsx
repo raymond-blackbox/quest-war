@@ -189,9 +189,12 @@ function Game() {
     if (room.status === 'ended' || room.status === 'aborted') {
         const isAborted = room.status === 'aborted';
         const isDraw = room.isDraw;
-        const totalTokensEarned = Number(room.players?.[player.id]?.tokensEarned || 0);
-        const winnerBonusEarned = room.winner === player.id ? Math.min(winnerBonus, totalTokensEarned) : 0;
-        const correctAnswerTokens = Math.max(totalTokensEarned - winnerBonusEarned, 0);
+        const correctAnswerTokens = Number(room.players?.[player.id]?.tokensEarned || 0);
+        const isWinner = room.winner === player.id;
+        // tokensEarned in RTDB only tracks correct answer tokens
+        // Winner bonus is awarded separately at game end by backend
+        const winnerBonusEarned = isWinner ? winnerBonus : 0;
+        const totalTokensEarned = correctAnswerTokens + winnerBonusEarned;
         const hasTokenEarnings = totalTokensEarned > 0;
 
         // Calculate player's rank

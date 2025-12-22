@@ -6,16 +6,18 @@ import { useAuth } from '../context/AuthContext';
 function Leaderboard() {
     const [leaderboard, setLeaderboard] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [category, setCategory] = useState('balance'); // 'balance' or 'earnings'
     const navigate = useNavigate();
     const { player: currentPlayer } = useAuth();
 
     useEffect(() => {
         loadLeaderboard();
-    }, []);
+    }, [category]);
 
     const loadLeaderboard = async () => {
+        setLoading(true);
         try {
-            const data = await api.getLeaderboard();
+            const data = await api.getLeaderboard(category);
             setLeaderboard(data);
         } catch (err) {
             console.error('Failed to load leaderboard:', err);
@@ -34,7 +36,53 @@ function Leaderboard() {
     return (
         <div className="container" style={{ paddingTop: 'var(--spacing-xl)' }}>
             <h1 className="title">🏆 Leaderboard</h1>
-            <p className="subtitle">Top 100 Token Collectors</p>
+
+            {/* Category Tabs */}
+            <div className="leaderboard-tabs" style={{
+                display: 'flex',
+                gap: 'var(--spacing-sm)',
+                marginBottom: 'var(--spacing-lg)',
+                justifyContent: 'center'
+            }}>
+                <button
+                    className={`tab-button ${category === 'balance' ? 'active' : ''}`}
+                    onClick={() => setCategory('balance')}
+                    style={{
+                        padding: 'var(--spacing-sm) var(--spacing-lg)',
+                        borderRadius: 'var(--radius-md)',
+                        border: category === 'balance' ? '2px solid var(--primary)' : '2px solid var(--border-primary)',
+                        background: category === 'balance' ? 'var(--primary)' : 'var(--surface-elevated)',
+                        color: category === 'balance' ? 'white' : 'var(--text-secondary)',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                    }}
+                >
+                    💰 Token Balance
+                </button>
+                <button
+                    className={`tab-button ${category === 'earnings' ? 'active' : ''}`}
+                    onClick={() => setCategory('earnings')}
+                    style={{
+                        padding: 'var(--spacing-sm) var(--spacing-lg)',
+                        borderRadius: 'var(--radius-md)',
+                        border: category === 'earnings' ? '2px solid var(--success)' : '2px solid var(--border-primary)',
+                        background: category === 'earnings' ? 'var(--success)' : 'var(--surface-elevated)',
+                        color: category === 'earnings' ? 'white' : 'var(--text-secondary)',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                    }}
+                >
+                    ⚔️ Quest Earnings
+                </button>
+            </div>
+
+            <p className="subtitle" style={{ marginBottom: 'var(--spacing-md)', textAlign: 'center' }}>
+                {category === 'balance'
+                    ? 'Top 100 by Current Token Holdings'
+                    : 'Top 100 by Lifetime Quest Earnings'}
+            </p>
 
             {loading ? (
                 <div className="card" style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
@@ -57,7 +105,7 @@ function Leaderboard() {
                         <li
                             key={player.id}
                             className={`leaderboard-item animate-fade-in ${player.id === currentPlayer?.id ? 'me' : ''}`}
-                            style={{ animationDelay: `${index * 0.1}s` }}
+                            style={{ animationDelay: `${index * 0.05}s` }}
                         >
                             <div className={`leaderboard-rank ${getRankClass(index)}`}>
                                 {index + 1}
@@ -69,7 +117,7 @@ function Leaderboard() {
                                 )}
                             </div>
                             <div className="leaderboard-tokens">
-                                🪙 {player.tokens}
+                                {category === 'balance' ? '🪙' : '⚔️'} {player.displayValue ?? player.tokens}
                             </div>
                         </li>
                     ))}

@@ -1,6 +1,7 @@
 import express from 'express';
 import { getRealtimeDb, getFirestore } from '../services/firebase.js';
 import { generateQuestion, DIFFICULTY } from '../services/questions.js';
+import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ const resolveTokenValue = (value, fallback) => {
     return Math.round(parsed);
 };
 
-async function awardTokens(db, playerId, playerLabel, tokenDelta) {
+async function awardTokens(db, playerId, playerLabel, tokenDelta, reason = 'Quest Reward', roomId = null) {
     if (!playerId || tokenDelta <= 0) return;
 
     const playerDocRef = db.collection('players').doc(playerId);
@@ -39,15 +40,31 @@ async function awardTokens(db, playerId, playerLabel, tokenDelta) {
 
     const resolvedDisplayName = playerLabel || playerDoc.data().displayName || playerDoc.data().username;
     const resolvedUsername = playerDoc.data().username;
-    await db.collection('leaderboard').doc(playerId).set({
+
+    // Get current totalTokensEarned from leaderboard, then add the delta
+    const leaderboardDocRef = db.collection('leaderboard').doc(playerId);
+    const leaderboardDoc = await leaderboardDocRef.get();
+    const currentTotalEarned = Number(leaderboardDoc.exists ? leaderboardDoc.data().totalTokensEarned || 0 : 0);
+
+    await leaderboardDocRef.set({
         username: resolvedUsername,
         displayName: resolvedDisplayName,
         tokens: newTokens,
+        totalTokensEarned: currentTotalEarned + tokenDelta, // Lifetime earnings - only increases
         updatedAt: new Date()
     }, { merge: true });
+
+    // Log the transaction
+    await logTransaction(db, {
+        playerId,
+        type: TRANSACTION_TYPES.EARN,
+        amount: tokenDelta,
+        reason,
+        roomId
+    });
 }
 
-async function revokeTokens(db, playerId, playerLabel, tokenDelta) {
+async function revokeTokens(db, playerId, playerLabel, tokenDelta, reason = 'Revoked', roomId = null) {
     if (!playerId || tokenDelta <= 0) return;
 
     const playerDocRef = db.collection('players').doc(playerId);
@@ -61,12 +78,28 @@ async function revokeTokens(db, playerId, playerLabel, tokenDelta) {
 
     const resolvedDisplayName = playerLabel || playerDoc.data().displayName || playerDoc.data().username;
     const resolvedUsername = playerDoc.data().username;
-    await db.collection('leaderboard').doc(playerId).set({
+
+    // Also reduce totalTokensEarned since these tokens were revoked (e.g., player quit mid-game)
+    const leaderboardDocRef = db.collection('leaderboard').doc(playerId);
+    const leaderboardDoc = await leaderboardDocRef.get();
+    const currentTotalEarned = Number(leaderboardDoc.exists ? leaderboardDoc.data().totalTokensEarned || 0 : 0);
+
+    await leaderboardDocRef.set({
         username: resolvedUsername,
         displayName: resolvedDisplayName,
         tokens: newTokens,
+        totalTokensEarned: Math.max(0, currentTotalEarned - tokenDelta),
         updatedAt: new Date()
     }, { merge: true });
+
+    // Log the transaction
+    await logTransaction(db, {
+        playerId,
+        type: TRANSACTION_TYPES.REVOKE,
+        amount: tokenDelta,
+        reason,
+        roomId
+    });
 }
 
 const tokenRewardsCache = {
@@ -349,11 +382,10 @@ router.post('/:roomId/answer', async (req, res) => {
             const currentTokensEarned = Number(playerData.tokensEarned || 0);
             const playerUpdates = { score: currentScore + 1 };
 
-            // Award tokens for correct answer
+            // Track tokens for correct answer in RTDB only (will be awarded at game end)
             const roomSettings = room.settings || {};
             const perCorrect = resolveTokenValue(roomSettings.tokenPerCorrectAnswer, DEFAULT_TOKEN_PER_CORRECT);
             if (perCorrect > 0) {
-                await awardTokens(db, playerId, playerLabel, perCorrect);
                 tokenReward = perCorrect;
                 playerUpdates.tokensEarned = currentTokensEarned + perCorrect;
             }
@@ -527,7 +559,7 @@ router.post('/:roomId/quit', async (req, res) => {
             if (tokensEarned > 0) {
                 const db = getFirestore();
                 const playerLabel = playerData.displayName || playerData.username;
-                await revokeTokens(db, playerId, playerLabel, tokensEarned);
+                await revokeTokens(db, playerId, playerLabel, tokensEarned, TRANSACTION_REASONS.QUIT_GAME, roomId);
             }
         }
 
@@ -585,6 +617,7 @@ async function endGame(roomId, aborted = false) {
     if (room.status === 'aborted') return; // Already aborted
 
     const players = room.players || {};
+    const roomSettings = room.settings || {};
 
     // Find winner(s)
     let maxScore = 0;
@@ -612,16 +645,27 @@ async function endGame(roomId, aborted = false) {
         currentQuestion: null
     });
 
-    // Award token to winner only if NOT aborted
-    if (singleWinner) {
-        const roomSettings = room.settings || {};
+    // Award accumulated tokens to ALL players at game end (not aborted)
+    if (!aborted) {
         const winnerBonus = resolveTokenValue(roomSettings.tokenPerWin, DEFAULT_TOKEN_PER_WIN);
-        if (winnerBonus > 0) {
-            await awardTokens(db, singleWinner.id, singleWinner.label, winnerBonus);
-            const currentWinnerTokens = Number(players[singleWinner.id]?.tokensEarned || 0);
-            await roomRef.child(`players/${singleWinner.id}`).update({
-                tokensEarned: currentWinnerTokens + winnerBonus
-            });
+
+        for (const [playerId, playerData] of Object.entries(players)) {
+            const playerLabel = playerData.displayName || playerData.username;
+            let totalEarned = Number(playerData.tokensEarned || 0);
+
+            // Add winner bonus if this player is the single winner
+            const isWinner = singleWinner && singleWinner.id === playerId;
+            if (isWinner && winnerBonus > 0) {
+                totalEarned += winnerBonus;
+            }
+
+            // Award all tokens at once if any were earned
+            if (totalEarned > 0) {
+                const reason = isWinner
+                    ? `Game Complete (+${winnerBonus} Winner Bonus)`
+                    : 'Game Complete';
+                await awardTokens(db, playerId, playerLabel, totalEarned, reason, roomId);
+            }
         }
     }
 

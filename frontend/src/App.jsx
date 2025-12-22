@@ -6,6 +6,7 @@ import Room from './pages/Room';
 import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
+import Transactions from './pages/Transactions';
 import Navbar from './components/Navbar';
 
 function ProtectedRoute({ children }) {
@@ -40,6 +41,9 @@ function AppRoutes() {
         } />
         <Route path="/profile" element={
           <ProtectedRoute><Profile /></ProtectedRoute>
+        } />
+        <Route path="/transactions" element={
+          <ProtectedRoute><Transactions /></ProtectedRoute>
         } />
         <Route path="*" element={<Navigate to={player ? "/lobby" : "/login"} replace />} />
       </Routes>

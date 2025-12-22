@@ -33,7 +33,7 @@ function Lobby() {
 
     const [delaySeconds] = useState(2);
     const [questionsCount, setQuestionsCount] = useState(QUESTION_COUNT_OPTIONS[0]);
-    const [questionDifficulty, setQuestionDifficulty] = useState(DIFFICULTY_OPTIONS[1].value);
+    const [questionDifficulty, setQuestionDifficulty] = useState(DIFFICULTY_OPTIONS[0].value);
 
     // Handle scroll to show/hide FAB
     const handleScroll = useCallback(() => {

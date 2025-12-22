@@ -83,6 +83,15 @@ function Navbar() {
                         >
                             Profile
                         </button>
+                        <button
+                            className="navbar-menu-item"
+                            onClick={() => {
+                                navigate('/transactions');
+                                setMenuOpen(false);
+                            }}
+                        >
+                            Transactions
+                        </button>
                         <button className="navbar-menu-item" onClick={handleLogout}>
                             Logout
                         </button>

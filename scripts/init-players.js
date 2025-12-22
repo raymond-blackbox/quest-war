@@ -26,9 +26,9 @@ async function createPlayers() {
 
     const batch = db.batch();
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 3; i++) {
         const username = `play${i}`;
-        const password = `play${i}pass`;
+        const password = `pass${i}`;
         const passwordHash = await bcrypt.hash(password, 10);
 
         const playerRef = db.collection('players').doc();
@@ -45,8 +45,7 @@ async function createPlayers() {
     await batch.commit();
     console.log('\n✓ 20 player accounts created successfully!');
     console.log('\nTest credentials:');
-    console.log('  Username: play1, play2, ... play20');
-    console.log('  Password: play1pass, play2pass, ... play20pass');
+    console.log('  Username: play1, play2, ...');
 
     process.exit(0);
 }
