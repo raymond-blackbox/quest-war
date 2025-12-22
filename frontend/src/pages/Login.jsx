@@ -2,33 +2,69 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
-import { signInWithGoogle, signInWithCustomAuthToken } from '../services/firebase';
+import { signInWithGoogle, signInWithCustomAuthToken, loginWithEmail, registerWithEmail, sendVerificationEmail, resetPassword } from '../services/firebase';
 
 function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+    const [isRegistering, setIsRegistering] = useState(false);
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleEmailAuth = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
-            const player = await api.login(username.trim(), password);
+            const { idToken, user } = isRegistering
+                ? await registerWithEmail(email.trim(), password)
+                : await loginWithEmail(email.trim(), password);
+
+            if (isRegistering) {
+                await sendVerificationEmail();
+                setMessage('A verification email has been sent. Please check your inbox.');
+                setLoading(false); // Stop loading after sending verification email
+                return; // Prevent immediate login after registration
+            } else if (!user.emailVerified) {
+                setError('Please verify your email address before logging in.');
+                setLoading(false); // Stop loading if email not verified
+                return;
+            }
+
+            const player = await api.loginWithFirebase(idToken);
             if (player.firebaseCustomToken) {
                 await signInWithCustomAuthToken(player.firebaseCustomToken);
             }
             login(player);
             navigate('/lobby');
         } catch (err) {
-            setError(err.message || 'Login failed');
+            console.error(err);
+            setError(err.message || 'Authentication failed');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            setError('Please enter your email address first.');
+            return;
+        }
+        setError('');
+        setLoading(true);
+        try {
+            await resetPassword(email.trim());
+            setMessage('Password reset email sent. Please check your inbox.');
+        } catch (err) {
+            console.error(err);
+            setError(err.message || 'Failed to send reset email');
+        } finally {
+            setLoading(true); // Keep loading state or reset
+            setTimeout(() => setLoading(false), 2000);
         }
     };
 
@@ -37,7 +73,7 @@ function Login() {
         setLoading(true);
         try {
             const { idToken } = await signInWithGoogle();
-            const player = await api.loginWithGoogle(idToken);
+            const player = await api.loginWithFirebase(idToken);
             if (player.firebaseCustomToken) {
                 await signInWithCustomAuthToken(player.firebaseCustomToken);
             }
@@ -57,11 +93,73 @@ function Login() {
                 <h1 className="logo">⚔️ Quest War</h1>
                 <p className="subtitle">Battle your friends and gain token for Avatar!</p>
                 <div className="card">
-                    <h2 className="title" style={{ fontSize: '1rem' }}>Login with :</h2>
-                    <br></br>
-                    {error && <div className="error-message">{error}</div>}
+                    <div className="auth-toggle">
+                        <button
+                            type="button"
+                            className={!isRegistering ? 'active' : ''}
+                            onClick={() => setIsRegistering(false)}
+                        >
+                            Login
+                        </button>
+                        <button
+                            type="button"
+                            className={isRegistering ? 'active' : ''}
+                            onClick={() => setIsRegistering(true)}
+                        >
+                            Sign Up
+                        </button>
+                    </div>
 
-                    <div className="google-auth-container" style={{ padding: 'var(--spacing-lg) 0' }}>
+                    {error && <div className="error-message">{error}</div>}
+                    {message && <div className="success-message" style={{ color: 'var(--success)', background: 'rgba(16, 185, 129, 0.1)', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>{message}</div>}
+
+                    <form onSubmit={handleEmailAuth} className="login-form">
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="form-input"
+                                disabled={loading}
+                            />
+                        </div>
+                        <div className="form-group" style={{ position: 'relative' }}>
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="form-input"
+                                disabled={loading}
+                                minLength={6}
+                            />
+                            {!isRegistering && (
+                                <button
+                                    type="button"
+                                    className="btn-link"
+                                    onClick={handleForgotPassword}
+                                    style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.75rem', padding: '0.25rem' }}
+                                    disabled={loading}
+                                >
+                                    Forgot?
+                                </button>
+                            )}
+                        </div>
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={loading}
+                        >
+                            {loading ? 'Processing...' : (isRegistering ? 'Create Account' : 'Login')}
+                        </button>
+                    </form>
+
+                    <div className="divider">OR</div>
+
+                    <div className="google-auth-container">
                         <button
                             type="button"
                             className="btn btn-google"
@@ -84,8 +182,8 @@ function Login() {
                         </button>
                     </div>
 
-                    <small style={{ display: 'block', marginTop: '1rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                        Notice: Competitive play requires a verified Google/Social Media account.
+                    <small style={{ display: 'block', marginTop: '1.5rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                        Notice: Competitive play requires a verified account.
                     </small>
                 </div>
             </div>

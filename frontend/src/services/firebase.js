@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, off, query, orderByChild, equalTo, onDisconnect, set, remove } from 'firebase/database';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithCustomToken } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth';
 
 // Firebase configuration - replace with your project config
 const firebaseConfig = {
@@ -100,6 +100,28 @@ export async function signInWithGoogle() {
             photoURL: result.user.photoURL
         }
     };
+}
+
+export async function registerWithEmail(email, password) {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const idToken = await result.user.getIdToken();
+    return { idToken };
+}
+
+export async function loginWithEmail(email, password) {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    const idToken = await result.user.getIdToken();
+    return { idToken, user: result.user };
+}
+
+export async function sendVerificationEmail() {
+    if (auth.currentUser) {
+        await sendEmailVerification(auth.currentUser);
+    }
+}
+
+export async function resetPassword(email) {
+    await sendPasswordResetEmail(auth, email);
 }
 
 export { database, ref, onValue, off, onDisconnect, set, remove };

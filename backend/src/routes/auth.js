@@ -70,50 +70,84 @@ async function generateUniqueUsername(baseInput = 'adventurer') {
     return `${base}${Date.now().toString().slice(-4)}`;
 }
 
+function generateRandomId(length = 8) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
     // Disabled as per user request: Use Google login only
     return res.status(403).json({ error: 'Manual login is disabled. Please use "Sign in with Google".' });
 });
 
-// POST /api/auth/google
-router.post('/google', async (req, res) => {
+// POST /api/auth/firebase
+router.post('/firebase', async (req, res) => {
     try {
         const { idToken } = req.body;
         if (!idToken) {
-            return res.status(400).json({ error: 'Missing Google ID token' });
+            return res.status(400).json({ error: 'Missing Firebase ID token' });
         }
 
         const decoded = await admin.auth().verifyIdToken(idToken);
-        const { uid, email, name } = decoded;
+        const { uid, email, name, firebase, email_verified } = decoded;
+        const provider = firebase?.sign_in_provider || 'email';
+
+        if (provider === 'password' && !email_verified) {
+            return res.status(403).json({ error: 'Please verify your email address first.' });
+        }
 
         const playersRef = getPlayersCollection();
-        let playerDoc = await findPlayerByField('googleUid', uid);
+        // First try finding by UID (doc ID)
+        let playerRef = playersRef.doc(uid);
+        let playerDoc = await playerRef.get();
 
-        if (!playerDoc) {
+        if (!playerDoc.exists) {
+            // Check if email already exists but under a different UID (shouldn't happen with Firebase usually, but for migration/sanity)
             if (email) {
                 const normalizedEmail = normalizeEmail(email);
                 const conflictingEmailDoc = await findPlayerByField('email', normalizedEmail);
-                if (conflictingEmailDoc && conflictingEmailDoc.data().authProvider !== 'google') {
-                    return res.status(409).json({ error: 'Email already linked to a different account' });
+                if (conflictingEmailDoc) {
+                    // Link to existing player if appropriate, or error out
+                    // Here we'll error to prevent account takeover if they haven't linked
+                    return res.status(409).json({ error: 'Email already registered with another account' });
                 }
             }
 
             const newUsername = await generateUniqueUsername(name || email || 'adventurer');
-            const playerRef = playersRef.doc(uid); // Use Google UID as the document ID
-            const fallbackName = name || email || 'Adventurer';
-            const resolvedDisplayName = sanitizeDisplayName(fallbackName) || newUsername;
+            const fallbackName = name || email?.split('@')[0] || 'Adventurer';
+            let resolvedDisplayName = sanitizeDisplayName(fallbackName) || newUsername;
+
+            // Enforce display name uniqueness
+            const displayNameKey = getDisplayNameKey(resolvedDisplayName);
+            const conflictSnapshot = await getPlayersCollection()
+                .where('displayNameLower', '==', displayNameKey)
+                .limit(1)
+                .get();
+
+            if (!conflictSnapshot.empty) {
+                // If collision, use random 8-char alphanumeric
+                resolvedDisplayName = generateRandomId(8);
+            }
+
             await playerRef.set({
                 username: newUsername,
                 displayName: resolvedDisplayName,
                 displayNameLower: getDisplayNameKey(resolvedDisplayName) || newUsername.toLowerCase(),
                 email: normalizeEmail(email),
-                authProvider: 'google',
-                googleUid: uid,
+                authProvider: provider,
+                firebaseUid: uid,
                 tokens: 0,
                 createdAt: admin.firestore.FieldValue.serverTimestamp()
             });
             playerDoc = await playerRef.get();
+        } else {
+            // Update authProvider if it changed (e.g. from google to something else, though UID would change usually)
+            // For now, just ensure it's logged
         }
 
         // Mint custom token with player ID as UID. 

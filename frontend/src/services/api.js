@@ -35,8 +35,8 @@ class ApiService {
     }
     */
 
-    async loginWithGoogle(idToken) {
-        return this.request('/auth/google', {
+    async loginWithFirebase(idToken) {
+        return this.request('/auth/firebase', {
             method: 'POST',
             body: JSON.stringify({ idToken })
         });
