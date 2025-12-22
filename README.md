@@ -1,6 +1,6 @@
-# Quest War - Multiplayer Math Quiz Game
+# Quest War - Multiplayer Quiz Game
 
-A real-time multiplayer quiz game where players compete to answer math questions first.
+A real-time multiplayer quiz game where players compete to answer questions first.
 
 ## Tech Stack
 
@@ -122,12 +122,4 @@ firebase deploy --only hosting
 6. **Results**: Winner shown after each question
 7. **Game End**: Winner receives 1 token, leaderboard updated
 
-## Test Credentials
 
-| Username | Password |
-|----------|----------|
-| play1    | play1pass |
-| play2    | play2pass |
-| play3    | play3pass |
-| play4    | play4pass |
-| play5    | play5pass |
