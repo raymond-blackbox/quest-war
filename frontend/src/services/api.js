@@ -18,7 +18,8 @@ class ApiService {
         return response.json();
     }
 
-    // Auth
+    /* 
+    // Manual auth disabled - Use Google login instead
     async login(username, password) {
         return this.request('/auth/login', {
             method: 'POST',
@@ -32,6 +33,7 @@ class ApiService {
             body: JSON.stringify({ username, password, email })
         });
     }
+    */
 
     async loginWithGoogle(idToken) {
         return this.request('/auth/google', {

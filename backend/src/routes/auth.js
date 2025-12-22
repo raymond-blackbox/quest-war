@@ -1,9 +1,23 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { getFirestore, admin } from '../services/firebase.js';
+import { rateLimit } from 'express-rate-limit';
+import { getFirestore, admin, getRealtimeDb } from '../services/firebase.js';
+import { DistributedRateLimitStore } from '../services/rateLimitStore.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
 
 const router = express.Router();
+
+// Stricter rate limiting for auth endpoints
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 20, // Limit each IP to 20 requests per window
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_auth' }),
+    message: { error: 'Too many authentication attempts, please try again after 15 minutes.' }
+});
+
+router.use(authLimiter);
 
 const getPlayersCollection = () => getFirestore().collection('players');
 
@@ -67,41 +81,8 @@ async function generateUniqueUsername(baseInput = 'adventurer') {
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-
-        const trimmedUsername = sanitizeUsername(username);
-        if (!trimmedUsername || !password) {
-            return res.status(400).json({ error: 'Username and password are required' });
-        }
-
-        const playerDoc = await findPlayerByField('username', trimmedUsername);
-        if (!playerDoc) {
-            return res.status(401).json({ error: 'Invalid username or password' });
-        }
-
-        const player = playerDoc.data();
-        if (!player.passwordHash) {
-            return res.status(400).json({ error: 'This account uses Google login. Choose "Sign in with Google" instead.' });
-        }
-
-        const passwordMatch = await bcrypt.compare(password, player.passwordHash);
-
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Invalid username or password' });
-        }
-
-        // Mint custom token with player ID as UID
-        const firebaseCustomToken = await admin.auth().createCustomToken(playerDoc.id);
-
-        res.json({
-            ...toPlayerResponse(playerDoc),
-            firebaseCustomToken
-        });
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+    // Disabled as per user request: Use Google login only
+    return res.status(403).json({ error: 'Manual login is disabled. Please use "Sign in with Google".' });
 });
 
 // POST /api/auth/google

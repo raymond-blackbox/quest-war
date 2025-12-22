@@ -27,9 +27,12 @@ export function initializeFirebase() {
   // Use the specific database 'questwardb'
   db = getFirestoreDb(app, 'questwardb');
 
-  rtdb = admin.database();
-
-  console.log('Firebase initialized successfully');
+  try {
+    rtdb = admin.database();
+    console.log('Firebase initialized successfully (with RTDB)');
+  } catch (err) {
+    console.error('Failed to initialize RTDB:', err);
+  }
 }
 
 export function getFirestore() {

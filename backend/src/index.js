@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { initializeFirebase } from './services/firebase.js';
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+import { initializeFirebase, getRealtimeDb } from './services/firebase.js';
+import { DistributedRateLimitStore } from './services/rateLimitStore.js';
 import authRoutes from './routes/auth.js';
 import roomsRoutes from './routes/rooms.js';
 import gameRoutes from './routes/game.js';
@@ -10,12 +13,35 @@ import transactionsRoutes from './routes/transactions.js';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// Trust proxy if behind Cloud Run or similar
+app.set('trust proxy', 1);
+
+// Security Middleware
+app.use(helmet({
+    crossOriginOpenerPolicy: false,
+    crossOriginEmbedderPolicy: false,
+}));
 app.use(cors());
 app.use(express.json());
 
 // Initialize Firebase
 initializeFirebase();
+
+console.log('[RESTART] Applying security and stability fixes...');
+
+const rtdb = getRealtimeDb();
+
+// Global Rate Limiting
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 500, // Limit each IP to 500 requests per window
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_global' }),
+    message: { error: 'Too many requests from this IP, please try again later.' }
+});
+
+app.use(globalLimiter);
 
 // Health check
 app.get('/health', (req, res) => {

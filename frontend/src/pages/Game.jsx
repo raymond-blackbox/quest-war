@@ -122,15 +122,12 @@ function Game() {
 
     const handleAnswer = useCallback(async (answerIndex) => {
         const currentQuestion = room?.currentQuestion;
-        console.log('[FRONTEND] Handling answer:', answerIndex);
         if (hasAnswered || currentQuestion?.correctlyAnsweredBy) {
-            console.log('[FRONTEND] Already answered or round done. Skipping.');
             return;
         }
 
         // If current player already answered this question incorrectly
         if (currentQuestion?.incorrectAnswers && currentQuestion.incorrectAnswers[player.id]) {
-            console.log('[FRONTEND] Already incorrect. Skipping.');
             return;
         }
 
