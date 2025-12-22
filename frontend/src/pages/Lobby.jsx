@@ -25,7 +25,7 @@ function Lobby() {
         { value: 'medium', label: 'Medium Math' },
         { value: 'hard', label: 'Hard Math' }
     ];
-    const QUESTION_COUNT_OPTIONS = [5, 10, 20, 30, 40];
+    const QUESTION_COUNT_OPTIONS = [10, 20, 30, 40];
 
     // Create room form state
     const [roomName, setRoomName] = useState('');
