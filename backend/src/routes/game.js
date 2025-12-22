@@ -66,43 +66,6 @@ async function awardTokens(db, playerId, playerLabel, tokenDelta, reason = 'Ques
     });
 }
 
-async function revokeTokens(db, playerId, playerLabel, tokenDelta, reason = 'Revoked', roomId = null) {
-    if (!playerId || tokenDelta <= 0) return;
-
-    const playerDocRef = db.collection('players').doc(playerId);
-    const playerDoc = await playerDocRef.get();
-
-    if (!playerDoc.exists) return;
-
-    const currentTokens = Number(playerDoc.data().tokens || 0);
-    const newTokens = Math.max(0, currentTokens - tokenDelta);
-    await playerDocRef.update({ tokens: newTokens });
-
-    const resolvedDisplayName = playerLabel || playerDoc.data().displayName || playerDoc.data().username;
-    const resolvedUsername = playerDoc.data().username;
-
-    // Also reduce totalTokensEarned since these tokens were revoked (e.g., player quit mid-game)
-    const leaderboardDocRef = db.collection('leaderboard').doc(playerId);
-    const leaderboardDoc = await leaderboardDocRef.get();
-    const currentTotalEarned = Number(leaderboardDoc.exists ? leaderboardDoc.data().totalTokensEarned || 0 : 0);
-
-    await leaderboardDocRef.set({
-        username: resolvedUsername,
-        displayName: resolvedDisplayName,
-        tokens: newTokens,
-        totalTokensEarned: Math.max(0, currentTotalEarned - tokenDelta),
-        updatedAt: new Date()
-    }, { merge: true });
-
-    // Log the transaction
-    await logTransaction(db, {
-        playerId,
-        type: TRANSACTION_TYPES.REVOKE,
-        amount: tokenDelta,
-        reason,
-        roomId
-    });
-}
 
 const tokenRewardsCache = {
     data: null,
@@ -555,15 +518,6 @@ router.post('/:roomId/quit', async (req, res) => {
         // Remove the player so others can continue.
         await roomRef.child(`players/${playerId}`).remove();
 
-        // Revoke any tokens earned during the current game if they quit mid-match.
-        if (isActiveGame) {
-            const tokensEarned = Number(playerData.tokensEarned || 0);
-            if (tokensEarned > 0) {
-                const db = getFirestore();
-                const playerLabel = playerData.displayName || playerData.username;
-                await revokeTokens(db, playerId, playerLabel, tokensEarned, TRANSACTION_REASONS.QUIT_GAME, roomId);
-            }
-        }
 
         let roomClosed = false;
         const updates = {};
