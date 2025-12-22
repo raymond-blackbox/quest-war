@@ -1,7 +1,5 @@
 import express from 'express';
 import { getRealtimeDb, getFirestore } from '../services/firebase.js';
-import { rateLimit } from 'express-rate-limit';
-import { DistributedRateLimitStore } from '../services/rateLimitStore.js';
 import { generateQuestion, DIFFICULTY } from '../services/questions.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
 
@@ -10,18 +8,7 @@ const router = express.Router();
 // Store active game intervals
 const gameIntervals = new Map();
 
-// Rate limiting for game actions (e.g., submitting answers)
-const gameActionLimiter = rateLimit({
-    windowMs: 10 * 1000, // 10 seconds
-    limit: 20, // Allow 20 actions per 10 seconds (enough for rapid answers but prevents bot spam)
-    standardHeaders: 'draft-7',
-    legacyHeaders: false,
-    store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_game' }),
-    message: { error: 'Too many actions, please slow down.' }
-});
-
-router.use('/:roomId/answer', gameActionLimiter);
-router.use('/:roomId/start', gameActionLimiter);
+// Rate limiting handled by global limiter
 
 const DEFAULT_TOKEN_PER_CORRECT = 1;
 const DEFAULT_TOKEN_PER_WIN = 1;

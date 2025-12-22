@@ -1,23 +1,14 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { rateLimit } from 'express-rate-limit';
 import { getFirestore, admin, getRealtimeDb } from '../services/firebase.js';
-import { DistributedRateLimitStore } from '../services/rateLimitStore.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
 
 const router = express.Router();
 
-// Stricter rate limiting for auth endpoints
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 20, // Limit each IP to 20 requests per window
-    standardHeaders: 'draft-7',
-    legacyHeaders: false,
-    store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_auth' }),
-    message: { error: 'Too many authentication attempts, please try again after 15 minutes.' }
+router.use((req, res, next) => {
+    // Relying on global rate limiter instead
+    next();
 });
-
-router.use(authLimiter);
 
 const getPlayersCollection = () => getFirestore().collection('players');
 
