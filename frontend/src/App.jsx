@@ -8,6 +8,8 @@ import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Transactions from './pages/Transactions';
 import Navbar from './components/Navbar';
+import ScrollToTop from './components/ScrollToTop';
+import { useEffect } from 'react';
 
 function ProtectedRoute({ children }) {
   const { player } = useAuth();
@@ -52,9 +54,23 @@ function AppRoutes() {
 }
 
 function App() {
+  useEffect(() => {
+    // Global fix for mobile keyboard pushing up page
+    const handleFocusOut = () => {
+      // Small delay to ensure the keyboard is fully retracted
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }, 100);
+    };
+
+    window.addEventListener('focusout', handleFocusOut);
+    return () => window.removeEventListener('focusout', handleFocusOut);
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

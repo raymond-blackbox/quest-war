@@ -40,6 +40,9 @@ function Login() {
                 await signInWithCustomAuthToken(player.firebaseCustomToken);
             }
             login(player);
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
             navigate('/lobby');
         } catch (err) {
             console.error(err);
@@ -78,6 +81,9 @@ function Login() {
                 await signInWithCustomAuthToken(player.firebaseCustomToken);
             }
             login(player);
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
             navigate('/lobby');
         } catch (err) {
             console.error(err);
@@ -189,7 +195,7 @@ function Login() {
                 </div>
             </div>
             <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.5rem', marginTop: '0.5rem' }}>
-                v1.2.6 (Input Blur & Sync Fix)
+                v1.2.7 (Mobile Viewport Fix)
             </div>
         </div>
 

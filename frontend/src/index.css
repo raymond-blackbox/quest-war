@@ -57,11 +57,14 @@ body {
   background: var(--bg-gradient);
   color: var(--text-primary);
   min-height: 100vh;
+  min-height: 100svh;
+  /* Small viewport height */
   overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 }
