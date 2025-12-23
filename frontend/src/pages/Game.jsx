@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { playCountdownBeep, playCorrectSound } from '../utils/audio';
+import { playCountdownBeep, playCorrectSound, playWinSound, playLoseSound } from '../utils/audio';
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -25,6 +26,8 @@ function Game() {
     const [selection, setSelection] = useState({ forQuestion: null, answerIndex: null });
     const [hasSyncedTokens, setHasSyncedTokens] = useState(false);
     const [hasPlayedResultSound, setHasPlayedResultSound] = useState(false);
+    const [hasPlayedGameEndSound, setHasPlayedGameEndSound] = useState(false);
+
 
     // Derive effective selected answer - only valid if it's for the current question
     const selectedAnswer = useMemo(() => {
@@ -195,6 +198,19 @@ function Game() {
         }
     }, [showResult, selectedAnswer, room?.currentQuestion, hasPlayedResultSound]);
 
+    // Play Win/Lose sound when game ends
+    useEffect(() => {
+        if (!room) return;
+        if ((room.status === 'ended' || room.status === 'aborted') && !hasPlayedGameEndSound) {
+            if (room.winner === player.id) {
+                playWinSound();
+            } else {
+                playLoseSound();
+            }
+            setHasPlayedGameEndSound(true);
+        }
+    }, [room?.status, room?.winner, player.id, hasPlayedGameEndSound]);
+
     const handleBackToLobby = () => {
         navigate('/lobby');
     };
@@ -232,6 +248,7 @@ function Game() {
             </div>
         );
     }
+
 
     // Game ended or aborted
     if (room.status === 'ended' || room.status === 'aborted') {

@@ -25,12 +25,12 @@ Write-Host "`n>>> [Backend] Building and Deploying to Cloud Run..." -ForegroundC
 #   --project $PROJECT_ID `
 #   --allow-unauthenticated
 
-# if ($LASTEXITCODE -eq 0) {
-#     Write-Host ">>> [Backend] Deployment Successful!" -ForegroundColor Green
-# } else {
-#     Write-Host ">>> [Backend] Deployment Failed!" -ForegroundColor Red
-#     exit 1
-# }
+#if ($LASTEXITCODE -eq 0) {
+#    Write-Host ">>> [Backend] Deployment Successful!" -ForegroundColor Green
+#} else {
+#    Write-Host ">>> [Backend] Deployment Failed!" -ForegroundColor Red
+#    exit 1
+#}
 
 # 2. Frontend Deployment
 Write-Host "`n>>> [Frontend] Building and Deploying to Firebase Hosting..." -ForegroundColor Cyan

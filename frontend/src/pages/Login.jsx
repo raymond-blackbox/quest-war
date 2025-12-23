@@ -195,7 +195,7 @@ function Login() {
                 </div>
             </div>
             <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.5rem', marginTop: '0.5rem' }}>
-                v1.2.7 (Mobile Viewport Fix)
+                v1.2.8 (Add Win & Lose Sound)
             </div>
         </div>
 

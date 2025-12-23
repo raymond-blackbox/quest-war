@@ -100,3 +100,31 @@ export const playCorrectSound = () => {
         console.error("Audio error:", e);
     }
 };
+
+/**
+ * Play win sound
+ * Plays from public/sounds/win.mp3
+ */
+export const playWinSound = () => {
+    try {
+        const audio = new Audio('/sounds/win.mp3');
+        audio.volume = 0.6;
+        audio.play().catch(e => console.error("Could not play win sound:", e));
+    } catch (e) {
+        console.error("Audio error:", e);
+    }
+};
+
+/**
+ * Play lose sound
+ * Plays from public/sounds/lose.mp3
+ */
+export const playLoseSound = () => {
+    try {
+        const audio = new Audio('/sounds/lose.mp3');
+        audio.volume = 0.6;
+        audio.play().catch(e => console.error("Could not play lose sound:", e));
+    } catch (e) {
+        console.error("Audio error:", e);
+    }
+};
