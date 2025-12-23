@@ -13,21 +13,23 @@ $REPO_NAME = "quest-war-repo" # Create this in Artifact Registry first
 Write-Host ">>> Starting Deployment for $PROJECT_ID..." -ForegroundColor Green
 
 # 1. Backend Deployment
-Write-Host "`n>>> [Backend] Skipping backend deployment (uncomment to enable)..." -ForegroundColor Yellow
+Write-Host "`n>>> [Backend] Building and Deploying to Cloud Run..." -ForegroundColor Cyan
 
-# Write-Host "Deploying from source..."
-# gcloud run deploy $SERVICE_NAME `
-#   --source ./backend `
-#   --region $REGION `
-#   --project $PROJECT_ID `
-#   --allow-unauthenticated
+# Check if Artifact Registry repo exists (optional check, straightforward deployment)
+# Using 'gcloud run deploy --source' builds with Cloud Build automatically
+Write-Host "Deploying from source..."
+gcloud run deploy $SERVICE_NAME `
+  --source ./backend `
+  --region $REGION `
+  --project $PROJECT_ID `
+  --allow-unauthenticated
 
-# if ($LASTEXITCODE -eq 0) {
-#     Write-Host ">>> [Backend] Deployment Successful!" -ForegroundColor Green
-# } else {
-#     Write-Host ">>> [Backend] Deployment Failed!" -ForegroundColor Red
-#     exit 1
-# }
+if ($LASTEXITCODE -eq 0) {
+    Write-Host ">>> [Backend] Deployment Successful!" -ForegroundColor Green
+} else {
+    Write-Host ">>> [Backend] Deployment Failed!" -ForegroundColor Red
+    exit 1
+}
 
 # 2. Frontend Deployment
 Write-Host "`n>>> [Frontend] Building and Deploying to Firebase Hosting..." -ForegroundColor Cyan
