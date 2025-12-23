@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import { getFirestore, admin, getRealtimeDb } from '../services/firebase.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
+import logger from '../services/logger.js';
 
 const router = express.Router();
 
@@ -159,7 +160,7 @@ router.post('/firebase', async (req, res) => {
             firebaseCustomToken
         });
     } catch (error) {
-        console.error('Google auth error:', error);
+        logger.error('Google auth error:', error);
         const status = error.code === 'auth/argument-error' ? 400 : 500;
         res.status(status).json({ error: status === 400 ? 'Invalid Google token' : 'Internal server error' });
     }
@@ -177,7 +178,7 @@ router.get('/profile/:playerId', async (req, res) => {
 
         res.json(toPlayerResponse(playerDoc));
     } catch (error) {
-        console.error('Profile fetch error:', error);
+        logger.error('Profile fetch error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -262,7 +263,7 @@ router.patch('/profile/:playerId', async (req, res) => {
 
         res.json(toPlayerResponse(updatedDoc));
     } catch (error) {
-        console.error('Profile update error:', error);
+        logger.error('Profile update error:', error);
         if (error.message === 'Player not found') {
             return res.status(404).json({ error: 'Player not found' });
         }

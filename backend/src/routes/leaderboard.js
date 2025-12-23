@@ -1,5 +1,6 @@
 import express from 'express';
 import { getFirestore } from '../services/firebase.js';
+import logger from '../services/logger.js';
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.get('/', async (req, res) => {
         res.json(leaderboard);
 
     } catch (error) {
-        console.error('Leaderboard error:', error);
+        logger.error('Leaderboard error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

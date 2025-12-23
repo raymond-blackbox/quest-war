@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import { getRealtimeDb } from '../services/firebase.js';
 import { DIFFICULTY } from '../services/questions.js';
+import logger from '../services/logger.js';
 
 const router = express.Router();
 
@@ -116,7 +117,7 @@ router.post('/', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Create room error:', error);
+        logger.error('Create room error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -127,7 +128,7 @@ router.post('/:id/join', async (req, res) => {
         const { id } = req.params;
         const { password, playerId, playerUsername, playerDisplayName } = req.body;
 
-        console.log('Join attempt:', { roomId: id, body: req.body });
+        //console.log('Join attempt:', { roomId: id, body: req.body });
 
         if (!playerId) {
             return res.status(400).json({ error: 'Missing playerId' });
@@ -172,7 +173,7 @@ router.post('/:id/join', async (req, res) => {
         res.json({ success: true, roomId: id });
 
     } catch (error) {
-        console.error('Join room error:', error);
+        logger.error('Join room error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -191,7 +192,7 @@ router.post('/:id/ready', async (req, res) => {
         res.json({ success: true });
 
     } catch (error) {
-        console.error('Ready toggle error:', error);
+        logger.error('Ready toggle error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -223,7 +224,7 @@ router.post('/:id/leave', async (req, res) => {
         res.json({ success: true });
 
     } catch (error) {
-        console.error('Leave room error:', error);
+        logger.error('Leave room error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -257,7 +258,7 @@ router.get('/', async (req, res) => {
         res.json(rooms);
 
     } catch (error) {
-        console.error('List rooms error:', error);
+        logger.error('List rooms error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

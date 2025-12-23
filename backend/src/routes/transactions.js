@@ -1,5 +1,6 @@
 import express from 'express';
 import { getFirestore, admin } from '../services/firebase.js';
+import logger from '../services/logger.js';
 
 const router = express.Router();
 
@@ -84,7 +85,7 @@ router.get('/:playerId', async (req, res) => {
         res.json({ transactions });
 
     } catch (error) {
-        console.error('Fetch transactions error:', error);
+        logger.error('Fetch transactions error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

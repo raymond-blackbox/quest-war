@@ -16,7 +16,7 @@ function Transactions() {
         try {
             setLoading(true);
             setError(null);
-            const data = await api.getTransactions(player.id);
+            const data = await api.getTransactions(player.id, 15);
             setTransactions(data.transactions || []);
         } catch (err) {
             console.error('Failed to load transactions:', err);
@@ -68,7 +68,7 @@ function Transactions() {
         <div className="container transactions-page">
             <div className="transactions-header">
                 <h1>Transaction History</h1>
-                <p className="transactions-subtitle">Your token activity log</p>
+                <p className="transactions-subtitle">Your latest 15 token activity log</p>
             </div>
 
             {loading && (

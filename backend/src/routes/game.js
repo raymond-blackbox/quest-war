@@ -2,6 +2,7 @@ import express from 'express';
 import { getRealtimeDb, getFirestore } from '../services/firebase.js';
 import { generateQuestion, DIFFICULTY } from '../services/questions.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
+import logger from '../services/logger.js';
 
 const router = express.Router();
 
@@ -94,7 +95,7 @@ async function getTokenRewardsConfig() {
             return tokenRewardsCache.data;
         }
     } catch (error) {
-        console.error('Failed to load token rewards config:', error);
+        logger.error('Failed to load token rewards config:', error);
     }
 
     tokenRewardsCache.data = null;
@@ -170,7 +171,7 @@ router.post('/:roomId/start', async (req, res) => {
         res.json({ success: true });
 
     } catch (error) {
-        console.error('Start game error:', error);
+        logger.error('Start game error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -245,26 +246,26 @@ async function startGameLoop(roomId, settings) {
 
         // Set timeout for question (roundSeconds)
         const questionTimeout = setTimeout(async () => {
-            console.log(`[TIMEOUT] Timer fired for Room ${roomId}, Question ${currentQuestion}`);
+            //console.log(`[TIMEOUT] Timer fired for Room ${roomId}, Question ${currentQuestion}`);
             // Time's up for this question
             const snapshot = await roomRef.child('currentQuestion').get();
             if (snapshot.exists()) {
                 const q = snapshot.val();
                 if (!q.answeredBy) {
                     // No one answered, reveal correct answer
-                    console.log(`[TIMEOUT] No answer received. Moving to next.`);
+                    //console.log(`[TIMEOUT] No answer received. Moving to next.`);
                     await roomRef.child('currentQuestion').update({
                         answerRevealed: true,
                         timeUp: true
                     });
 
-                    // Move to next question
+                    //Move to next question
                     setTimeout(() => {
-                        console.log(`[TIMEOUT] Next question triggering.`);
+                        // console.log(`[TIMEOUT] Next question triggering.`);
                         askNextQuestion();
                     }, resolvedSettings.delaySeconds * 1000);
                 } else {
-                    console.log(`[TIMEOUT] Question was answered. ignoring.`);
+                    //console.log(`[TIMEOUT] Question was answered. ignoring.`);
                 }
             }
         }, resolvedSettings.roundSeconds * 1000);
@@ -282,7 +283,7 @@ async function startGameLoop(roomId, settings) {
     const presenceRef = rtdb.ref(`rooms/${roomId}/presence`);
     const onPresenceRemove = presenceRef.on('child_removed', (snapshot) => {
         const playerId = snapshot.key;
-        console.log(`[PRESENCE] Player ${playerId} disconnected from Room ${roomId}`);
+        logger.info(`[PRESENCE] Player ${playerId} disconnected from Room ${roomId}`);
         // Trigger check immediately, explicitly excluding this player to handle race condition
         checkRoundCompletion(roomId, playerId);
     });
@@ -379,7 +380,7 @@ router.post('/:roomId/answer', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Answer error:', error);
+        logger.error('Answer error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -435,7 +436,7 @@ async function checkRoundCompletion(roomId, removedPlayerId = null) {
                 timeUp: true
             });
         } catch (err) {
-            console.error(`DB Update FAILED:`, err);
+            logger.error(`DB Update FAILED:`, err);
         }
 
         clearRoomTimeout(roomId);
@@ -445,7 +446,7 @@ async function checkRoundCompletion(roomId, removedPlayerId = null) {
 
     // Logic 3: If NO active players left?
     if (activePlayerCount === 0) {
-        console.log(`[CHECK] Room ${roomId}: No active players remaining. Aborting game.`);
+        logger.info(`[CHECK] Room ${roomId}: No active players remaining. Aborting game.`);
         await endGame(roomId, true); // Abort the game
         return;
     }
@@ -556,7 +557,7 @@ router.post('/:roomId/quit', async (req, res) => {
         res.json({ success: true, playerRemoved: true, roomClosed });
 
     } catch (error) {
-        console.error('Quit error:', error);
+        logger.error('Quit error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

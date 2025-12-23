@@ -1686,6 +1686,16 @@ body {
   .player-item {
     padding: 0.75rem 1rem;
   }
+
+  .navbar-profile-menu {
+    min-width: 160px;
+    padding: 0.5rem;
+  }
+
+  .navbar-menu-item {
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+  }
 }
 
 /* Modal */

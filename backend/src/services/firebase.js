@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
 import { getFirestore as getFirestoreDb } from 'firebase-admin/firestore';
 import { readFileSync, existsSync } from 'fs';
+import logger from './logger.js';
 
 let db;
 let rtdb;
@@ -29,9 +30,9 @@ export function initializeFirebase() {
 
   try {
     rtdb = admin.database();
-    console.log('Firebase initialized successfully (with RTDB)');
+    logger.info('Firebase initialized successfully (with RTDB)');
   } catch (err) {
-    console.error('Failed to initialize RTDB:', err);
+    logger.error('Failed to initialize RTDB:', err);
   }
 }
 

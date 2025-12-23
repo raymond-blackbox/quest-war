@@ -9,6 +9,7 @@ import roomsRoutes from './routes/rooms.js';
 import gameRoutes from './routes/game.js';
 import leaderboardRoutes from './routes/leaderboard.js';
 import transactionsRoutes from './routes/transactions.js';
+import logger from './services/logger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,7 +28,7 @@ app.use(express.json());
 // Initialize Firebase
 initializeFirebase();
 
-console.log('[RESTART] Applying security and stability fixes...');
+logger.info('[RESTART] Applying security and stability fixes...');
 
 const rtdb = getRealtimeDb();
 
@@ -57,11 +58,11 @@ app.use('/api/transactions', transactionsRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
+    logger.error('Unhandled error:', err);
     res.status(500).json({ error: 'Internal server error' });
 });
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Quest War API running on port ${PORT}`);
+    logger.info(`Quest War API running on port ${PORT}`);
 });
