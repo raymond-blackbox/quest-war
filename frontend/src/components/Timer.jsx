@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { playTickSound } from '../utils/audio';
 
-function Timer({ seconds, onComplete, warning = 10, danger = 5 }) {
+function Timer({ seconds, onComplete, warning = 10, danger = 3 }) {
     const [timeLeft, setTimeLeft] = useState(seconds);
     const intervalRef = useRef(null);
     const secondsRef = useRef(seconds);
@@ -25,6 +26,12 @@ function Timer({ seconds, onComplete, warning = 10, danger = 5 }) {
             setTimeLeft((prev) => {
                 // Use the ref to get the current seconds value to avoid stale closures
                 const currentSeconds = secondsRef.current;
+
+                // Play ticking sound if in danger zone (<= danger seconds)
+                if (prev > 1 && prev <= danger + 1) { // +1 because we are about to decrement
+                    playTickSound();
+                }
+
                 if (prev <= 1) {
                     if (intervalRef.current) {
                         clearInterval(intervalRef.current);

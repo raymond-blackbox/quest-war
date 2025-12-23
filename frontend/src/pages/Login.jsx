@@ -92,6 +92,7 @@ function Login() {
             <div className="animate-fade-in">
                 <h1 className="logo">⚔️ Quest War</h1>
                 <p className="subtitle">Battle your friends and gain token for Avatar!</p>
+
                 <div className="card">
                     <div className="auth-toggle">
                         <button
@@ -182,12 +183,16 @@ function Login() {
                         </button>
                     </div>
 
-                    <small style={{ display: 'block', marginTop: '1.5rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                    <small style={{ display: 'block', marginTop: '0.5rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
                         Notice: Competitive play requires a verified account.
                     </small>
                 </div>
             </div>
+            <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.5rem', marginTop: '0.5rem' }}>
+                v1.2.6 (Input Blur & Sync Fix)
+            </div>
         </div>
+
     );
 }
 

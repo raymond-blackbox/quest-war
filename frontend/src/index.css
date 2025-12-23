@@ -704,6 +704,18 @@ body {
   padding: var(--spacing-2xl) var(--spacing-xl);
   margin-bottom: var(--spacing-xl);
   margin-top: calc(var(--spacing-md) * -4);
+  position: relative;
+}
+
+.waiting-indicator {
+  position: absolute;
+  bottom: calc(var(--spacing-xl) * -1.5);
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
 }
 
 .question-text {
@@ -741,13 +753,18 @@ body {
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
 }
 
-.option-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--primary-light);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+@media (hover: hover) {
+  .option-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
 }
 
 .option-btn:active:not(:disabled) {
@@ -764,6 +781,21 @@ body {
   border-color: var(--success);
   color: var(--success);
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.option-btn:focus,
+.option-btn:focus-visible,
+.option-btn:active {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.option-btn.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  transform: translateY(-1px);
 }
 
 .option-btn.wrong {

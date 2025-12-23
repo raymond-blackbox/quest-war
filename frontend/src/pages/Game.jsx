@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { playCountdownBeep, playCorrectSound } from '../utils/audio';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -20,10 +21,33 @@ function Game() {
     const navigate = useNavigate();
     const [room, setRoom] = useState(null);
     const [countdown, setCountdown] = useState(null);
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
-    const [hasAnswered, setHasAnswered] = useState(false);
-    const [showResult, setShowResult] = useState(false);
+    // Selection state now includes the question context to prevent carry-over
+    const [selection, setSelection] = useState({ forQuestion: null, answerIndex: null });
     const [hasSyncedTokens, setHasSyncedTokens] = useState(false);
+    const [hasPlayedResultSound, setHasPlayedResultSound] = useState(false);
+
+    // Derive effective selected answer - only valid if it's for the current question
+    const selectedAnswer = useMemo(() => {
+        if (selection.forQuestion === room?.questionNumber) {
+            return selection.answerIndex;
+        }
+        return null;
+    }, [selection, room?.questionNumber]);
+
+    // Derive showResult directly from room data - always in sync with Firebase
+    const showResult = room?.currentQuestion?.answerRevealed === true;
+
+    // Derive hasAnswered - true if we have a local selection or server says we answered
+    const hasAnswered = useMemo(() => {
+        if (!room?.currentQuestion) return false;
+        if (selectedAnswer !== null) return true;
+
+        const myUserId = player?.id;
+        if (room.currentQuestion.answeredBy === myUserId) return true;
+        if (room.currentQuestion.incorrectAnswers && room.currentQuestion.incorrectAnswers[myUserId]) return true;
+
+        return false;
+    }, [room?.currentQuestion, selectedAnswer, player?.id]);
     const winnerBonus = useMemo(() => {
         if (!room?.settings) return 0;
         return Number(room.settings.tokenPerWin || 0);
@@ -37,11 +61,6 @@ function Game() {
             }
 
             setRoom(data);
-
-            // Show result when answer is revealed
-            if (data.currentQuestion?.answerRevealed) {
-                setShowResult(true);
-            }
         });
 
         // Set up presence
@@ -94,6 +113,8 @@ function Game() {
 
         if (room?.status === 'starting' && countdown === null) {
             setCountdown(3);
+            playCountdownBeep(3);
+
             const interval = setInterval(() => {
                 setCountdown((prev) => {
                     if (prev === null) {
@@ -102,8 +123,10 @@ function Game() {
                     }
                     if (prev <= 1) {
                         clearInterval(interval);
+                        playCountdownBeep("Start");
                         return null;
                     }
+                    playCountdownBeep(prev - 1);
                     return prev - 1;
                 });
             }, 1000);
@@ -111,12 +134,15 @@ function Game() {
         }
     }, [room?.status]);
 
-    // Reset selection state when question number changes
     useEffect(() => {
         if (room?.questionNumber) {
-            setSelectedAnswer(null);
-            setHasAnswered(false);
-            setShowResult(false);
+            // Reset per-question state
+            setHasPlayedResultSound(false);
+
+            // Failsafe: Blur any focused element on question change to break Safari sticky focus
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
         }
     }, [room?.questionNumber]);
 
@@ -131,8 +157,8 @@ function Game() {
             return;
         }
 
-        setSelectedAnswer(answerIndex);
-        setHasAnswered(true);
+        const currentQNum = room.questionNumber;
+        setSelection({ forQuestion: currentQNum, answerIndex: answerIndex });
 
         try {
             console.log('[FRONTEND] Sending submitAnswer API code...');
@@ -143,6 +169,31 @@ function Game() {
             setHasAnswered(false);
         }
     }, [hasAnswered, roomId, player.id, player.username, room?.currentQuestion]);
+
+    // Play sound when result is revealed and user answered correctly
+    useEffect(() => {
+        if (showResult && room?.currentQuestion && !hasPlayedResultSound) {
+            const { correctIndex } = room.currentQuestion;
+
+            console.log('[AUDIO DEBUG]', {
+                showResult,
+                selectedAnswer,
+                correctIndex,
+                hasPlayed: hasPlayedResultSound,
+                match: selectedAnswer === correctIndex
+            });
+
+            if (selectedAnswer !== null && correctIndex !== undefined && correctIndex !== null) {
+                if (Number(selectedAnswer) === Number(correctIndex)) {
+                    console.log('[AUDIO] Playing correct sound!');
+                    playCorrectSound();
+                } else {
+                    console.log('[AUDIO] Answer incorrect, no sound.');
+                }
+                setHasPlayedResultSound(true);
+            }
+        }
+    }, [showResult, selectedAnswer, room?.currentQuestion, hasPlayedResultSound]);
 
     const handleBackToLobby = () => {
         navigate('/lobby');
@@ -277,25 +328,23 @@ function Game() {
                     )}
 
                     {!isAborted && (
-                        <div style={{ marginTop: 'var(--spacing-xl)', maxHeight: '200px', overflowY: 'auto', marginBottom: 'var(--spacing-md)' }}>
-                            <div style={{ marginTop: 'var(--spacing-xl)', maxHeight: '200px', overflowY: 'auto', marginBottom: 'var(--spacing-md)' }}>
-                                <PlayerList
-                                    players={
-                                        (() => {
-                                            const p = room.presence || {};
-                                            const pl = room.players || {};
-                                            const merged = {};
-                                            Object.entries(pl).forEach(([id, data]) => {
-                                                merged[id] = { ...data, connected: p[id] === true };
-                                            });
-                                            return merged;
-                                        })()
-                                    }
-                                    hostId={room.hostId}
-                                    currentPlayerId={player.id}
-                                    showScores
-                                />
-                            </div>
+                        <div style={{ marginTop: 'var(--spacing-md)', maxHeight: '200px', overflowY: 'auto', marginBottom: 'var(--spacing-md)' }}>
+                            <PlayerList
+                                players={
+                                    (() => {
+                                        const p = room.presence || {};
+                                        const pl = room.players || {};
+                                        const merged = {};
+                                        Object.entries(pl).forEach(([id, data]) => {
+                                            merged[id] = { ...data, connected: p[id] === true };
+                                        });
+                                        return merged;
+                                    })()
+                                }
+                                hostId={room.hostId}
+                                currentPlayerId={player.id}
+                                showScores
+                            />
                         </div>
                     )}
                 </div>
@@ -362,6 +411,7 @@ function Game() {
                 selectedAnswer={selectedAnswer}
                 correctIndex={currentQuestion.correctIndex}
                 showResult={showResult}
+                isWaiting={!showResult && hasAnswered}
             />
 
             <button
@@ -371,12 +421,6 @@ function Game() {
             >
                 ×
             </button>
-
-            {!showResult && hasAnswered && !currentQuestion.correctlyAnsweredBy && (
-                <div className="animate-fade-in" style={{ textAlign: 'center', marginTop: 'var(--spacing-lg)', color: 'var(--text-secondary)' }}>
-                    Waiting for others to answer...
-                </div>
-            )}
 
             <div className="game-footer">
                 <div className="scores-section">

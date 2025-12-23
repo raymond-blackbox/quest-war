@@ -7,7 +7,8 @@ function QuestionCard({
     disabled,
     selectedAnswer,
     correctIndex,
-    showResult
+    showResult,
+    isWaiting
 }) {
     const getButtonClass = (index) => {
         let className = 'option-btn';
@@ -19,8 +20,8 @@ function QuestionCard({
             }
         } else if (index === selectedAnswer) {
             // Round still active but this player answered
-            // In our logic, if round is active and they answered, it must be wrong
-            className += ' wrong';
+            // Show as selected (neutral/pending) until result is revealed
+            className += ' selected';
         }
         return className;
     };
@@ -38,13 +39,21 @@ function QuestionCard({
                     <button
                         key={index}
                         className={getButtonClass(index)}
-                        onClick={() => onAnswer(index)}
+                        onClick={(e) => {
+                            onAnswer(index);
+                            e.currentTarget.blur();
+                        }}
                         disabled={disabled}
                     >
                         {option}
                     </button>
                 ))}
             </div>
+            {isWaiting && (
+                <div className="waiting-indicator animate-fade-in">
+                    Waiting for others to answer...
+                </div>
+            )}
         </div>
     );
 }
