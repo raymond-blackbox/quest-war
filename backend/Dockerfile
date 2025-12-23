@@ -8,6 +8,10 @@ RUN npm ci --only=production
 
 COPY . .
 
-EXPOSE 3001
+
+# Default to port 8080 for Cloud Run
+ENV PORT=8080
+
+EXPOSE ${PORT}
 
 CMD ["node", "src/index.js"]

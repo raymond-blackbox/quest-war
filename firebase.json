@@ -10,8 +10,8 @@
             {
                 "source": "/api/**",
                 "run": {
-                    "serviceId": "quest-war-api",
-                    "region": "us-central1"
+                    "serviceId": "quest-war-backend",
+                    "region": "asia-southeast1"
                 }
             },
             {
