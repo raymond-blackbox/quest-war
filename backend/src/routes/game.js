@@ -237,6 +237,7 @@ async function startGameLoop(roomId, settings) {
                 correctIndex: question.correctIndex,
                 startedAt: Date.now(),
                 answeredBy: null,
+                correctlyAnsweredBy: null,
                 answeredCorrectly: null,
                 answerRevealed: false,
                 roundSeconds: resolvedSettings.roundSeconds
@@ -245,14 +246,15 @@ async function startGameLoop(roomId, settings) {
         });
 
         // Set timeout for question (roundSeconds)
+        clearRoomTimeout(roomId); // Clear any existing timeout before setting a new one
         const questionTimeout = setTimeout(async () => {
             //console.log(`[TIMEOUT] Timer fired for Room ${roomId}, Question ${currentQuestion}`);
             // Time's up for this question
             const snapshot = await roomRef.child('currentQuestion').get();
             if (snapshot.exists()) {
                 const q = snapshot.val();
-                if (!q.answeredBy) {
-                    // No one answered, reveal correct answer
+                if (!q.correctlyAnsweredBy) {
+                    // No one answered correctly, reveal correct answer
                     //console.log(`[TIMEOUT] No answer received. Moving to next.`);
                     await roomRef.child('currentQuestion').update({
                         answerRevealed: true,
@@ -260,12 +262,9 @@ async function startGameLoop(roomId, settings) {
                     });
 
                     //Move to next question
-                    setTimeout(() => {
-                        // console.log(`[TIMEOUT] Next question triggering.`);
-                        askNextQuestion();
-                    }, resolvedSettings.delaySeconds * 1000);
+                    scheduleNextQuestion(roomId, { settings: resolvedSettings });
                 } else {
-                    //console.log(`[TIMEOUT] Question was answered. ignoring.`);
+                    //console.log(`[TIMEOUT] Question was answered correctly. ignoring.`);
                 }
             }
         }, resolvedSettings.roundSeconds * 1000);
@@ -359,12 +358,7 @@ router.post('/:roomId/answer', async (req, res) => {
 
             // Clear timeout and schedule next
             clearRoomTimeout(roomId); // Use the helper function
-
-            const delayMs = (Number(roomSettings.delaySeconds) || 5) * 1000;
-            const askNextQuestion = gameIntervals.get(`${roomId}-nextQuestion`);
-            if (askNextQuestion) {
-                setTimeout(() => askNextQuestion(), delayMs);
-            }
+            scheduleNextQuestion(roomId, room);
         } else {
             // Mark that this player answered incorrectly
             await roomRef.child(`currentQuestion/incorrectAnswers/${playerId}`).set(true);
@@ -453,10 +447,12 @@ async function checkRoundCompletion(roomId, removedPlayerId = null) {
 }
 
 function scheduleNextQuestion(roomId, room) {
-    const settings = room.settings || {};
+    const roomSettings = room.settings || {};
     const askNextQuestion = gameIntervals.get(`${roomId}-nextQuestion`);
     if (askNextQuestion) {
-        setTimeout(() => askNextQuestion(), (settings.delaySeconds || 5) * 1000);
+        clearRoomTimeout(roomId);
+        const timeout = setTimeout(() => askNextQuestion(), (roomSettings.delaySeconds || 5) * 1000);
+        gameIntervals.set(`${roomId}-timeout`, timeout);
     }
 }
 
