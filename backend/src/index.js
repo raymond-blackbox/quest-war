@@ -39,7 +39,8 @@ const globalLimiter = rateLimit({
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_global' }),
-    message: { error: 'Too many requests from this IP, please try again later.' }
+    message: { error: 'Too many requests from this IP, please try again later.' },
+    validate: { trustProxy: false }
 });
 
 app.use(globalLimiter);
