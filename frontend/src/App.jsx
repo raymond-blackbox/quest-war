@@ -7,6 +7,7 @@ import Game from './pages/Game';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Transactions from './pages/Transactions';
+import Quests from './pages/Quests';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import { useEffect } from 'react';
@@ -46,6 +47,9 @@ function AppRoutes() {
         } />
         <Route path="/transactions" element={
           <ProtectedRoute><Transactions /></ProtectedRoute>
+        } />
+        <Route path="/quests" element={
+          <ProtectedRoute><Quests /></ProtectedRoute>
         } />
         <Route path="*" element={<Navigate to={player ? "/lobby" : "/login"} replace />} />
       </Routes>

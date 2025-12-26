@@ -34,7 +34,7 @@ function Leaderboard() {
     };
 
     return (
-        <div className="container" style={{ paddingTop: 'var(--spacing-xl)' }}>
+        <div className="container leaderboard-page" style={{ paddingTop: 'var(--spacing-xl)' }}>
             <h1 className="title">🏆 Leaderboard</h1>
 
             {/* Category Tabs */}

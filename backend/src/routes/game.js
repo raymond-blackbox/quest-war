@@ -1,13 +1,40 @@
 import express from 'express';
 import { getRealtimeDb, getFirestore } from '../services/firebase.js';
 import { generateQuestion, DIFFICULTY } from '../services/questions.js';
-import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from './transactions.js';
+import { logTransaction, TRANSACTION_TYPES } from './transactions.js';
 import logger from '../services/logger.js';
+import { updateMultipleQuestProgress } from '../services/quests.js';
+
+async function updateMultipleQuestProgressSafe(playerId, updates) {
+    try {
+        await updateMultipleQuestProgress(playerId, updates);
+    } catch (error) {
+        logger.error('Quest progress update error:', error);
+    }
+}
 
 const router = express.Router();
 
 // Store active game intervals
 const gameIntervals = new Map();
+const questCounters = new Map();
+
+function getRoomQuestCounters(roomId) {
+    if (!questCounters.has(roomId)) {
+        questCounters.set(roomId, new Map());
+    }
+    return questCounters.get(roomId);
+}
+
+function incrementQuestCounter(roomId, playerId, field) {
+    const roomCounters = getRoomQuestCounters(roomId);
+    const playerCounters = roomCounters.get(playerId) || {
+        dailyCorrect: 0,
+        speedCorrect: 0
+    };
+    playerCounters[field] += 1;
+    roomCounters.set(playerId, playerCounters);
+}
 
 // Rate limiting handled by global limiter
 
@@ -179,6 +206,7 @@ router.post('/:roomId/start', async (req, res) => {
 async function startGameLoop(roomId, settings) {
     const rtdb = getRealtimeDb();
     const roomRef = rtdb.ref(`rooms/${roomId}`);
+    questCounters.set(roomId, new Map());
 
     // Reset per-game state
     await roomRef.update({
@@ -356,6 +384,13 @@ router.post('/:roomId/answer', async (req, res) => {
             }
             await playerRef.update(playerUpdates);
 
+            // Update quest progress for correct answer
+            const answerTime = Date.now() - currentQuestion.startedAt;
+            incrementQuestCounter(roomId, playerId, 'dailyCorrect');
+            if (answerTime < 3000) {
+                incrementQuestCounter(roomId, playerId, 'speedCorrect');
+            }
+
             // Clear timeout and schedule next
             clearRoomTimeout(roomId); // Use the helper function
             scheduleNextQuestion(roomId, room);
@@ -481,6 +516,7 @@ function clearGameIntervals(roomId) {
     }
 
     gameIntervals.delete(`${roomId}-nextQuestion`);
+    questCounters.delete(roomId);
 }
 
 // POST /api/game/:roomId/quit - Quit/Surrender the game
@@ -601,6 +637,7 @@ async function endGame(roomId, aborted = false) {
     // Award accumulated tokens to ALL players at game end (not aborted)
     if (!aborted) {
         const winnerBonus = resolveTokenValue(roomSettings.tokenPerWin, DEFAULT_TOKEN_PER_WIN);
+        const roomCounters = getRoomQuestCounters(roomId);
 
         for (const [playerId, playerData] of Object.entries(players)) {
             const playerLabel = playerData.displayName || playerData.username;
@@ -619,6 +656,47 @@ async function endGame(roomId, aborted = false) {
                     : 'Game Complete';
                 await awardTokens(db, playerId, playerLabel, totalEarned, reason, roomId);
             }
+
+            // Update quest progress for game completion
+            const playerScore = Number(playerData.score || 0);
+            const totalQuestions = roomSettings.questionsCount || 10;
+            const accuracy = totalQuestions > 0 ? (playerScore / totalQuestions) * 100 : 0;
+            const gameData = {
+                won: isWinner,
+                difficulty: roomSettings.questionDifficulty,
+                playerCount: Object.keys(players).length,
+                accuracy,
+                questionsCount: totalQuestions
+            };
+
+            const counters = roomCounters.get(playerId) || { dailyCorrect: 0, speedCorrect: 0 };
+            const questUpdates = [];
+
+            if (counters.dailyCorrect > 0) {
+                questUpdates.push({
+                    questId: 'daily_math_warrior',
+                    increment: counters.dailyCorrect
+                });
+            }
+
+            if (counters.speedCorrect > 0) {
+                questUpdates.push({
+                    questId: 'speed_demon',
+                    increment: counters.speedCorrect,
+                    gameData: { fastCorrect: true }
+                });
+            }
+
+            questUpdates.push(
+                { questId: 'streak_master', increment: 1, gameData },
+                { questId: 'social_butterfly', increment: 1, gameData },
+                { questId: 'mastery_seeker', increment: 1, gameData },
+                { questId: 'collector_explorer', increment: 1, gameData },
+                { questId: 'weekly_champion', increment: 1, gameData },
+                { questId: 'perfectionist', increment: 1, gameData }
+            );
+
+            await updateMultipleQuestProgressSafe(playerId, questUpdates);
         }
     }
 

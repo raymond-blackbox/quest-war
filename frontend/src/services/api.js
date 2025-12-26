@@ -117,6 +117,18 @@ class ApiService {
     async getTransactions(playerId, limit = 50, offset = 0) {
         return this.request(`/transactions/${playerId}?limit=${limit}&offset=${offset}`);
     }
+
+    // Quests
+    async getQuests(playerId) {
+        return this.request(`/quests/${playerId}`);
+    }
+
+    async claimQuestReward(playerId, questId) {
+        return this.request(`/quests/${playerId}/claim`, {
+            method: 'POST',
+            body: JSON.stringify({ questId })
+        });
+    }
 }
 
 export const api = new ApiService();

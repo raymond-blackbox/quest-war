@@ -9,6 +9,7 @@ import roomsRoutes from './routes/rooms.js';
 import gameRoutes from './routes/game.js';
 import leaderboardRoutes from './routes/leaderboard.js';
 import transactionsRoutes from './routes/transactions.js';
+import questRoutes from './routes/quests.js';
 import logger from './services/logger.js';
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/api/rooms', roomsRoutes);
 app.use('/api/game', gameRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/transactions', transactionsRoutes);
+app.use('/api/quests', questRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {

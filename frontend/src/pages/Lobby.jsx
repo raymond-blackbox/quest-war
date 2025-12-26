@@ -12,9 +12,9 @@ function Lobby() {
     const [joinPassword, setJoinPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showFilter, setShowFilter] = useState(false);
     const [difficultyFilter, setDifficultyFilter] = useState('all');
     const [fabVisible, setFabVisible] = useState(true);
+    const [questReadyCount, setQuestReadyCount] = useState(0);
     const lastScrollY = useRef(0);
     const { player, refreshPlayer } = useAuth();
     const navigate = useNavigate();
@@ -41,7 +41,6 @@ function Lobby() {
         if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
             // Scrolling down
             setFabVisible(false);
-            setShowFilter(false);
         } else {
             // Scrolling up
             setFabVisible(true);
@@ -62,6 +61,10 @@ function Lobby() {
         };
     }, []);
 
+    useEffect(() => {
+        loadQuestReadyCount();
+    }, [player?.id]);
+
     const syncPlayer = async () => {
         if (!player?.id) return;
         try {
@@ -69,6 +72,20 @@ function Lobby() {
             refreshPlayer(latestData);
         } catch (err) {
             console.error('Failed to sync player:', err);
+        }
+    };
+
+    const loadQuestReadyCount = async () => {
+        if (!player?.id) {
+            setQuestReadyCount(0);
+            return;
+        }
+        try {
+            const quests = await api.getQuests(player.id);
+            const readyCount = quests.filter((quest) => quest.completed && !quest.claimed).length;
+            setQuestReadyCount(readyCount);
+        } catch (err) {
+            console.error('Failed to load quest notifications:', err);
         }
     };
 
@@ -194,47 +211,49 @@ function Lobby() {
             <h1 className="title">Game Lobby</h1>
             <p className="subtitle">Join a quest and start competing!</p>
 
+            <div className="room-filter-card">
+                <div className="room-filter-header">
+                    <div>
+                        <div className="room-filter-title">Filter rooms</div>
+                    </div>
+
+                </div>
+                <div className="room-filter-options">
+                    <button
+                        type="button"
+                        className={`room-filter-chip ${difficultyFilter === 'all' ? 'active' : ''}`}
+                        onClick={() => setDifficultyFilter('all')}
+                    >
+                        All
+                    </button>
+                    {DIFFICULTY_OPTIONS.map((opt) => (
+                        <button
+                            key={opt.value}
+                            type="button"
+                            className={`room-filter-chip ${difficultyFilter === opt.value ? 'active' : ''}`}
+                            onClick={() => setDifficultyFilter(opt.value)}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {/* Floating Action Buttons */}
             <div className={`fab-container ${fabVisible ? '' : 'fab-hidden'}`}>
                 <button className="fab fab-primary" onClick={() => setShowCreate(true)} title="Create Room">
                     +
                 </button>
-                <div className="fab-filter-wrapper">
-                    <button
-                        className={`fab fab-secondary ${difficultyFilter !== 'all' ? 'fab-active' : ''}`}
-                        onClick={() => setShowFilter(!showFilter)}
-                        title="Filter Rooms"
-                    >
-                        🎯
-                    </button>
-                    {showFilter && (
-                        <div className="fab-dropdown">
-                            <button
-                                className={`fab-dropdown-item ${difficultyFilter === 'all' ? 'active' : ''}`}
-                                onClick={() => {
-                                    setDifficultyFilter('all');
-                                    setShowFilter(false);
-                                }}
-                            >
-                                All Rooms
-                            </button>
-                            {DIFFICULTY_OPTIONS.map(opt => (
-                                <button
-                                    key={opt.value}
-                                    className={`fab-dropdown-item ${difficultyFilter === opt.value ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setDifficultyFilter(opt.value);
-                                        setShowFilter(false);
-                                    }}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
                 <button className="fab fab-secondary" onClick={() => navigate('/leaderboard')} title="Leaderboard">
                     🏆
+                </button>
+                <button className="fab fab-secondary fab-quest" onClick={() => navigate('/quests')} title="Challenges">
+                    🎯
+                    {questReadyCount > 0 && (
+                        <span className="fab-badge">
+                            {questReadyCount > 9 ? '9+' : questReadyCount}
+                        </span>
+                    )}
                 </button>
             </div>
 
