@@ -108,6 +108,13 @@ class ApiService {
         });
     }
 
+    async resetGame(roomId, playerId) {
+        return this.request(`/game/${roomId}/reset`, {
+            method: 'POST',
+            body: JSON.stringify({ playerId })
+        });
+    }
+
     // Leaderboard
     async getLeaderboard(category = 'balance') {
         return this.request(`/leaderboard?category=${category}`);

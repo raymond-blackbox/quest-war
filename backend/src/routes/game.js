@@ -48,6 +48,8 @@ const DEFAULT_REWARD_BY_DIFFICULTY = {
     [DIFFICULTY.HARD]: { tokenPerCorrect: 3, tokenPerWin: 30 }
 };
 
+const GAME_SESSION_COLLECTION = 'gameSessions';
+
 const resolveTokenValue = (value, fallback) => {
     const parsed = Number(value);
     if (!Number.isFinite(parsed) || parsed < 0) {
@@ -151,6 +153,51 @@ async function getTokenRewardsForDifficulty(difficulty) {
     };
 }
 
+async function persistGameSession(db, summary) {
+    try {
+        await db.collection(GAME_SESSION_COLLECTION).doc(summary.sessionId).set(summary);
+    } catch (error) {
+        logger.error('Game session save error:', error);
+    }
+}
+
+function buildGameSessionSummary({ sessionId, roomId, room, aborted, singleWinner, isDraw, winnerBonus }) {
+    const players = room.players || {};
+    const roomSettings = room.settings || {};
+    const playersSummary = Object.entries(players).map(([playerId, playerData]) => {
+        const score = Number(playerData.score || 0);
+        const tokensEarned = Number(playerData.tokensEarned || 0);
+        const isWinner = !!singleWinner && singleWinner.id === playerId;
+        const winnerBonusEarned = !aborted && isWinner ? winnerBonus : 0;
+        return {
+            playerId,
+            username: playerData.username || null,
+            displayName: playerData.displayName || playerData.username || null,
+            score,
+            tokensEarned,
+            winnerBonus: winnerBonusEarned,
+            totalTokensEarned: aborted ? 0 : tokensEarned + winnerBonusEarned,
+            isWinner
+        };
+    });
+
+    return {
+        sessionId,
+        roomId,
+        roomName: room.name || null,
+        hostId: room.hostId || null,
+        status: aborted ? 'aborted' : 'ended',
+        isDraw: !!isDraw,
+        winnerId: singleWinner?.id || null,
+        winnerName: singleWinner?.label || null,
+        playerCount: playersSummary.length,
+        settingsSnapshot: roomSettings,
+        tokensAwarded: !aborted,
+        players: playersSummary,
+        endedAt: new Date()
+    };
+}
+
 // POST /api/game/:roomId/start - Start the game
 router.post('/:roomId/start', async (req, res) => {
     try {
@@ -199,6 +246,65 @@ router.post('/:roomId/start', async (req, res) => {
 
     } catch (error) {
         logger.error('Start game error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// POST /api/game/:roomId/reset - Reset room for a new game (host only)
+router.post('/:roomId/reset', async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const { playerId } = req.body;
+
+        if (!playerId) {
+            return res.status(400).json({ error: 'Missing playerId' });
+        }
+
+        const rtdb = getRealtimeDb();
+        const roomRef = rtdb.ref(`rooms/${roomId}`);
+        const snapshot = await roomRef.get();
+
+        if (!snapshot.exists()) {
+            return res.status(404).json({ error: 'Room not found' });
+        }
+
+        const room = snapshot.val();
+
+        if (room.hostId !== playerId) {
+            return res.status(403).json({ error: 'Only host can reset the game' });
+        }
+
+        if (room.status !== 'ended' && room.status !== 'aborted') {
+            return res.status(400).json({ error: 'Game must be ended before reset' });
+        }
+
+        clearGameIntervals(roomId);
+
+        const resetUpdates = {
+            status: 'waiting',
+            questionNumber: 0,
+            totalQuestions: null,
+            currentQuestion: null,
+            winner: null,
+            winnerUsername: null,
+            isDraw: false,
+            abortedBy: null,
+            currentGameId: rtdb.ref().push().key,
+            lastResetAt: Date.now()
+        };
+
+        const players = room.players || {};
+        Object.keys(players).forEach((pid) => {
+            resetUpdates[`players/${pid}/ready`] = false;
+            resetUpdates[`players/${pid}/score`] = 0;
+            resetUpdates[`players/${pid}/tokensEarned`] = 0;
+        });
+
+        await roomRef.update(resetUpdates);
+
+        res.json({ success: true });
+    } catch (error) {
+        logger.error('Reset game error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -624,6 +730,7 @@ async function endGame(roomId, aborted = false) {
 
     const singleWinner = !aborted && maxScore > 0 && winners.length === 1 ? winners[0] : null;
     const isDraw = !aborted && maxScore > 0 && winners.length > 1;
+    const winnerBonus = resolveTokenValue(roomSettings.tokenPerWin, DEFAULT_TOKEN_PER_WIN);
 
     // Update room status
     await roomRef.update({
@@ -636,7 +743,6 @@ async function endGame(roomId, aborted = false) {
 
     // Award accumulated tokens to ALL players at game end (not aborted)
     if (!aborted) {
-        const winnerBonus = resolveTokenValue(roomSettings.tokenPerWin, DEFAULT_TOKEN_PER_WIN);
         const roomCounters = getRoomQuestCounters(roomId);
 
         for (const [playerId, playerData] of Object.entries(players)) {
@@ -699,6 +805,18 @@ async function endGame(roomId, aborted = false) {
             await updateMultipleQuestProgressSafe(playerId, questUpdates);
         }
     }
+
+    const sessionId = db.collection(GAME_SESSION_COLLECTION).doc().id;
+    const sessionSummary = buildGameSessionSummary({
+        sessionId,
+        roomId,
+        room,
+        aborted,
+        singleWinner,
+        isDraw,
+        winnerBonus
+    });
+    await persistGameSession(db, sessionSummary);
 
     // Clean up intervals
     clearGameIntervals(roomId);

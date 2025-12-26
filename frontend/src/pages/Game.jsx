@@ -27,6 +27,7 @@ function Game() {
     const [hasSyncedTokens, setHasSyncedTokens] = useState(false);
     const [hasPlayedResultSound, setHasPlayedResultSound] = useState(false);
     const [hasPlayedGameEndSound, setHasPlayedGameEndSound] = useState(false);
+    const [rematchLoading, setRematchLoading] = useState(false);
 
 
     // Derive effective selected answer - only valid if it's for the current question
@@ -82,6 +83,12 @@ function Game() {
             }
         };
     }, [roomId, navigate, player.id]);
+
+    useEffect(() => {
+        if (room?.status === 'waiting') {
+            navigate(`/room/${roomId}`);
+        }
+    }, [room?.status, roomId, navigate]);
 
     useEffect(() => {
         if (!room || !player?.id) return;
@@ -215,6 +222,20 @@ function Game() {
         navigate('/lobby');
     };
 
+    const handleRematch = async () => {
+        if (rematchLoading) return;
+        setRematchLoading(true);
+        try {
+            await api.resetGame(roomId, player.id);
+            navigate(`/room/${roomId}`);
+        } catch (err) {
+            console.error('Failed to reset game:', err);
+            alert('Failed to reset game. Please try again.');
+        } finally {
+            setRematchLoading(false);
+        }
+    };
+
     const handleQuit = async (e) => {
         if (e) e.stopPropagation();
         if (window.confirm('Are you sure you want to quit this game?')) {
@@ -341,6 +362,34 @@ function Game() {
                             ) : (
                                 <p>🪙 No tokens earned this game. Try to answer faster next round!</p>
                             )}
+                        </div>
+                    )}
+
+                    {room.hostId === player.id ? (
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleRematch}
+                            disabled={rematchLoading}
+                            style={{ width: '100%' }}
+                        >
+                            {rematchLoading ? 'Resetting...' : 'Play Again'}
+                        </button>
+                    ) : (
+                        <div
+                            className="animate-pulse"
+                            style={{
+                                marginTop: 'var(--spacing-sm)',
+                                padding: 'var(--spacing-sm) var(--spacing-md)',
+                                borderRadius: 'var(--radius-lg)',
+                                border: '1px solid rgba(245, 158, 11, 0.4)',
+                                background: 'rgba(245, 158, 11, 0.12)',
+                                color: 'var(--warning)',
+                                textAlign: 'center',
+                                fontWeight: 700,
+                                letterSpacing: '0.02em'
+                            }}
+                        >
+                            Waiting for host to start the next round...
                         </div>
                     )}
 
