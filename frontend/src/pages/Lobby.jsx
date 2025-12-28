@@ -10,6 +10,7 @@ function Lobby() {
     const [showJoin, setShowJoin] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [joinPassword, setJoinPassword] = useState('');
+    const [lobbyError, setLobbyError] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [difficultyFilter, setDifficultyFilter] = useState('all');
@@ -109,10 +110,12 @@ function Lobby() {
     }, [rooms, difficultyFilter]);
 
     const MAX_ROOM_NAME_LENGTH = 15;
+    const MAX_ROOM_PLAYERS = 5;
 
     const handleCreateRoom = async (e) => {
         e.preventDefault();
         setError('');
+        setLobbyError('');
         setLoading(true);
 
         try {
@@ -150,13 +153,18 @@ function Lobby() {
 
 
     const openJoinModal = (room) => {
+        if (room.playerCount >= MAX_ROOM_PLAYERS) {
+            setLobbyError(`Room is full (max ${MAX_ROOM_PLAYERS} players).`);
+            return;
+        }
+        setLobbyError('');
+        setError('');
         if (!room.isPrivate) {
             handleJoinRoom(room.id, '');
             return;
         }
         setSelectedRoom(room);
         setJoinPassword('');
-        setError('');
         setShowJoin(true);
     };
 
@@ -173,6 +181,7 @@ function Lobby() {
         }
 
         setError('');
+        setLobbyError('');
         setLoading(true);
 
         const joinData = {
@@ -188,10 +197,20 @@ function Lobby() {
             await api.joinRoom(roomId, joinData);
             navigate(`/room/${roomId}`);
         } catch (err) {
-            setError(err.message);
+            const message = err.message;
+            const isRoomFull = message.toLowerCase().includes('room is full');
+            if (isRoomFull) {
+                if (showJoin) {
+                    setError(message);
+                } else {
+                    setLobbyError(message);
+                }
+            } else {
+                setError(message);
+            }
             // If direct join failed, show modal
             const room = rooms.find(r => r.id === roomId);
-            if (room && room.isPrivate) {
+            if (!isRoomFull && room && room.isPrivate) {
                 setSelectedRoom(room);
                 setShowJoin(true);
             }
@@ -210,6 +229,7 @@ function Lobby() {
         <div className="container" style={{ paddingTop: 'var(--spacing-lg)' }}>
             <h1 className="title">Game Lobby</h1>
             <p className="subtitle">Join a quest and start competing!</p>
+            {lobbyError && <div className="error-message">{lobbyError}</div>}
 
             <div className="room-filter-card">
                 <div className="room-filter-header">
@@ -269,27 +289,35 @@ function Lobby() {
                     </div>
                 ) : (
                     <div className="room-list">
-                        {filteredRooms.map((room) => (
-                            <div key={room.id} className="room-item" onClick={() => openJoinModal(room)}>
-                                <span className={`difficulty-label difficulty-${room.questionDifficulty || 'medium'}`}>
-                                    {DIFFICULTY_OPTIONS.find(d => d.value === room.questionDifficulty)?.label || 'Medium Math'}
-                                </span>
-                                <div className="room-info">
-                                    <h3>{room.name}</h3>
-                                    <div className="room-meta">
-                                        <span className={`status-badge ${room.isPrivate ? 'private' : 'public'}`}>
-                                            {room.isPrivate ? '� Private' : '🌐 Public'}
-                                        </span>
-                                        <span>👤 {truncateDisplayName(room.hostUsername)}</span>
-                                        <span>👥 {room.playerCount}</span>
+                        {filteredRooms.map((room) => {
+                            const isRoomFull = room.playerCount >= MAX_ROOM_PLAYERS;
+                            return (
+                                <div
+                                    key={room.id}
+                                    className={`room-item ${isRoomFull ? 'room-item-full' : ''}`}
+                                    onClick={() => openJoinModal(room)}
+                                    aria-disabled={isRoomFull}
+                                >
+                                    <span className={`difficulty-label difficulty-${room.questionDifficulty || 'medium'}`}>
+                                        {DIFFICULTY_OPTIONS.find(d => d.value === room.questionDifficulty)?.label || 'Medium Math'}
+                                    </span>
+                                    <div className="room-info">
+                                        <h3>{room.name}</h3>
+                                        <div className="room-meta">
+                                            <span className={`status-badge ${room.isPrivate ? 'private' : 'public'}`}>
+                                                {room.isPrivate ? '� Private' : '🌐 Public'}
+                                            </span>
+                                            <span>👤 {truncateDisplayName(room.hostUsername)}</span>
+                                            <span>👥 {room.playerCount}/{MAX_ROOM_PLAYERS}</span>
+                                        </div>
+                                    </div>
+                                    <div className="join-action">
+                                        <span>{isRoomFull ? 'Full' : 'Join'}</span>
+                                        <span className="arrow">→</span>
                                     </div>
                                 </div>
-                                <div className="join-action">
-                                    <span>Join</span>
-                                    <span className="arrow">→</span>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
 

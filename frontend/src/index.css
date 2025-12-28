@@ -1211,6 +1211,33 @@ body {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
+.room-item.room-item-full {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.room-item.room-item-full:hover {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  transform: none;
+  box-shadow: none;
+}
+
+.room-item.room-item-full .join-action {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+}
+
+.room-item.room-item-full:hover .join-action {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
+.room-item.room-item-full:hover .join-action .arrow {
+  transform: none;
+}
+
 .room-info {
   flex: 1;
   min-width: 0;

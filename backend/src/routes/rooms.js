@@ -8,6 +8,7 @@ const router = express.Router();
 
 const DEFAULT_TOKEN_PER_CORRECT = 1;
 const DEFAULT_TOKEN_PER_WIN = 1;
+const MAX_ROOM_PLAYERS = 5;
 
 const sanitizePositiveNumber = (value, fallback) => {
     const parsed = Number(value);
@@ -149,6 +150,12 @@ router.post('/:id/join', async (req, res) => {
 
         if (room.status !== 'waiting') {
             return res.status(400).json({ error: 'Game already in progress' });
+        }
+
+        const currentPlayers = Object.keys(room.players || {});
+        const isAlreadyInRoom = !!room.players?.[playerId];
+        if (!isAlreadyInRoom && currentPlayers.length >= MAX_ROOM_PLAYERS) {
+            return res.status(409).json({ error: `Room is full (max ${MAX_ROOM_PLAYERS} players)` });
         }
 
         if (room.isPrivate || room.password) {
