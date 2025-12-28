@@ -112,9 +112,6 @@ function Leaderboard() {
                             </div>
                             <div className="leaderboard-name">
                                 {player.displayName || player.username}
-                                {player.id === currentPlayer?.id && (
-                                    <span className="you-badge" style={{ marginLeft: 'var(--spacing-sm)' }}>You</span>
-                                )}
                             </div>
                             <div className="leaderboard-tokens">
                                 {category === 'balance' ? '🪙' : '⚔️'} {player.displayValue ?? player.tokens}

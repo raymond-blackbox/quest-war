@@ -8,6 +8,8 @@ const router = express.Router();
 
 const DEFAULT_TOKEN_PER_CORRECT = 1;
 const DEFAULT_TOKEN_PER_WIN = 1;
+const SOLO_TOKEN_PER_CORRECT = 1;
+const SOLO_TOKEN_PER_WIN = 0;
 const MAX_ROOM_PLAYERS = 5;
 
 const sanitizePositiveNumber = (value, fallback) => {
@@ -37,6 +39,7 @@ const resolveDifficulty = (value) => {
 const DEFAULT_ROUND_SECONDS = 10;
 
 const sanitizeRoomName = (value) => value?.trim();
+const resolveBoolean = (value) => value === true || value === 'true' || value === 1 || value === '1';
 
 // POST /api/rooms - Create a new room
 router.post('/', async (req, res) => {
@@ -51,7 +54,8 @@ router.post('/', async (req, res) => {
             questionsCount,
             questionDifficulty,
             tokenPerCorrectAnswer,
-            tokenPerWin
+            tokenPerWin,
+            isSolo
         } = req.body;
 
         const trimmedName = sanitizeRoomName(name);
@@ -63,12 +67,17 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Room name must be 15 characters or less' });
         }
 
+        const resolvedIsSolo = resolveBoolean(isSolo);
         const resolvedDelaySeconds = sanitizePositiveNumber(delaySeconds, 2);
         const resolvedRoundSeconds = DEFAULT_ROUND_SECONDS;
         const resolvedQuestionsCount = sanitizePositiveNumber(questionsCount, 20);
         const resolvedQuestionDifficulty = resolveDifficulty(questionDifficulty);
-        const resolvedTokenPerCorrect = sanitizeNonNegativeNumber(tokenPerCorrectAnswer, DEFAULT_TOKEN_PER_CORRECT);
-        const resolvedTokenPerWin = sanitizeNonNegativeNumber(tokenPerWin, DEFAULT_TOKEN_PER_WIN);
+        const resolvedTokenPerCorrect = resolvedIsSolo
+            ? SOLO_TOKEN_PER_CORRECT
+            : sanitizeNonNegativeNumber(tokenPerCorrectAnswer, DEFAULT_TOKEN_PER_CORRECT);
+        const resolvedTokenPerWin = resolvedIsSolo
+            ? SOLO_TOKEN_PER_WIN
+            : sanitizeNonNegativeNumber(tokenPerWin, DEFAULT_TOKEN_PER_WIN);
 
         if (!hostId || !hostUsername) {
             return res.status(400).json({ error: 'Missing required fields' });
@@ -77,13 +86,14 @@ router.post('/', async (req, res) => {
         const rtdb = getRealtimeDb();
         const roomRef = rtdb.ref('rooms').push();
 
-        const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+        const hashedPassword = resolvedIsSolo ? null : (password ? await bcrypt.hash(password, 10) : null);
         const resolvedHostDisplayName = (hostDisplayName || hostUsername || '').trim() || hostUsername;
 
         const roomData = {
             name: trimmedName,
             password: hashedPassword,
-            isPrivate: !!password,
+            isPrivate: !resolvedIsSolo && !!password,
+            isSolo: resolvedIsSolo,
             hostId,
             hostUsername,
             hostDisplayName: resolvedHostDisplayName,
@@ -96,12 +106,12 @@ router.post('/', async (req, res) => {
                 tokenPerWin: resolvedTokenPerWin
             },
             status: 'waiting',
-            hostPassword: password || null,
+            hostPassword: resolvedIsSolo ? null : (password || null),
             players: {
                 [hostId]: {
                     username: hostUsername,
                     displayName: resolvedHostDisplayName,
-                    ready: false,
+                    ready: resolvedIsSolo,
                     score: 0,
                     tokensEarned: 0
                 }
@@ -168,11 +178,18 @@ router.post('/:id/join', async (req, res) => {
             }
         }
 
+        if (room.isSolo && room.hostId !== playerId) {
+            return res.status(403).json({ error: 'Solo rooms cannot be joined' });
+        }
+
+        const isSoloRoom = room.isSolo === true;
+        const isHost = room.hostId === playerId;
+
         // Add player to room
         await roomRef.child(`players/${playerId}`).set({
             username: playerUsername,
             displayName: (playerDisplayName || playerUsername || '').trim() || playerUsername,
-            ready: false,
+            ready: isSoloRoom && isHost,
             score: 0,
             tokensEarned: 0
         });
@@ -251,7 +268,7 @@ router.get('/', async (req, res) => {
         const rooms = [];
         snapshot.forEach((childSnapshot) => {
             const room = childSnapshot.val();
-            if (room.status === 'waiting') {
+            if (room.status === 'waiting' && !room.isSolo) {
                 rooms.push({
                     id: childSnapshot.key,
                     name: room.name,

@@ -97,6 +97,7 @@ function Room() {
     }, [roomId, navigate, player.id]);
 
     const isHost = room?.hostId === player.id;
+    const isSolo = room?.isSolo === true;
     const myData = room?.players?.[player.id];
     const isReady = myData?.ready || false;
     const presence = room?.presence || {};
@@ -109,7 +110,7 @@ function Room() {
         };
     });
     const playerIds = Object.keys(players);
-    const allReady = playerIds.length > 1 && playerIds.every(id => players[id].ready);
+    const allReady = isSolo ? playerIds.length === 1 : playerIds.length > 1 && playerIds.every(id => players[id].ready);
 
     const roundSeconds = room?.settings?.roundSeconds ?? room?.roundSeconds ?? 10;
     const questionsCount = room?.settings?.questionsCount ?? room?.totalQuestions ?? 10;
@@ -205,13 +206,19 @@ function Room() {
 
                 <div className="room-actions">
                     <div className="ready-leave-grid">
-                        <button
-                            className={`btn ${isReady ? 'btn-secondary' : 'btn-success'}`}
-                            onClick={handleToggleReady}
-                        >
+                        {!isSolo && (
+                            <button
+                                className={`btn ${isReady ? 'btn-secondary' : 'btn-success'}`}
+                                onClick={handleToggleReady}
+                            >
                             {isReady ? 'Cancel Ready' : '✓ Ready'}
-                        </button>
-                        <button className="btn btn-secondary" onClick={handleLeaveRoom}>
+                            </button>
+                        )}
+                        <button
+                            className="btn btn-secondary"
+                            onClick={handleLeaveRoom}
+                            style={isSolo ? { gridColumn: '1 / -1' } : undefined}
+                        >
                             ← Leave Room
                         </button>
                     </div>
@@ -223,7 +230,15 @@ function Room() {
                             disabled={!allReady || loading}
                             style={{ opacity: allReady ? 1 : 0.5 }}
                         >
-                            {loading ? 'Starting...' : playerIds.length < 2 ? 'Need 2+ Players' : allReady ? '🚀 Start Game!' : 'Waiting for players...'}
+                            {loading
+                                ? 'Starting...'
+                                : isSolo
+                                    ? 'Start Solo Game'
+                                    : playerIds.length < 2
+                                        ? 'Need 2+ Players'
+                                        : allReady
+                                            ? '🚀 Start Game!'
+                                            : 'Waiting for players...'}
                         </button>
                     )}
                 </div>

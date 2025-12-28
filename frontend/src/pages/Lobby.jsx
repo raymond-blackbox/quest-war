@@ -31,6 +31,7 @@ function Lobby() {
     // Create room form state
     const [roomName, setRoomName] = useState('');
     const [roomPassword, setRoomPassword] = useState('');
+    const [isSolo, setIsSolo] = useState(false);
 
     const [delaySeconds] = useState(2);
     const [questionsCount, setQuestionsCount] = useState(QUESTION_COUNT_OPTIONS[0]);
@@ -65,6 +66,15 @@ function Lobby() {
     useEffect(() => {
         loadQuestReadyCount();
     }, [player?.id]);
+
+    useEffect(() => {
+        if (isSolo) {
+            setRoomPassword('');
+            if (!roomName.trim()) {
+                setRoomName('Solo Game');
+            }
+        }
+    }, [isSolo, roomName]);
 
     const syncPlayer = async () => {
         if (!player?.id) return;
@@ -120,27 +130,29 @@ function Lobby() {
 
         try {
             const trimmedName = roomName.trim();
-            if (!trimmedName) {
+            const resolvedName = trimmedName || (isSolo ? 'Solo Game' : '');
+            if (!resolvedName) {
                 setError('Room name is required');
                 setLoading(false);
                 return;
             }
 
-            if (trimmedName.length > MAX_ROOM_NAME_LENGTH) {
+            if (resolvedName.length > MAX_ROOM_NAME_LENGTH) {
                 setError(`Room name must be ${MAX_ROOM_NAME_LENGTH} characters or less`);
                 setLoading(false);
                 return;
             }
 
             const room = await api.createRoom({
-                name: trimmedName,
-                password: roomPassword,
+                name: resolvedName,
+                password: isSolo ? '' : roomPassword,
                 hostId: player.id,
                 hostUsername: player.username,
                 hostDisplayName: player.displayName || player.username,
                 delaySeconds: Number(delaySeconds),
                 questionsCount: Number(questionsCount),
-                questionDifficulty
+                questionDifficulty,
+                isSolo
             });
             navigate(`/room/${room.roomId}`);
         } catch (err) {
@@ -331,6 +343,31 @@ function Lobby() {
 
                         <form onSubmit={handleCreateRoom}>
                             <div className="input-group">
+                                <label>Game Mode</label>
+                                <div className="room-filter-options" style={{ justifyContent: 'flex-start' }}>
+                                    <button
+                                        type="button"
+                                        className={`room-filter-chip ${!isSolo ? 'active' : ''}`}
+                                        onClick={() => setIsSolo(false)}
+                                    >
+                                        Multiplayer
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`room-filter-chip ${isSolo ? 'active' : ''}`}
+                                        onClick={() => setIsSolo(true)}
+                                    >
+                                        Solo
+                                    </button>
+                                </div>
+                                {isSolo && (
+                                    <small className="input-hint">
+                                        Solo games are hidden from the lobby and do not count toward quests or leaderboards.
+                                    </small>
+                                )}
+                            </div>
+
+                            <div className="input-group">
                                 <label>Room Name</label>
                                 <input
                                     type="text"
@@ -343,16 +380,18 @@ function Lobby() {
                                 />
                             </div>
 
-                            <div className="input-group">
-                                <label>Room Password (Optional)</label>
-                                <input
-                                    type="text"
-                                    className="input"
-                                    value={roomPassword}
-                                    onChange={(e) => setRoomPassword(e.target.value)}
-                                    placeholder="Leave empty for public room"
-                                />
-                            </div>
+                            {!isSolo && (
+                                <div className="input-group">
+                                    <label>Room Password (Optional)</label>
+                                    <input
+                                        type="text"
+                                        className="input"
+                                        value={roomPassword}
+                                        onChange={(e) => setRoomPassword(e.target.value)}
+                                        placeholder="Leave empty for public room"
+                                    />
+                                </div>
+                            )}
 
 
 

@@ -62,6 +62,9 @@ export function subscribeToLobbyRooms(callback) {
             if (!isHostConnected || !hostData) {
                 return;
             }
+            if (room.isSolo) {
+                return;
+            }
 
             // Query guarantees status === 'waiting', but we keep the mapping logic
             rooms.push({

@@ -40,6 +40,8 @@ function incrementQuestCounter(roomId, playerId, field) {
 
 const DEFAULT_TOKEN_PER_CORRECT = 1;
 const DEFAULT_TOKEN_PER_WIN = 1;
+const SOLO_TOKEN_PER_CORRECT = 1;
+const SOLO_TOKEN_PER_WIN = 0;
 const TOKEN_CONFIG_CACHE_MS = 60 * 1000;
 
 const DEFAULT_REWARD_BY_DIFFICULTY = {
@@ -58,9 +60,18 @@ const resolveTokenValue = (value, fallback) => {
     return Math.round(parsed);
 };
 
-async function awardTokens(db, playerId, playerLabel, tokenDelta, reason = 'Quest Reward', roomId = null) {
+async function awardTokens(
+    db,
+    playerId,
+    playerLabel,
+    tokenDelta,
+    reason = 'Quest Reward',
+    roomId = null,
+    options = {}
+) {
     if (!playerId || tokenDelta <= 0) return;
 
+    const { updateLeaderboard = true } = options;
     const playerDocRef = db.collection('players').doc(playerId);
     const playerDoc = await playerDocRef.get();
 
@@ -73,18 +84,20 @@ async function awardTokens(db, playerId, playerLabel, tokenDelta, reason = 'Ques
     const resolvedDisplayName = playerLabel || playerDoc.data().displayName || playerDoc.data().username;
     const resolvedUsername = playerDoc.data().username;
 
-    // Get current totalTokensEarned from leaderboard, then add the delta
-    const leaderboardDocRef = db.collection('leaderboard').doc(playerId);
-    const leaderboardDoc = await leaderboardDocRef.get();
-    const currentTotalEarned = Number(leaderboardDoc.exists ? leaderboardDoc.data().totalTokensEarned || 0 : 0);
+    if (updateLeaderboard) {
+        // Get current totalTokensEarned from leaderboard, then add the delta
+        const leaderboardDocRef = db.collection('leaderboard').doc(playerId);
+        const leaderboardDoc = await leaderboardDocRef.get();
+        const currentTotalEarned = Number(leaderboardDoc.exists ? leaderboardDoc.data().totalTokensEarned || 0 : 0);
 
-    await leaderboardDocRef.set({
-        username: resolvedUsername,
-        displayName: resolvedDisplayName,
-        tokens: newTokens,
-        totalTokensEarned: currentTotalEarned + tokenDelta, // Lifetime earnings - only increases
-        updatedAt: new Date()
-    }, { merge: true });
+        await leaderboardDocRef.set({
+            username: resolvedUsername,
+            displayName: resolvedDisplayName,
+            tokens: newTokens,
+            totalTokensEarned: currentTotalEarned + tokenDelta, // Lifetime earnings - only increases
+            updatedAt: new Date()
+        }, { merge: true });
+    }
 
     // Log the transaction
     await logTransaction(db, {
@@ -213,6 +226,7 @@ router.post('/:roomId/start', async (req, res) => {
         }
 
         const room = snapshot.val();
+        const isSolo = room.isSolo === true;
 
         // Only host can start
         if (room.hostId !== playerId) {
@@ -223,13 +237,19 @@ router.post('/:roomId/start', async (req, res) => {
         const players = room.players || {};
         const playerIds = Object.keys(players);
 
-        if (playerIds.length < 2) {
+        if (isSolo && playerIds.length !== 1) {
+            return res.status(400).json({ error: 'Solo rooms can only have 1 player' });
+        }
+
+        if (!isSolo && playerIds.length < 2) {
             return res.status(400).json({ error: 'Need at least 2 players to start' });
         }
 
-        const allReady = playerIds.every(id => players[id].ready);
-        if (!allReady) {
-            return res.status(400).json({ error: 'All players must be ready' });
+        if (!isSolo) {
+            const allReady = playerIds.every(id => players[id].ready);
+            if (!allReady) {
+                return res.status(400).json({ error: 'All players must be ready' });
+            }
         }
 
         // Update room status
@@ -240,7 +260,7 @@ router.post('/:roomId/start', async (req, res) => {
         });
 
         // Start the game after a short delay
-        setTimeout(() => startGameLoop(roomId, room.settings), 3000);
+        setTimeout(() => startGameLoop(roomId, room.settings, { isSolo }), 3000);
 
         res.json({ success: true });
 
@@ -269,6 +289,7 @@ router.post('/:roomId/reset', async (req, res) => {
         }
 
         const room = snapshot.val();
+        const isSolo = room.isSolo === true;
 
         if (room.hostId !== playerId) {
             return res.status(403).json({ error: 'Only host can reset the game' });
@@ -295,7 +316,7 @@ router.post('/:roomId/reset', async (req, res) => {
 
         const players = room.players || {};
         Object.keys(players).forEach((pid) => {
-            resetUpdates[`players/${pid}/ready`] = false;
+            resetUpdates[`players/${pid}/ready`] = isSolo && pid === room.hostId;
             resetUpdates[`players/${pid}/score`] = 0;
             resetUpdates[`players/${pid}/tokensEarned`] = 0;
         });
@@ -309,7 +330,8 @@ router.post('/:roomId/reset', async (req, res) => {
     }
 });
 
-async function startGameLoop(roomId, settings) {
+async function startGameLoop(roomId, settings, options = {}) {
+    const isSolo = options.isSolo === true;
     const rtdb = getRealtimeDb();
     const roomRef = rtdb.ref(`rooms/${roomId}`);
     questCounters.set(roomId, new Map());
@@ -341,7 +363,9 @@ async function startGameLoop(roomId, settings) {
         questionsCount: Number(settings?.questionsCount) || 10,
         questionDifficulty: settings?.questionDifficulty || DIFFICULTY.MEDIUM
     };
-    const rewardSettings = await getTokenRewardsForDifficulty(baseSettings.questionDifficulty);
+    const rewardSettings = isSolo
+        ? { tokenPerCorrectAnswer: SOLO_TOKEN_PER_CORRECT, tokenPerWin: SOLO_TOKEN_PER_WIN }
+        : await getTokenRewardsForDifficulty(baseSettings.questionDifficulty);
     const resolvedSettings = {
         ...baseSettings,
         tokenPerCorrectAnswer: rewardSettings.tokenPerCorrectAnswer,
@@ -442,6 +466,7 @@ router.post('/:roomId/answer', async (req, res) => {
         }
 
         const room = snapshot.val();
+        const isSolo = room.isSolo === true;
 
         if (room.status !== 'playing') {
             return res.status(400).json({ error: 'Game not in progress' });
@@ -483,7 +508,9 @@ router.post('/:roomId/answer', async (req, res) => {
 
             // Track tokens for correct answer in RTDB only (will be awarded at game end)
             const roomSettings = room.settings || {};
-            const perCorrect = resolveTokenValue(roomSettings.tokenPerCorrectAnswer, DEFAULT_TOKEN_PER_CORRECT);
+            const perCorrect = isSolo
+                ? SOLO_TOKEN_PER_CORRECT
+                : resolveTokenValue(roomSettings.tokenPerCorrectAnswer, DEFAULT_TOKEN_PER_CORRECT);
             if (perCorrect > 0) {
                 tokenReward = perCorrect;
                 playerUpdates.tokensEarned = currentTokensEarned + perCorrect;
@@ -491,10 +518,12 @@ router.post('/:roomId/answer', async (req, res) => {
             await playerRef.update(playerUpdates);
 
             // Update quest progress for correct answer
-            const answerTime = Date.now() - currentQuestion.startedAt;
-            incrementQuestCounter(roomId, playerId, 'dailyCorrect');
-            if (answerTime < 3000) {
-                incrementQuestCounter(roomId, playerId, 'speedCorrect');
+            if (!isSolo) {
+                const answerTime = Date.now() - currentQuestion.startedAt;
+                incrementQuestCounter(roomId, playerId, 'dailyCorrect');
+                if (answerTime < 3000) {
+                    incrementQuestCounter(roomId, playerId, 'speedCorrect');
+                }
             }
 
             // Clear timeout and schedule next
@@ -543,7 +572,6 @@ async function checkRoundCompletion(roomId, removedPlayerId = null) {
 
     let activePlayerCount = 0;
     let activeIncorrectCount = 0;
-    let activeAnsweredCount = 0;
 
     // Calculate counts based on ACTIVE (Present) players
     Object.entries(players).forEach(([pid, p]) => {
@@ -558,7 +586,6 @@ async function checkRoundCompletion(roomId, removedPlayerId = null) {
             const isCorrect = currentQuestion.correctlyAnsweredBy === pid;
 
             if (isIncorrect) activeIncorrectCount++;
-            if (isIncorrect || isCorrect) activeAnsweredCount++;
         }
     });
 
@@ -652,7 +679,6 @@ router.post('/:roomId/quit', async (req, res) => {
         }
 
         const remainingPlayerIds = Object.keys(players).filter(id => id !== playerId);
-        const isActiveGame = room.status === 'playing' || room.status === 'starting';
 
         // Remove the player so others can continue.
         await roomRef.child(`players/${playerId}`).remove();
@@ -709,6 +735,7 @@ async function endGame(roomId, aborted = false) {
     if (!snapshot.exists()) return;
 
     const room = snapshot.val();
+    const isSolo = room.isSolo === true;
     if (room.status === 'aborted') return; // Already aborted
 
     const players = room.players || {};
@@ -730,7 +757,7 @@ async function endGame(roomId, aborted = false) {
 
     const singleWinner = !aborted && maxScore > 0 && winners.length === 1 ? winners[0] : null;
     const isDraw = !aborted && maxScore > 0 && winners.length > 1;
-    const winnerBonus = resolveTokenValue(roomSettings.tokenPerWin, DEFAULT_TOKEN_PER_WIN);
+    const winnerBonus = isSolo ? SOLO_TOKEN_PER_WIN : resolveTokenValue(roomSettings.tokenPerWin, DEFAULT_TOKEN_PER_WIN);
 
     // Update room status
     await roomRef.update({
@@ -743,8 +770,6 @@ async function endGame(roomId, aborted = false) {
 
     // Award accumulated tokens to ALL players at game end (not aborted)
     if (!aborted) {
-        const roomCounters = getRoomQuestCounters(roomId);
-
         for (const [playerId, playerData] of Object.entries(players)) {
             const playerLabel = playerData.displayName || playerData.username;
             let totalEarned = Number(playerData.tokensEarned || 0);
@@ -757,52 +782,57 @@ async function endGame(roomId, aborted = false) {
 
             // Award all tokens at once if any were earned
             if (totalEarned > 0) {
-                const reason = isWinner
+                const reason = isWinner && winnerBonus > 0
                     ? `Game Complete (+${winnerBonus} Winner Bonus)`
                     : 'Game Complete';
-                await awardTokens(db, playerId, playerLabel, totalEarned, reason, roomId);
+                await awardTokens(db, playerId, playerLabel, totalEarned, reason, roomId, {
+                    updateLeaderboard: !isSolo
+                });
             }
 
             // Update quest progress for game completion
-            const playerScore = Number(playerData.score || 0);
-            const totalQuestions = roomSettings.questionsCount || 10;
-            const accuracy = totalQuestions > 0 ? (playerScore / totalQuestions) * 100 : 0;
-            const gameData = {
-                won: isWinner,
-                difficulty: roomSettings.questionDifficulty,
-                playerCount: Object.keys(players).length,
-                accuracy,
-                questionsCount: totalQuestions
-            };
+            if (!isSolo) {
+                const roomCounters = getRoomQuestCounters(roomId);
+                const playerScore = Number(playerData.score || 0);
+                const totalQuestions = roomSettings.questionsCount || 10;
+                const accuracy = totalQuestions > 0 ? (playerScore / totalQuestions) * 100 : 0;
+                const gameData = {
+                    won: isWinner,
+                    difficulty: roomSettings.questionDifficulty,
+                    playerCount: Object.keys(players).length,
+                    accuracy,
+                    questionsCount: totalQuestions
+                };
 
-            const counters = roomCounters.get(playerId) || { dailyCorrect: 0, speedCorrect: 0 };
-            const questUpdates = [];
+                const counters = roomCounters.get(playerId) || { dailyCorrect: 0, speedCorrect: 0 };
+                const questUpdates = [];
 
-            if (counters.dailyCorrect > 0) {
-                questUpdates.push({
-                    questId: 'daily_math_warrior',
-                    increment: counters.dailyCorrect
-                });
+                if (counters.dailyCorrect > 0) {
+                    questUpdates.push({
+                        questId: 'daily_math_warrior',
+                        increment: counters.dailyCorrect
+                    });
+                }
+
+                if (counters.speedCorrect > 0) {
+                    questUpdates.push({
+                        questId: 'speed_demon',
+                        increment: counters.speedCorrect,
+                        gameData: { fastCorrect: true }
+                    });
+                }
+
+                questUpdates.push(
+                    { questId: 'streak_master', increment: 1, gameData },
+                    { questId: 'social_butterfly', increment: 1, gameData },
+                    { questId: 'mastery_seeker', increment: 1, gameData },
+                    { questId: 'collector_explorer', increment: 1, gameData },
+                    { questId: 'weekly_champion', increment: 1, gameData },
+                    { questId: 'perfectionist', increment: 1, gameData }
+                );
+
+                await updateMultipleQuestProgressSafe(playerId, questUpdates);
             }
-
-            if (counters.speedCorrect > 0) {
-                questUpdates.push({
-                    questId: 'speed_demon',
-                    increment: counters.speedCorrect,
-                    gameData: { fastCorrect: true }
-                });
-            }
-
-            questUpdates.push(
-                { questId: 'streak_master', increment: 1, gameData },
-                { questId: 'social_butterfly', increment: 1, gameData },
-                { questId: 'mastery_seeker', increment: 1, gameData },
-                { questId: 'collector_explorer', increment: 1, gameData },
-                { questId: 'weekly_champion', increment: 1, gameData },
-                { questId: 'perfectionist', increment: 1, gameData }
-            );
-
-            await updateMultipleQuestProgressSafe(playerId, questUpdates);
         }
     }
 
