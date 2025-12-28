@@ -122,8 +122,22 @@ export const playWinSound = () => {
 export const playLoseSound = () => {
     try {
         const audio = new Audio('/sounds/lose.mp3');
-        audio.volume = 0.6;
+        audio.volume = 0.7;
         audio.play().catch(e => console.error("Could not play lose sound:", e));
+    } catch (e) {
+        console.error("Audio error:", e);
+    }
+};
+
+/**
+ * Play quest claim sound
+ * Plays from public/sounds/questClaim.mp3
+ */
+export const playQuestClaimSound = () => {
+    try {
+        const audio = new Audio('/sounds/questClaim.mp3');
+        audio.volume = 0.4;
+        audio.play().catch(e => console.error("Could not play quest claim sound:", e));
     } catch (e) {
         console.error("Audio error:", e);
     }

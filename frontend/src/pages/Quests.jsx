@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { playQuestClaimSound } from '../utils/audio';
 
 function Quests() {
     const [quests, setQuests] = useState([]);
@@ -34,6 +35,7 @@ function Quests() {
         try {
             setClaiming(questId);
             await api.claimQuestReward(player.id, questId);
+            playQuestClaimSound();
             const latestProfile = await api.getProfile(player.id);
             refreshPlayer(latestProfile);
             await loadQuests(); // Refresh quests
