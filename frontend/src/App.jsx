@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Lobby from './pages/Lobby';
@@ -10,7 +11,7 @@ import Transactions from './pages/Transactions';
 import Quests from './pages/Quests';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
-import { useEffect } from 'react';
+import { checkForVersionUpdate } from './services/version';
 
 function ProtectedRoute({ children }) {
   const { player } = useAuth();
@@ -22,6 +23,43 @@ function ProtectedRoute({ children }) {
 
 function AppRoutes() {
   const { player } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const shouldCheck = location.pathname === '/login' || location.pathname === '/lobby';
+    if (!shouldCheck) {
+      return undefined;
+    }
+
+    let isChecking = false;
+
+    const runCheck = async () => {
+      if (isChecking) {
+        return;
+      }
+      isChecking = true;
+      try {
+        await checkForVersionUpdate();
+      } finally {
+        isChecking = false;
+      }
+    };
+
+    runCheck();
+    const intervalId = setInterval(runCheck, 10 * 60 * 1000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        runCheck();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [location.pathname]);
 
   return (
     <>

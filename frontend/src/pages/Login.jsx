@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { signInWithGoogle, signInWithCustomAuthToken, loginWithEmail, registerWithEmail, sendVerificationEmail, resetPassword } from '../services/firebase';
+import { appVersion, fetchVersionInfo, getReloadBlockedVersion } from '../services/version';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -11,8 +12,33 @@ function Login() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [versionInfo, setVersionInfo] = useState({ version: appVersion, message: '' });
+    const [updateBlocked, setUpdateBlocked] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadVersionInfo = async () => {
+            try {
+                const latest = await fetchVersionInfo({ cacheBust: true });
+                if (!isMounted) return;
+                setVersionInfo(latest);
+                const blockedVersion = getReloadBlockedVersion();
+                setUpdateBlocked(blockedVersion === latest.version && latest.version !== appVersion);
+            } catch (err) {
+                if (!isMounted) return;
+                setVersionInfo({ version: appVersion, message: '' });
+            }
+        };
+
+        loadVersionInfo();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const handleEmailAuth = async (e) => {
         e.preventDefault();
@@ -194,8 +220,18 @@ function Login() {
                     </small>
                 </div>
             </div>
-            <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.5rem', marginTop: '0.5rem' }}>
-                v1.2.9 (Limit 5 players per room)
+            <div style={{ textAlign: 'center', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.5rem', marginTop: '0.5rem', display: 'grid', gap: '0.25rem' }}>
+                <span>
+                    {versionInfo.version && versionInfo.version !== appVersion
+                        ? `v${appVersion} (Latest v${versionInfo.version})`
+                        : `v${appVersion}`}
+                </span>
+                {versionInfo.message && (
+                    <span>What&apos;s new: {versionInfo.message}</span>
+                )}
+                {updateBlocked && (
+                    <span style={{ color: 'var(--warning)' }}>Update available but cache is still old. Please refresh.</span>
+                )}
             </div>
         </div>
 

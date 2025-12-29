@@ -357,7 +357,7 @@ function Lobby() {
                                         className={`room-filter-chip ${isSolo ? 'active' : ''}`}
                                         onClick={() => setIsSolo(true)}
                                     >
-                                        Solo
+                                        Solo (Practice)
                                     </button>
                                 </div>
                                 {isSolo && (

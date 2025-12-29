@@ -1,8 +1,28 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync } from 'fs'
+import { dirname, resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+const currentDir = dirname(fileURLToPath(import.meta.url))
+const versionFile = resolve(currentDir, 'public', 'version.json')
+let appVersion = '0.0.0'
+
+try {
+  const raw = readFileSync(versionFile, 'utf-8')
+  const parsed = JSON.parse(raw)
+  if (parsed && typeof parsed.version === 'string') {
+    appVersion = parsed.version
+  }
+} catch (error) {
+  appVersion = '0.0.0'
+}
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+  },
   plugins: [
     react(),
     VitePWA({

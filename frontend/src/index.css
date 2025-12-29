@@ -477,6 +477,14 @@ body {
   margin-bottom: var(--spacing-sm);
 }
 
+.input-hint {
+  display: block;
+  margin-top: var(--spacing-xs);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
 .input {
   width: 100%;
   padding: 0.85rem 1rem;
