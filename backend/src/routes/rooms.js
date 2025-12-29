@@ -1,8 +1,12 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import { getRealtimeDb } from '../services/firebase.js';
-import { DIFFICULTY } from '../services/questions.js';
+import { getQuestionProvider, GAME_TYPES } from '../services/questionProviders/index.js';
 import logger from '../services/logger.js';
+
+// Get the default math provider for validation
+const mathProvider = getQuestionProvider(GAME_TYPES.MATH);
+const { DIFFICULTY } = mathProvider;
 
 const router = express.Router();
 
@@ -55,7 +59,8 @@ router.post('/', async (req, res) => {
             questionDifficulty,
             tokenPerCorrectAnswer,
             tokenPerWin,
-            isSolo
+            isSolo,
+            gameType
         } = req.body;
 
         const trimmedName = sanitizeRoomName(name);
@@ -68,6 +73,7 @@ router.post('/', async (req, res) => {
         }
 
         const resolvedIsSolo = resolveBoolean(isSolo);
+        const resolvedGameType = (gameType && Object.values(GAME_TYPES).includes(gameType)) ? gameType : GAME_TYPES.MATH;
         const resolvedDelaySeconds = sanitizePositiveNumber(delaySeconds, 2);
         const resolvedRoundSeconds = DEFAULT_ROUND_SECONDS;
         const resolvedQuestionsCount = sanitizePositiveNumber(questionsCount, 20);
@@ -103,7 +109,8 @@ router.post('/', async (req, res) => {
                 questionsCount: resolvedQuestionsCount,
                 questionDifficulty: resolvedQuestionDifficulty,
                 tokenPerCorrectAnswer: resolvedTokenPerCorrect,
-                tokenPerWin: resolvedTokenPerWin
+                tokenPerWin: resolvedTokenPerWin,
+                gameType: resolvedGameType
             },
             status: 'waiting',
             hostPassword: resolvedIsSolo ? null : (password || null),

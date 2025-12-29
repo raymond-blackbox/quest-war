@@ -1,9 +1,13 @@
 import express from 'express';
 import { getRealtimeDb, getFirestore } from '../services/firebase.js';
-import { generateQuestion, DIFFICULTY } from '../services/questions.js';
+import { getQuestionProvider, GAME_TYPES } from '../services/questionProviders/index.js';
 import { logTransaction, TRANSACTION_TYPES } from './transactions.js';
 import logger from '../services/logger.js';
 import { updateMultipleQuestProgress } from '../services/quests.js';
+
+// Get the default math provider and its exports
+const mathProvider = getQuestionProvider(GAME_TYPES.MATH);
+const { DIFFICULTY } = mathProvider;
 
 async function updateMultipleQuestProgressSafe(playerId, updates) {
     try {
@@ -336,6 +340,10 @@ async function startGameLoop(roomId, settings, options = {}) {
     const roomRef = rtdb.ref(`rooms/${roomId}`);
     questCounters.set(roomId, new Map());
 
+    // Get the question provider based on game type (defaults to math)
+    const gameType = settings?.gameType || GAME_TYPES.MATH;
+    const questionProvider = getQuestionProvider(gameType);
+
     // Reset per-game state
     await roomRef.update({
         status: 'playing',
@@ -384,8 +392,8 @@ async function startGameLoop(roomId, settings, options = {}) {
             return;
         }
 
-        // Generate a new question
-        const question = generateQuestion(resolvedSettings.questionDifficulty);
+        // Generate a new question using the provider
+        const question = questionProvider.generateQuestion(resolvedSettings.questionDifficulty);
 
         await roomRef.update({
             questionNumber: currentQuestion,
