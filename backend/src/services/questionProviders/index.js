@@ -5,11 +5,13 @@
  */
 
 import * as mathProvider from './mathProvider.js';
+import * as scienceProvider from './scienceProvider.js';
 
-// Provider registry - lazy loading for future providers
+// Provider registry
 const providers = {
     math: mathProvider,
-    // Future: trivia: () => import('./triviaProvider.js'),
+    science: scienceProvider,
+    // Add more providers here as needed
 };
 
 /**
@@ -17,6 +19,7 @@ const providers = {
  */
 export const GAME_TYPES = {
     MATH: 'math',
+    SCIENCE: 'science',
     // Future game types can be added here
 };
 

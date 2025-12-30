@@ -74,6 +74,7 @@ export function subscribeToLobbyRooms(callback) {
                 playerCount: Object.keys(room.players || {}).length,
                 hostUsername: hostData?.displayName || hostData?.username,
                 questionDifficulty: room.settings?.questionDifficulty,
+                gameType: room.settings?.gameType || 'math',
                 createdAt: room.createdAt
             });
         });

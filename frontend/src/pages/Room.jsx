@@ -41,7 +41,6 @@ function Room() {
             setRoom(roomData);
 
             // Handle presence/disconnect logic
-            // Handle presence/disconnect logic
             const presenceRef = ref(database, `rooms/${roomId}/presence/${player.id}`);
             set(presenceRef, true);
             connectedDisconnectRef = onDisconnect(presenceRef);
@@ -60,39 +59,10 @@ function Room() {
 
         return () => {
             unsubscribeFromRoom(roomRef);
-            // Cancel onDisconnect when component unmounts (e.g. user navigates away safely)
             if (disconnectRef) {
                 disconnectRef.cancel();
             }
-            // Also cancel connected status disconnect? Or set it to false immediately?
-            // If user navigates away, they ARE disconnected from the room in a sense.
-            // But if they navigate to Game, we want to KEEP connected=true.
-            // Current logic in lines 26-33 handles navigation to game.
-
-            // If we are unmounting and NOT going to game...
-            // Actually, cancel() just cancels the *server-side* trigger.
-            // The user is still online.
             if (disconnectRef) disconnectRef.cancel();
-            // Do NOT cancel connectedDisconnectRef. 
-            // If the user closes the tab, we want this to fire. 
-            // If they navigate away, it will fire and set connected=false, which is acceptable (they left the room context).
-            // Main issue is ensuring it doesn't break if we navigate to Game, but Game should set it back to true.
-            // However, react useEffect cleanup runs BEFORE the next component effect.
-            // So: Room unmounts -> cancel() (IF we kept it) -> Game mounts -> set(true).
-            // If we REMOVE cancel(): Room unmounts -> Handler stays active -> Game mounts -> set(true).
-            // If connection drops later: Handler fires?
-            // Yes.
-            // BUT Game.jsx should probably OVERWRITE the handler or manage its own independent one.
-            // Since the path is the same `rooms/.../connected`, replacing the onDisconnect listener is good.
-            // Wait, does defining a NEW onDisconnect replace the old one for the same path?
-            // "You can establish multiple onDisconnect() operations for a single location."
-            // So they will stack.
-            // Room sets one. Game sets one. Drop -> Both fire. Both set false. Fine.
-            // BUT if we navigate Room -> Lobby -> Drop. 
-            // Room handler fires. Sets false. Fine.
-
-            // So, removing cancel() is SAFE and CORRECT for tracking "active connection".
-            // if (connectedDisconnectRef) connectedDisconnectRef.cancel();
         };
     }, [roomId, navigate, player.id]);
 
@@ -112,14 +82,18 @@ function Room() {
     const playerIds = Object.keys(players);
     const allReady = isSolo ? playerIds.length === 1 : playerIds.length > 1 && playerIds.every(id => players[id].ready);
 
-    const roundSeconds = room?.settings?.roundSeconds ?? room?.roundSeconds ?? 10;
     const questionsCount = room?.settings?.questionsCount ?? room?.totalQuestions ?? 10;
     const questionDifficulty = room?.settings?.questionDifficulty ?? room?.questionDifficulty ?? 'medium';
 
     const DIFFICULTY_LABELS = {
-        easy: 'Easy Math',
-        medium: 'Medium Math',
-        hard: 'Hard Math'
+        easy: 'Easy',
+        medium: 'Medium',
+        hard: 'Hard'
+    };
+
+    const GAME_TYPE_LABELS = {
+        math: '🔢 Math Challenge',
+        science: '🔬 Science Challenge'
     };
 
     const displayedRoomName = isHost && room?.hostPassword
@@ -180,14 +154,20 @@ function Room() {
                         flexWrap: 'wrap'
                     }}>
                         <div className="room-badge">
-
+                            <div className="badge-text">
+                                <span className="label">Mode</span>
+                                <span className="value">
+                                    {GAME_TYPE_LABELS[room?.settings?.gameType] || GAME_TYPE_LABELS[room?.gameType] || '🔢 Math Challenge'}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="room-badge">
                             <div className="badge-text">
                                 <span className="label">Difficulty</span>
                                 <span className="value">{DIFFICULTY_LABELS[questionDifficulty] || 'Medium'}</span>
                             </div>
                         </div>
                         <div className="room-badge">
-
                             <div className="badge-text">
                                 <span className="label">Questions</span>
                                 <span className="value">{questionsCount}</span>
@@ -211,7 +191,7 @@ function Room() {
                                 className={`btn ${isReady ? 'btn-secondary' : 'btn-success'}`}
                                 onClick={handleToggleReady}
                             >
-                            {isReady ? 'Cancel Ready' : '✓ Ready'}
+                                {isReady ? 'Cancel Ready' : '✓ Ready'}
                             </button>
                         )}
                         <button

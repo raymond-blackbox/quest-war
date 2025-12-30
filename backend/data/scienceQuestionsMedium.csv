@@ -1,0 +1,197 @@
+difficulty,category,question,option1,option2,option3,option4,correctIndex,questionChinese,optionChinese1,optionChinese2,optionChinese3,optionChinese4
+medium,biology,What is the largest internal organ in the human body?,Heart,Liver,Lungs,Stomach,1,人体最大的内脏器官是什么？,心脏,肝脏,肺,胃
+medium,biology,Which organ pumps blood throughout the body?,Brain,Lungs,Heart,Kidney,2,哪个器官将血液泵送到全身？,大脑,肺,心脏,肾脏
+medium,biology,How many chambers does the human heart have?,2,3,4,6,2,人类心脏有几个腔室？,2,3,4,6
+medium,biology,Which organ filters waste from the blood?,Liver,Kidney,Heart,Stomach,1,哪个器官过滤血液中的废物？,肝脏,肾脏,心脏,胃
+medium,biology,What is the main function of the lungs?,Digestion,Respiration,Circulation,Excretion,1,肺的主要功能是什么？,消化,呼吸,循环,排泄
+medium,biology,Which part of the brain controls balance?,Cerebrum,Cerebellum,Brainstem,Thalamus,1,大脑的哪一部分控制平衡？,大脑,小脑,脑干,丘脑
+medium,biology,What is the longest bone in the human body?,Femur,Tibia,Humerus,Radius,0,人体最长的骨头是什么？,股骨,胫骨,肱骨,桡骨
+medium,biology,Which organ produces insulin?,Liver,Pancreas,Kidney,Stomach,1,哪个器官产生胰岛素？,肝脏,胰腺,肾脏,胃
+medium,biology,What carries oxygen in the blood?,White Blood Cells,Red Blood Cells,Platelets,Plasma,1,血液中什么携带氧气？,白细胞,红细胞,血小板,血浆
+medium,biology,Where does digestion begin?,Stomach,Small Intestine,Mouth,Esophagus,2,消化从哪里开始？,胃,小肠,嘴,食道
+medium,biology,What connects muscle to bone?,Ligament,Tendon,Cartilage,Joint,1,什么连接肌肉和骨头？,韧带,肌腱,软骨,关节
+medium,biology,What connects bone to bone?,Ligament,Tendon,Muscle,Skin,0,什么连接骨头和骨头？,韧带,肌腱,肌肉,皮肤
+medium,biology,Which part of the eye controls the amount of light entering?,Lens,Retina,Iris,Cornea,2,眼睛的哪一部分控制进入的光线量？,晶状体,视网膜,虹膜,角膜
+medium,biology,How many teeth does an adult human typically have?,28,30,32,34,2,成年人通常有几颗牙齿？,28,30,32,34
+medium,biology,What is the function of white blood cells?,Carry Oxygen,Clot Blood,Fight Infection,Transport Nutrients,2,白细胞的功能是什么？,携带氧气,凝血,抵抗感染,输送营养
+medium,biology,Which vitamin is good for eyesight?,Vitamin A,Vitamin B,Vitamin C,Vitamin D,0,哪种维生素对视力有益？,维生素A,维生素B,维生素C,维生素D
+medium,biology,Where is bile stored?,Liver,Gallbladder,Pancreas,Stomach,1,胆汁储存在哪里？,肝脏,胆囊,胰腺,胃
+medium,biology,What is the main function of skin?,Protection,Digestion,Movement,Thinking,0,皮肤的主要功能是什么？,保护,消化,运动,思考
+medium,biology,Which specialized tissue contracts to cause movement?,Nervous,Epithelial,Muscle,Connective,2,哪种特殊组织收缩会引起运动？,神经,上皮,肌肉,结缔
+medium,biology,What is the largest organ of the integumentary system?,Liver,Skin,Heart,Brain,1,外皮系统最大的器官是什么？,肝脏,皮肤,心脏,大脑
+medium,biology,Which component of blood helps in clotting?,Red Blood Cells,White Blood Cells,Plasma,Platelets,3,血液中哪个成分有助于凝血？,红细胞,白细胞,血浆,血小板
+medium,biology,What tube carries food to the stomach?,Trachea,Esophagus,Artery,Vein,1,什么管子把食物输送到胃里？,气管,食道,动脉,静脉
+medium,biology,Where does most nutrient absorption occur?,Stomach,Large Intestine,Small Intestine,Mouth,2,大部分营养吸收发生在哪里？,胃,大肠,小肠,嘴
+medium,biology,What system controls the body with hormones?,Nervous,Endocrine,Digestive,Skeletal,1,什么系统用激素控制身体？,神经,内分泌,消化,骨骼
+medium,biology,Which organ is primarily responsible for detoxifying chemicals?,Kidney,Liver,Lungs,Skin,1,哪个器官主要负责解毒化学物质？,肾脏,肝脏,肺,皮肤
+medium,biology,What is the liquid part of blood called?,Water,Plasma,Lymph,Serum,1,血液的液体部分叫什么？,水,血浆,淋巴,血清
+medium,biology,How many pairs of ribs do humans have?,10,11,12,13,2,人类有几对肋骨？,10,11,12,13
+medium,biology,Which blood vessel carries blood away from the heart?,Vein,Artery,Capillary,Valve,1,哪种血管将血液带离心脏？,静脉,动脉,毛细血管,瓣膜
+medium,biology,Which blood vessel carries blood back to the heart?,Vein,Artery,Capillary,Aorta,0,哪种血管将血液带回心脏？,静脉,动脉,毛细血管,主动脉
+medium,biology,What is the main gas we exhale?,Oxygen,Nitrogen,Carbon Dioxide,Hydrogen,2,我们呼出的主要气体是什么？,氧气,氮气,二氧化碳,氢气
+medium,biology,What prevents food from entering the windpipe?,Tongue,Epiglottis,Tonsils,Uvula,1,什么防止食物进入气管？,舌头,会厌,扁桃体,悬雍垂
+medium,biology,Which organ destroys old red blood cells?,Spleen,Heart,Lung,Brain,0,哪个器官破坏旧的红细胞？,脾脏,心脏,肺,大脑
+medium,biology,What is the outer layer of skin called?,Dermis,Epidermis,Hypodermis,Cortex,1,皮肤的外层叫什么？,真皮,表皮,皮下组织,皮层
+medium,biology,Which part of the ear contains the eardrum?,Outer Ear,Middle Ear,Inner Ear,Canal,1,耳朵的哪一部分包含耳膜？,外耳,中耳,内耳,耳道
+medium,biology,How many lobes does the human brain have?,2,4,6,8,1,人脑有几个叶？,2,4,6,8
+medium,biology,What is the smallest bone in the body?,Stapes,Incus,Malleus,Femur,0,人体最小的骨头是什么？,镫骨,砧骨,锤骨,股骨
+medium,biology,Which system defends the body against infection?,Digestive,Immune,Skeletal,Nervous,1,哪个系统防御身体免受感染？,消化,免疫,骨骼,神经
+medium,biology,What does the stomach produce to digest food?,Acid,Bile,Insulin,Saliva,0,胃产生什么来消化食物？,酸,胆汁,胰岛素,唾液
+medium,biology,Which joint type allows the most movement?,Hinge,Pivot,Ball and Socket,Gliding,2,哪种关节类型允许最大的运动？,铰链,枢轴,球窝,滑动
+medium,biology,What is the colored part of the eye?,Pupil,Sclera,Iris,Cornea,2,眼睛的有色部分是什么？,瞳孔,巩膜,虹膜,角膜
+medium,biology,What controls involuntary actions like heartbeat?,Cerebrum,Medulla Oblongata,Cerebellum,Pons,1,什么控制像心跳这样的不随意动作？,大脑,延髓,小脑,脑桥
+medium,biology,Which sense is linked to the olfactory nerve?,Sight,Hearing,Smell,Taste,2,哪种感觉与嗅神经有关？,视觉,听觉,嗅觉,味觉
+medium,biology,What is the hard substance covering teeth?,Dentin,Pulp,Enamel,Cementum,2,覆盖牙齿的坚硬物质是什么？,牙本质,牙髓,牙釉质,牙骨质
+medium,biology,Which organ removes excess water from the body?,Liver,Heart,Kidney,Spleen,2,哪个器官从体内排出多余的水分？,肝脏,心脏,肾脏,脾脏
+medium,biology,What type of blood cell produces antibodies?,Red Blood Cell,Platelet,B-Cell (White BC),Stem Cell,2,哪种血细胞产生抗体？,红细胞,血小板,B细胞（白细胞）,干细胞
+medium,biology,Where are blood cells made?,Heart,Liver,Bone Marrow,Kidney,2,血细胞在哪里制造？,心脏,肝脏,骨髓,肾脏
+medium,biology,What is the master gland of the endocrine system?,Thyroid,Adrenal,Pituitary,Pineal,2,内分泌系统的主腺是什么？,甲状腺,肾上腺,垂体,松果体
+medium,biology,Which acid is found in the stomach?,Sulfuric,Hydrochloric,Acetic,Citric,1,胃里发现哪种酸？,硫酸,盐酸,醋酸,柠檬酸
+medium,biology,What is the space between two neurons called?,Axon,Dendrite,Synapse,Soma,2,两个神经元之间的空间叫什么？,轴突,树突,突触,胞体
+medium,biology,Which part of the cell makes proteins?,Nucleus,Ribosome,Mitochondria,Lysosome,1,细胞的哪一部分制造蛋白质？,细胞核,核糖体,线粒体,溶酶体
+medium,chemistry,Which element has the symbol O?,Gold,Osmium,Oxygen,Silver,2,由于符号O的元素是什么？,金,锇,氧,银
+medium,chemistry,Which element has the symbol H?,Helium,Hydrogen,Hafnium,Mercury,1,由于符号H的元素是什么？,氦,氢,铪,汞
+medium,chemistry,Which element has the symbol C?,Calcium,Carbon,Cobalt,Copper,1,由于符号C的元素是什么？,钙,碳,钴,铜
+medium,chemistry,Which element has the symbol N?,Nickel,Neon,Nitrogen,Niobium,2,由于符号N的元素是什么？,镍,氖,氮,铌
+medium,chemistry,Which element has the symbol Au?,Silver,Gold,Aluminum,Argon,1,由于符号Au的元素是什么？,银,金,铝,氩
+medium,chemistry,Which element has the symbol Ag?,Gold,Silver,Argon,Arsenic,1,由于符号Ag的元素是什么？,金,银,氩,砷
+medium,chemistry,Which element has the symbol Fe?,Lead,Iron,Fluorine,Francium,1,由于符号Fe的元素是什么？,铅,铁,氟,钫
+medium,chemistry,Which element has the symbol Na?,Nitrogen,Sodium,Neon,Nickel,1,由于符号Na的元素是什么？,氮,钠,氖,镍
+medium,chemistry,Which element has the symbol K?,Krypton,Potassium,Calcium,Phosphorus,1,由于符号K的元素是什么？,氪,钾,钙,磷
+medium,chemistry,Which element has the symbol Cl?,Carbon,Calcium,Chlorine,Cobalt,2,由于符号Cl的元素是什么？,碳,钙,氯,钴
+medium,chemistry,What is the chemical formula for table salt?,KCl,NaCl,HCl,NaOH,1,食盐的化学式是什么？,KCl,NaCl,HCl,NaOH
+medium,chemistry,What is the chemical formula for carbon dioxide?,CO,CO2,C2O,O2C,1,二氧化碳的化学式是什么？,CO,CO2,C2O,O2C
+medium,chemistry,At what temperature does water boil (Celsius)?,90,100,110,120,1,水在什么温度沸腾（摄氏度）？,90,100,110,120
+medium,chemistry,At what temperature does water freeze (Celsius)?,-1,0,1,10,1,水在什么温度结冰（摄氏度）？,-1,0,1,10
+medium,chemistry,What state of matter has a definite shape and volume?,Liquid,Gas,Solid,Plasma,2,哪种物质状态有固定的形状和体积？,液体,气体,固体,等离子体
+medium,chemistry,What state of matter takes the shape of its container but has definite volume?,Solid,Liquid,Gas,Plasma,1,哪种物质状态取容器的形状但有固定的体积？,固体,液体,气体,等离子体
+medium,chemistry,What state of matter expands to fill its container?,Solid,Liquid,Gas,Crystal,2,哪种物质状态膨胀以充满其容器？,固体,液体,气体,晶体
+medium,chemistry,What is the change from solid to liquid called?,Freezing,Melting,Boiling,Condensation,1,从固体到液体的变化叫什么？,冻结,融化,沸腾,冷凝
+medium,chemistry,What is the change from liquid to gas called?,Melting,Evaporation,Freezing,Sublimation,1,从液体到气体的变化叫什么？,融化,蒸发,冻结,升华
+medium,chemistry,What is the change from gas to liquid called?,Evaporation,Condensation,Sublimation,Melting,1,从气体到液体的变化叫什么？,蒸发,冷凝,升华,融化
+medium,chemistry,What is the change from liquid to solid called?,Melting,Freezing,Boiling,Sublimation,1,从液体到固体的变化叫什么？,融化,冻结,沸腾,升华
+medium,chemistry,What is the center of an atom called?,Electron,Nucleus,Proton,Neutron,1,原子的中心叫什么？,电子,原子核,质子,中子
+medium,chemistry,Which particle has a negative charge?,Proton,Neutron,Electron,Nucleus,2,哪个粒子带负电荷？,质子,中子,电子,原子核
+medium,chemistry,Which particle has a positive charge?,Proton,Neutron,Electron,Photon,0,哪个粒子带正电荷？,质子,中子,电子,光子
+medium,chemistry,Which particle has no charge?,Proton,Neutron,Electron,Ion,1,哪个粒子不带电荷？,质子,中子,电子,离子
+medium,chemistry,What is the first element on the periodic table?,Helium,Hydrogen,Lithium,Beryllium,1,周期表上的第一个元素是什么？,氦,氢,锂,铍
+medium,chemistry,What gas is used in balloons to make them float?,Oxygen,Hydrogen,Helium,Nitrogen,2,气球里用什么气体让它们漂浮？,氧气,氢气,氦气,氮气
+medium,chemistry,What is the most abundant gas in the atmosphere?,Oxygen,Carbon Dioxide,Nitrogen,Argon,2,大气中最丰富的气体是什么？,氧气,二氧化碳,氮气,氩气
+medium,chemistry,What is the pH of a neutral substance?,1,7,14,10,1,中性物质的pH值是多少？,1,7,14,10
+medium,chemistry,Is a lemon acidic or basic?,Acidic,Basic,Neutral,None,0,柠檬是酸性的还是碱性的？,酸性,碱性,中性,无
+medium,chemistry,What turns blue litmus paper red?,Base,Acid,Water,Salt,1,什么使蓝色石蕊试纸变红？,碱,酸,水,盐
+medium,chemistry,What is the process of mixing an acid and a base called?,Oxidation,Neutralization,Combustion,Fermentation,1,混合酸和碱的过程叫什么？,氧化,中和,燃烧,发酵
+medium,chemistry,Which metal is liquid at room temperature?,Iron,Gold,Mercury,Lead,2,哪种金属在室温下是液体？,铁,金,汞,铅
+medium,chemistry,What is the hardest natural substance?,Gold,Iron,Diamond,Quartz,2,最硬的天然物质是什么？,金,铁,钻石,石英
+medium,chemistry,What element is diamond made of?,Silicon,Carbon,Iron,Gold,1,钻石是由什么元素制成的？,硅,碳,铁,金
+medium,chemistry,What is the chemical symbol for Helium?,H,He,Ha,Hl,1,氦的化学符号是什么？,H,He,Ha,Hl
+medium,chemistry,What is the chemical symbol for Calcium?,C,Ca,Cl,Co,1,钙的化学符号是什么？,C,Ca,Cl,Co
+medium,chemistry,What is the chemical symbol for Iron?,Ir,Fe,In,Io,1,铁的化学符号是什么？,Ir,Fe,In,Io
+medium,chemistry,What is the chemical symbol for Copper?,Co,Cu,Cr,Cp,1,铜的化学符号是什么？,Co,Cu,Cr,Cp
+medium,chemistry,What is the chemical symbol for Lead?,Ld,Pb,Le,Pd,1,铅的化学符号是什么？,Ld,Pb,Le,Pd
+medium,chemistry,Which gas do plants release during photosynthesis?,Carbon Dioxide,Oxygen,Nitrogen,Hydrogen,1,植物在光合作用期间释放什么气体？,二氧化碳,氧气,氮气,氢气
+medium,chemistry,What is the common name for solid carbon dioxide?,Ice,Dry Ice,Snow,Hail,1,固体二氧化碳的俗称是什么？,冰,干冰,雪,冰雹
+medium,chemistry,Which element is needed for strong bones?,Iron,Calcium,Potassium,Zinc,1,强壮的骨骼需要哪种元素？,铁,钙,钾,锌
+medium,chemistry,What is the symbol for Potassium?,P,K,Po,Pt,1,钾的符号是什么？,P,K,Po,Pt
+medium,chemistry,What is the symbol for Phosphorus?,P,Ph,Ps,Po,0,磷的符号是什么？,P,Ph,Ps,Po
+medium,chemistry,What is rust chemically known as?,Iron Oxide,Copper Sulfate,Silver Nitrate,Gold Dust,0,锈在化学上叫什么？,氧化铁,硫酸铜,硝酸银,金粉
+medium,chemistry,What is the main component of natural gas?,Ethane,Methane,Propane,Butane,1,天然气的主要成分是什么？,乙烷,甲烷,丙烷,丁烷
+medium,chemistry,Which element is the main component of the sun?,Helium,Hydrogen,Oxygen,Carbon,1,哪种元素是太阳的主要成分？,氦,氢,氧,碳
+medium,chemistry,What is the atomic number of Hydrogen?,1,2,3,4,0,氢的原子序数是多少？,1,2,3,4
+medium,astronomy,What is the largest planet in the solar system?,Saturn,Jupiter,Uranus,Neptune,1,太阳系最大的行星是什么？,土星,木星,天王星,海王星
+medium,astronomy,Which planet has the most visible rings?,Jupiter,Saturn,Uranus,Neptune,1,哪个行星有最明显的环？,木星,土星,天王星,海王星
+medium,astronomy,What is the closest planet to the Sun?,Venus,Mars,Mercury,Earth,2,离太阳最近的行星是什么？,金星,火星,水星,地球
+medium,astronomy,Which planet is known as the Morning Star?,Mars,Venus,Jupiter,Mercury,1,哪个行星被称为晨星？,火星,金星,木星,水星
+medium,astronomy,What lies between Mars and Jupiter?,The Sun,Asteroid Belt,Kuiper Belt,The Moon,1,火星和木星之间有什么？,太阳,小行星带,柯伊伯带,月亮
+medium,astronomy,How many moons does Earth have?,0,1,2,3,1,地球有几颗卫星？,0,1,2,3
+medium,astronomy,Which planet spins on its side?,Mars,Uranus,Venus,Neptune,1,哪个行星侧着旋转？,火星,天王星,金星,海王星
+medium,astronomy,What is the Great Red Spot on Jupiter?,Volcano,Storm,Crater,Lake,1,木星上的大红斑是什么？,火山,风暴,陨石坑,湖
+medium,astronomy,Which is the second largest planet?,Uranus,Neptune,Saturn,Jupiter,2,第二大行星是哪个？,天王星,海王星,土星,木星
+medium,astronomy,What is the name of our galaxy?,Andromeda,Milky Way,Triangulum,Whirlpool,1,我们星系的名字是什么？,仙女座,银河系,三角座,漩涡
+medium,astronomy,Which planet has a day longer than its year?,Mercury,Venus,Mars,Jupiter,1,哪个行星的一天比一年还长？,水星,金星,火星,木星
+medium,astronomy,What is the hottest planet in the solar system?,Mercury,Venus,Mars,Jupiter,1,太阳系最热的行星是什么？,水星,金星,火星,木星
+medium,astronomy,Which planet is famous for its beautiful rings?,Jupiter,Saturn,Uranus,Neptune,1,哪个行星以其美丽的环而闻名？,木星,土星,天王星,海王星
+medium,astronomy,What are comets mostly made of?,Rock,Ice and Dust,Gas,Metal,1,彗星主要由什么组成？,岩石,冰和尘埃,气体,金属
+medium,astronomy,"Which planet is called the ""Ice Giant""?",Mars,Uranus,Saturn,Mercury,1,哪个行星被称为“冰巨星”？,火星,天王星,土星,水星
+medium,astronomy,What color is Mars?,Blue,Red,Green,Yellow,1,火星是什么颜色？,蓝色,红色,绿色,黄色
+medium,astronomy,Which planet has the moon Titan?,Jupiter,Saturn,Uranus,Neptune,1,哪个行星有泰坦卫星？,木星,土星,天王星,海王星
+medium,astronomy,What is the smallest planet in the solar system?,Mars,Mercury,Venus,Pluto,1,太阳系最小的行星是什么？,火星,水星,金星,冥王星
+medium,astronomy,Is Pluto a planet?,Yes,No (Dwarf Planet),Maybe,Star,1,冥王星是行星吗？,是,否（矮行星）,也许,恒星
+medium,astronomy,What force holds the planets in orbit?,Magnetism,Gravity,Friction,Electricity,1,什么力量保持行星在轨道上？,磁力,重力,摩擦,电力
+medium,astronomy,What is a star made of?,Rock,Gas/Plasma,Ice,Liquid,1,恒星是由什么组成的？,岩石,气体/等离子体,冰,液体
+medium,astronomy,What is the sun?,Planet,Star,Moon,Asteroid,1,太阳是什么？,行星,恒星,月亮,小行星
+medium,astronomy,Which planet has the most moons?,Mars,Jupiter,Saturn,Earth,2,哪个行星的卫星最多？,火星,木星,土星,地球
+medium,astronomy,What is the name of Mars' largest moon?,Phobos,Deimos,Titan,Io,0,火星最大的卫星叫什么？,火卫一,火卫二,泰坦,伊奥
+medium,astronomy,Which planet has the fastest wind?,Jupiter,Saturn,Neptune,Earth,2,哪个行星的风速最快？,木星,土星,海王星,地球
+medium,astronomy,What is the astronomical unit (AU)?,Distance to Moon,Distance to Sun,Distance to Mars,Light Year,1,天文单位（AU）是什么？,到月球的距离,到太阳的距离,到火星的距离,光年
+medium,astronomy,Which planet is similar in size to Earth?,Mars,Venus,Mercury,Neptune,1,哪个行星的大小与地球相似？,火星,金星,水星,海王星
+medium,astronomy,What causes a solar eclipse?,Moon covers Sun,Sun covers Moon,Earth covers Sun,Earth covers Moon,0,什么引起日食？,月亮遮住太阳,太阳遮住月亮,地球遮住太阳,地球遮住月亮
+medium,astronomy,What causes a lunar eclipse?,Moon covers Sun,Sun covers Moon,Earth shadow on Moon,Moon shadow on Earth,2,什么引起月食？,月亮遮住太阳,太阳遮住月亮,地球阴影在月球上,月球阴影在地球上
+medium,astronomy,What is a light year?,Time,Distance,Speed,Weight,1,光年是什么？,时间,距离,速度,重量
+medium,astronomy,Which galaxy is closest to the Milky Way?,Andromeda,Triangulum,Whirlpool,Sombrero,0,哪个星系离银河系最近？,仙女座,三角座,漩涡,草帽
+medium,astronomy,What is the shape of the Milky Way?,Elliptical,Spiral,Irregular,Round,1,银河系是什么形状？,椭圆,螺旋,不规则,圆
+medium,astronomy,Who proposed the heliocentric model?,Ptolemy,Copernicus,Newton,Einstein,1,谁提出了日心说模型？,托勒密,哥白尼,牛顿,爱因斯坦
+medium,astronomy,Who discovered gravity?,Einstein,Newton,Galileo,Tesla,1,谁发现了重力？,爱因斯坦,牛顿,伽利略,特斯拉
+medium,astronomy,Who improved the telescope?,Newton,Galileo,Copernicus,Kepler,1,谁改进了望远镜？,牛顿,伽利略,哥白尼,开普勒
+medium,astronomy,What is the name of the North Star?,Sirius,Polaris,Vega,Betelgeuse,1,北极星的名字是什么？,天狼星,北极星,织女星,参宿四
+medium,astronomy,What are the dark patches on the Sun called?,Sunspots,Solar Flares,Craters,Shadows,0,太阳上的黑斑叫什么？,太阳黑子,太阳耀斑,陨石坑,阴影
+medium,astronomy,Which planet has a hexagon-shaped storm?,Jupiter,Saturn,Uranus,Neptune,1,哪个行星有六边形风暴？,木星,土星,天王星,海王星
+medium,astronomy,What is the largest moon in the solar system?,Titan,Ganymede,Callisto,Io,1,太阳系最大的卫星是什么？,泰坦,木卫三,木卫四,伊奥
+medium,astronomy,Which planet rotates backwards?,Mars,Venus,Earth,Jupiter,1,哪个行星向后旋转？,火星,金星,地球,木星
+medium,astronomy,What is the brightest star in the night sky?,Polaris,Sirius,Vega,Alpha Centauri,1,夜空中最亮的星是什么？,北极星,天狼星,织女星,半人马座阿尔法星
+medium,astronomy,What is the boundary of a black hole called?,Singularity,Event Horizon,Ergosphere,Accretion Disk,1,黑洞的边界叫什么？,奇点,事件视界,能层,吸积盘
+medium,astronomy,What is the explosion of a star called?,Nova,Supernova,Nebula,Pulsar,1,恒星的爆炸叫什么？,新星,超新星,星云,脉冲星
+medium,astronomy,What is a cloud of gas and dust in space?,Star,Nebula,Galaxy,Comet,1,太空中的气体和尘埃云是什么？,恒星,星云,星系,彗星
+medium,astronomy,Which planet is not a gas giant?,Jupiter,Saturn,Mars,Neptune,2,哪个行星不是气态巨行星？,木星,土星,火星,海王星
+medium,astronomy,What is the smallest planet?,Mercury,Mars,Venus,Earth,0,最小的行星是什么？,水星,火星,金星,地球
+medium,astronomy,How long does sunlight take to reach Earth?,1 min,8 min,20 min,1 hour,1,阳光到达地球需要多长时间？,1分钟,8分钟,20分钟,1小时
+medium,astronomy,Which planet has a moon named Europa?,Saturn,Jupiter,Mars,Uranus,1,哪个行星有一颗名为欧罗巴的卫星？,土星,木星,火星,天王星
+medium,physics,What is the unit of force?,Joule,Newton,Watt,Pascal,1,力的单位是什么？,焦耳,牛顿,瓦特,帕斯卡
+medium,physics,What is the unit of energy?,Newton,Joule,Watt,Volt,1,能量的单位是什么？,牛顿,焦耳,瓦特,伏特
+medium,physics,What is the unit of power?,Joule,Newton,Watt,Ampere,2,功率的单位是什么？,焦耳,牛顿,瓦特,安培
+medium,physics,What opposes motion between surfaces?,Gravity,Friction,Inertia,Magnetism,1,什么阻碍表面之间的运动？,重力,摩擦,惯性,磁力
+medium,physics,What is the tendency to resist change in motion?,Gravity,Inertia,Friction,Force,1,抵抗运动变化的倾向是什么？,重力,惯性,摩擦,力
+medium,physics,Speed is distance divided by what?,Force,Time,Mass,Energy,1,速度是距离除以什么？,力,时间,质量,能量
+medium,physics,What is a push or pull?,Energy,Force,Work,Power,1,推或拉是什么？,能量,力,功,功率
+medium,physics,What energy does a moving object have?,Potential,Kinetic,Thermal,Chemical,1,运动物体有什么能量？,势能,动能,热能,化学能
+medium,physics,What energy is stored due to position?,Kinetic,Potential,Mechanical,Electrical,1,由于位置储存的能量是什么？,动能,势能,机械能,电能
+medium,physics,What is the rate of change of velocity?,Speed,Acceleration,Force,Momentum,1,速度的变化率是什么？,速度,加速度,力,动量
+medium,physics,"Which law states ""Action has equal reaction""?",1st,2nd,3rd,4th,2,哪条定律指出“作用力有相等的反作用力”？,第一,第二,第三,第四
+medium,physics,What pulls objects towards Earth?,Friction,Gravity,Magnetism,Inertia,1,什么将物体拉向地球？,摩擦,重力,磁力,惯性
+medium,physics,Does mass change on the Moon?,Yes,No,Depends,Slightly,1,质量在月球上会改变吗？,会,不会,取决于,稍微
+medium,physics,Does weight change on the Moon?,Yes,No,Never,Slightly,0,重量在月球上会改变吗？,会,不会,从不,稍微
+medium,physics,What kind of lever is a seesaw?,1st Class,2nd Class,3rd Class,4th Class,0,跷跷板是哪种杠杆？,第一类,第二类,第三类,第四类
+medium,physics,What simple machine is a ramp?,Lever,Inclined Plane,Pulley,Wedge,1,坡道是什么简单机器？,杠杆,斜面,滑轮,楔子
+medium,physics,What simple machine is a door knob?,Lever,Wheel and Axle,Pulley,Screw,1,门把手是什么简单机器？,杠杆,轮轴,滑轮,螺丝
+medium,physics,What protects you in a car crash (Inertia)?,Brakes,Seatbelt,Horn,Light,1,在车祸中什么保护你（惯性）？,刹车,安全带,喇叭,灯
+medium,physics,Which is a vector quantity?,Speed,Velocity,Mass,Time,1,哪个是矢量？,速率,速度,质量,时间
+medium,physics,Which is a scalar quantity?,Velocity,Speed,Force,Acceleration,1,哪个是标量？,速度,速率,力,加速度
+medium,physics,What is the force from a string?,Friction,Tension,Gravity,Normal,1,绳子产生的力是什么？,摩擦,张力,重力,法向力
+medium,physics,What slows down a falling object?,Gravity,Air Resistance,Magnetism,Heat,1,什么减慢下落物体的速度？,重力,空气阻力,磁力,热
+medium,physics,What quantity is mass * velocity?,Force,Momentum,Energy,Power,1,质量*速度是什么量？,力,动量,能量,功率
+medium,physics,Can energy be created?,Yes,No,Sometimes,Maybe,1,能量可以被创造吗？,可以,不可以,有时,也许
+medium,physics,What is stored energy in a battery?,Kinetic,Chemical,Thermal,Nuclear,1,电池中储存的能量是什么？,动能,化学,热,核
+medium,physics,What form of energy is heat?,Mechanical,Thermal,Chemical,Electrical,1,热是什么形式的能量？,机械,热,化学,电
+medium,physics,What energy comes from the sun?,Geothermal,Solar,Nuclear,Wind,1,来自太阳的能量是什么？,地热,太阳能,核,风
+medium,physics,What is the bending of light called?,Reflection,Refraction,Diffraction,Absorption,1,光的弯曲叫什么？,反射,折射,衍射,吸收
+medium,physics,What is the bouncing of light called?,Refraction,Reflection,Diffraction,Scattering,1,光的反弹叫什么？,折射,反射,衍射,散射
+medium,physics,Which conducts electricity best?,Wood,Plastic,Copper,Rubber,2,哪种导电性最好？,木头,塑料,铜,橡胶
+medium,physics,Which is an insulator?,Copper,Aluminum,Rubber,Iron,2,哪个是绝缘体？,铜,铝,橡胶,铁
+medium,physics,What flows in a circuit?,Protons,Electrons,Neutrons,Atoms,1,什么在电路中流动？,质子,电子,中子,原子
+medium,physics,What measures electric current?,Voltmeter,Ammeter,Thermometer,Barometer,1,什么测量电流？,电压表,安培表,温度计,气压计
+medium,physics,What measures voltage?,Ammeter,Voltmeter,Ohmmeter,Scale,1,什么测量电压？,安培表,电压表,欧姆表,秤
+medium,physics,What is unit of resistance?,Volt,Ampere,Ohm,Watt,2,电阻的单位是什么？,伏特,安培,欧姆,瓦特
+medium,physics,Does sound travel in a vacuum?,Yes,No,Maybe,Sometimes,1,声音在真空中传播吗？,会,不会,也许,有时
+medium,physics,Does light travel in a vacuum?,Yes,No,Maybe,Sometimes,0,光在真空中传播吗？,会,不会,也许,有时
+medium,physics,Which travels faster?,Sound,Light,Car,Plane,1,哪个传播得更快？,声音,光,汽车,飞机
+medium,physics,What pitch does high frequency sound have?,High,Low,Medium,None,0,高频声音有什么音调？,高,低,中,无
+medium,physics,What is the bottom of a wave called?,Crest,Trough,Amplitude,Wavelength,1,波的底部叫什么？,波峰,波谷,振幅,波长
+medium,physics,What is the top of a wave called?,Crest,Trough,Frequency,Period,0,波的顶部叫什么？,波峰,波谷,频率,周期
+medium,physics,What color has the longest wavelength?,Violet,Blue,Green,Red,3,哪种颜色波长最长？,紫色,蓝色,绿色,红色
+medium,physics,What color has the shortest wavelength?,Red,Green,Blue,Violet,3,哪种颜色波长最短？,红色,绿色,蓝色,紫色
+medium,physics,What type of magnet is temporary?,Permanent,Electromagnet,Bar,Horseshoe,1,哪种磁铁是暂时的？,永久,电磁铁,条形,马蹄形
+medium,physics,Do like poles attract or repel?,Attract,Repel,Nothing,Stick,1,同极相吸还是相斥？,相吸,相斥,无,粘
+medium,physics,Do opposite poles attract or repel?,Attract,Repel,Rotate,Push,0,异极相吸还是相斥？,相吸,相斥,旋转,推
+medium,physics,Unit of frequency?,Second,Hertz,Meter,Gram,1,频率的单位？,秒,赫兹,米,克
+medium,physics,Symbol for Ohm?,Ω,λ,π,μ,0,欧姆的符号？,Ω,λ,π,μ
+medium,physics,Device that stores charge?,Resistor,Capacitor,Battery,Switch,1,储存电荷的装置？,电阻,电容,电池,开关

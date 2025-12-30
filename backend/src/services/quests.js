@@ -4,7 +4,7 @@ export const QUEST_DEFINITIONS = [
     {
         id: 'daily_math_warrior',
         type: 'daily',
-        title: 'Daily Math Warrior',
+        title: 'Daily Warrior',
         description: 'Answer 25 questions correctly in any game',
         target: 25,
         reward: 50,

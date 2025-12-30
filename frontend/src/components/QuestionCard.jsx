@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 function QuestionCard({
     question,
     questionNumber,
@@ -10,8 +12,32 @@ function QuestionCard({
     showResult,
     isWaiting
 }) {
+    const [lang, setLang] = useState('en'); // 'en' or 'zh'
+
+    const getDisplayQuestion = () => {
+        if (typeof question === 'object' && question !== null) {
+            return question[lang] || question.en || '';
+        }
+        return question;
+    };
+
+    const getDisplayOption = (option) => {
+        if (typeof option === 'object' && option !== null) {
+            return option[lang] || option.en || '';
+        }
+        return option;
+    };
+
+    const isLongAnswer = options.some(opt => {
+        const text = getDisplayOption(opt);
+        return text.length > 9;
+    });
+
     const getButtonClass = (index) => {
         let className = 'option-btn';
+        const text = getDisplayOption(options[index]);
+        if (text.length > 17) className += ' long-text';
+
         if (showResult) {
             if (index === correctIndex) {
                 className += ' correct';
@@ -19,22 +45,31 @@ function QuestionCard({
                 className += ' wrong';
             }
         } else if (index === selectedAnswer) {
-            // Round still active but this player answered
-            // Show as selected (neutral/pending) until result is revealed
             className += ' selected';
         }
         return className;
     };
 
+    const hasTranslation = typeof question === 'object' && question?.zh;
+
     return (
         <div className="card question-card animate-fade-in">
+            {hasTranslation && (
+                <button
+                    className="lang-toggle"
+                    onClick={() => setLang(prev => prev === 'en' ? 'zh' : 'en')}
+                    title="Switch Language"
+                >
+                    {lang === 'en' ? 'zh' : 'en'}
+                </button>
+            )}
             <div className="question-number">
                 Question {questionNumber} of {totalQuestions}
             </div>
             <div className="question-text">
-                {question}
+                {getDisplayQuestion()}
             </div>
-            <div className="options-grid">
+            <div className={`options-grid ${isLongAnswer ? 'long-options' : ''}`}>
                 {options.map((option, index) => (
                     <button
                         key={index}
@@ -45,7 +80,7 @@ function QuestionCard({
                         }}
                         disabled={disabled}
                     >
-                        {option}
+                        {getDisplayOption(option)}
                     </button>
                 ))}
             </div>

@@ -22,20 +22,28 @@ function Lobby() {
 
     // Difficulty options (used for both create room and filter)
     const DIFFICULTY_OPTIONS = [
-        { value: 'easy', label: 'Easy Math' },
-        { value: 'medium', label: 'Medium Math' },
-        { value: 'hard', label: 'Hard Math' }
+        { value: 'easy', label: 'Easy' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'hard', label: 'Hard' }
     ];
     const QUESTION_COUNT_OPTIONS = [10, 20, 30, 40];
+
+    // Game type options
+    const GAME_TYPE_OPTIONS = [
+        { value: 'math', label: '🔢 Math' },
+        { value: 'science', label: '🔬 Science' }
+    ];
 
     // Create room form state
     const [roomName, setRoomName] = useState('');
     const [roomPassword, setRoomPassword] = useState('');
     const [isSolo, setIsSolo] = useState(false);
+    const [isPrivateRoom, setIsPrivateRoom] = useState(false);
 
     const [delaySeconds] = useState(2);
     const [questionsCount, setQuestionsCount] = useState(QUESTION_COUNT_OPTIONS[0]);
     const [questionDifficulty, setQuestionDifficulty] = useState(DIFFICULTY_OPTIONS[0].value);
+    const [gameType, setGameType] = useState(GAME_TYPE_OPTIONS[0].value);
 
     // Handle scroll to show/hide FAB
     const handleScroll = useCallback(() => {
@@ -73,8 +81,12 @@ function Lobby() {
             if (!roomName.trim()) {
                 setRoomName('Solo Game');
             }
+        } else {
+            if (roomName === 'Solo Game') {
+                setRoomName('');
+            }
         }
-    }, [isSolo, roomName]);
+    }, [isSolo]);
 
     const syncPlayer = async () => {
         if (!player?.id) return;
@@ -152,7 +164,9 @@ function Lobby() {
                 delaySeconds: Number(delaySeconds),
                 questionsCount: Number(questionsCount),
                 questionDifficulty,
-                isSolo
+                gameType,
+                isSolo: isSolo,
+                isPrivate: !isSolo && isPrivateRoom
             });
             navigate(`/room/${room.roomId}`);
         } catch (err) {
@@ -311,7 +325,7 @@ function Lobby() {
                                     aria-disabled={isRoomFull}
                                 >
                                     <span className={`difficulty-label difficulty-${room.questionDifficulty || 'medium'}`}>
-                                        {DIFFICULTY_OPTIONS.find(d => d.value === room.questionDifficulty)?.label || 'Medium Math'}
+                                        {GAME_TYPE_OPTIONS.find(g => g.value === room.gameType)?.label || '🔢 Math'} • {DIFFICULTY_OPTIONS.find(d => d.value === room.questionDifficulty)?.label || 'Medium'}
                                     </span>
                                     <div className="room-info">
                                         <h3>{room.name}</h3>
@@ -368,7 +382,39 @@ function Lobby() {
                             </div>
 
                             <div className="input-group">
-                                <label>Room Name</label>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-sm)' }}>
+                                    <label style={{ margin: 0 }}>Room Name</label>
+                                    {!isSolo && (
+                                        <label style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 'var(--spacing-xs)',
+                                            fontSize: '0.85rem',
+                                            cursor: 'pointer',
+                                            color: isPrivateRoom ? 'var(--primary-light)' : 'var(--text-muted)',
+                                            lineHeight: 1
+                                        }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isPrivateRoom}
+                                                onChange={(e) => {
+                                                    setIsPrivateRoom(e.target.checked);
+                                                    if (!e.target.checked) setRoomPassword('');
+                                                }}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    margin: 0,
+                                                    width: '14px',
+                                                    height: '14px'
+                                                }}
+                                            />
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <span>🔒</span>
+                                                <span style={{ paddingTop: '1px' }}>Private</span>
+                                            </span>
+                                        </label>
+                                    )}
+                                </div>
                                 <input
                                     type="text"
                                     className="input"
@@ -380,29 +426,46 @@ function Lobby() {
                                 />
                             </div>
 
-                            {!isSolo && (
-                                <div className="input-group">
-                                    <label>Room Password (Optional)</label>
-                                    <input
-                                        type="text"
-                                        className="input"
-                                        value={roomPassword}
-                                        onChange={(e) => setRoomPassword(e.target.value)}
-                                        placeholder="Leave empty for public room"
-                                    />
+
+
+                            {!isSolo && isPrivateRoom && (
+                                <div className="input-group animate-fade-in">
+                                    <label>Room Password</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <span style={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            color: 'var(--text-muted)',
+                                            zIndex: 1
+                                        }}>
+                                            🔒
+                                        </span>
+                                        <input
+                                            type="password"
+                                            className="input"
+                                            style={{ paddingLeft: '2.5rem' }}
+                                            value={roomPassword}
+                                            onChange={(e) => setRoomPassword(e.target.value)}
+                                            placeholder="Set room password"
+                                            required={isPrivateRoom}
+                                            autoFocus
+                                        />
+                                    </div>
                                 </div>
                             )}
 
 
 
                             <div className="input-group">
-                                <label>Question Difficulty</label>
+                                <label>Game Type</label>
                                 <select
                                     className="select"
-                                    value={questionDifficulty}
-                                    onChange={(e) => setQuestionDifficulty(e.target.value)}
+                                    value={gameType}
+                                    onChange={(e) => setGameType(e.target.value)}
                                 >
-                                    {DIFFICULTY_OPTIONS.map((option) => (
+                                    {GAME_TYPE_OPTIONS.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
                                         </option>
@@ -410,15 +473,32 @@ function Lobby() {
                                 </select>
                             </div>
 
-                            <div className="input-group">
-                                <label>Number of Questions</label>
-                                <select className="select" value={questionsCount} onChange={(e) => setQuestionsCount(Number(e.target.value))}>
-                                    {QUESTION_COUNT_OPTIONS.map((option) => (
-                                        <option key={option} value={option}>
-                                            {option} Questions
-                                        </option>
-                                    ))}
-                                </select>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-md)' }}>
+                                <div className="input-group">
+                                    <label>Difficulty</label>
+                                    <select
+                                        className="select"
+                                        value={questionDifficulty}
+                                        onChange={(e) => setQuestionDifficulty(e.target.value)}
+                                    >
+                                        {DIFFICULTY_OPTIONS.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="input-group">
+                                    <label>Questions</label>
+                                    <select className="select" value={questionsCount} onChange={(e) => setQuestionsCount(Number(e.target.value))}>
+                                        {QUESTION_COUNT_OPTIONS.map((option) => (
+                                            <option key={option} value={option}>
+                                                {option}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             <div style={{ display: 'flex', gap: 'var(--spacing-md)' }}>

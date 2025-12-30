@@ -1,0 +1,201 @@
+difficulty,category,question,option1,option2,option3,option4,correctIndex,questionChinese,optionChinese1,optionChinese2,optionChinese3,optionChinese4
+hard,biology,What is the powerhouse of the cell?,Nucleus,Mitochondria,Ribosome,Golgi Apparatus,1,细胞的动力工厂是什么？,细胞核,线粒体,核糖体,高尔基体
+hard,biology,What molecule carries genetic information?,RNA,DNA,Protein,Lipid,1,什么分子携带遗传信息？,RNA,DNA,蛋白质,脂质
+hard,biology,What is the process of cell division for growth?,Meiosis,Mitosis,Fission,Budding,1,用于生长的细胞分裂过程是什么？,减数分裂,有丝分裂,裂变,出芽
+hard,biology,Which organelle synthesizes proteins?,Lysosome,Ribosome,Vacuole,Chloroplast,1,哪个细胞器合成蛋白质？,溶酶体,核糖体,液泡,叶绿体
+hard,biology,What is the basic unit of muscle?,Neuron,Sarcomere,Osteon,Nephron,1,肌肉的基本单位是什么？,神经元,肌节,骨单位,肾单位
+hard,biology,Which blood type is the universal donor?,A+,B-,AB+,O-,3,哪种血型是万能供血者？,A+,B-,AB+,O-
+hard,biology,Which blood type is the universal recipient?,A-,B+,AB+,O+,2,哪种血型是万能受血者？,A-,B+,AB+,O+
+hard,biology,What are the building blocks of proteins?,Fatty Acids,Amino Acids,Sugars,Nucleotides,1,蛋白质的组成部分是什么？,脂肪酸,氨基酸,糖,核苷酸
+hard,biology,Which hormone regulates blood sugar levels?,Adrenaline,Insulin,Thyroxine,Cortisol,1,哪种激素调节血糖水平？,肾上腺素,胰岛素,甲状腺素,皮质醇
+hard,biology,What is the study of heredity called?,Evolution,Genetics,Ecology,Anatomy,1,遗传的研究叫什么？,进化,遗传学,生态学,解剖学
+hard,biology,What structures inside the nucleus contain DNA?,Ribosomes,Chromosomes,Centrioles,Vesicles,1,细胞核内包含DNA的结构是什么？,核糖体,染色体,中心粒,囊泡
+hard,biology,Which base pairs with Adenine in DNA?,Cytosine,Guanine,Thymine,Uracil,2,在DNA中哪个碱基与腺嘌呤配对？,胞嘧啶,鸟嘌呤,胸腺嘧啶,尿嘧啶
+hard,biology,Which base is found in RNA but not DNA?,Thymine,Uracil,Cytosine,Guanine,1,哪种碱基存在于RNA中但不存在于DNA中？,胸腺嘧啶,尿嘧啶,胞嘧啶,鸟嘌呤
+hard,biology,What is the fluid mosaic model describing?,DNA Structure,Cell Membrane,Cell Wall,Nucleus,1,流动镶嵌模型描述的是什么？,DNA结构,细胞膜,细胞壁,细胞核
+hard,biology,Which organelle contains digestive enzymes?,Ribosome,Lysosome,Mitochondria,Golgi,1,哪个细胞器包含消化酶？,核糖体,溶酶体,线粒体,高尔基体
+hard,biology,What is the main function of the large intestine?,Digestion,Water Absorption,Protein Synthesis,Bile Production,1,大肠的主要功能是什么？,消化,水分吸收,蛋白质合成,胆汁产生
+hard,biology,Where does fertilization typically occur?,Uterus,Ovary,Fallopian Tube,Cervix,2,受精通常发生在哪里？,子宫,卵巢,输卵管,宫颈
+hard,biology,Which part of the brain controls breathing?,Cerebrum,Cerebellum,Medulla Oblongata,Hypothalamus,2,大脑的哪一部分控制呼吸？,大脑,小脑,延髓,下丘脑
+hard,biology,What is the gap between nerve cells called?,Axon,Synapse,Dendrite,Myelin,1,神经细胞之间的间隙叫什么？,轴突,突触,树突,髓鞘
+hard,biology,Which cells fight infection?,Erythrocytes,Leukocytes,Thrombocytes,Adipocytes,1,哪些细胞抵抗感染？,红细胞,白细胞,血小板,脂肪细胞
+hard,biology,What is the functional unit of the kidney?,Neuron,Nephron,Alveoli,Villi,1,肾脏的功能单位是什么？,神经元,肾单位,肺泡,绒毛
+hard,biology,Where are gas exchanges made in lungs?,Bronchi,Trachea,Alveoli,Larynx,2,肺部在哪里进行气体交换？,支气管,气管,肺泡,喉
+hard,biology,What enzyme breaks down starch?,Pepsin,Amylase,Lipase,Trypsin,1,什么酶分解淀粉？,胃蛋白酶,淀粉酶,脂肪酶,胰蛋白酶
+hard,biology,What is the largest artery in the body?,Carotid,Femoral,Aorta,Jugular,2,人体最大的动脉是什么？,颈动脉,股动脉,主动脉,颈静脉
+hard,biology,Which vitamin is water-soluble?,Vitamin A,Vitamin C,Vitamin D,Vitamin K,1,哪种维生素是水溶性的？,维生素A,维生素C,维生素D,维生素K
+hard,biology,What is the deficiency of iron called?,Scurvy,Rickets,Anemia,Goiter,2,缺铁叫什么？,坏血病,佝偻病,贫血,甲状腺肿
+hard,biology,Which part of the eye contains rods and cones?,Iris,Cornea,Lens,Retina,3,眼睛的哪一部分包含视杆和视锥细胞？,虹膜,角膜,晶状体,视网膜
+hard,biology,What control center regulates body temperature?,Thalamus,Hypothalamus,Hippocampus,Pons,1,什么控制中心调节体温？,丘脑,下丘脑,海马体,脑桥
+hard,biology,Which antibody is most abundant?,IgA,IgE,IgG,IgM,2,哪种抗体最丰富？,IgA,IgE,IgG,IgM
+hard,biology,What type of muscle is the heart?,Skeletal,Smooth,Cardiac,Voluntary,2,心脏是什么类型的肌肉？,骨骼,平滑,心肌,随意
+hard,biology,Which organism attaches to a host?,Predator,Parasite,Prey,Producer,1,哪种生物附着在宿主上？,捕食者,寄生虫,猎物,生产者
+hard,biology,What is programmed cell death called?,Necrosis,Apoptosis,Mitosis,Meiosis,1,程序性细胞死亡叫什么？,坏死,细胞凋亡,有丝分裂,减数分裂
+hard,biology,Which kingdom do mushrooms belong to?,Plantae,Animalia,Fungi,Protista,2,蘑菇属于哪个界？,植物界,动物界,真菌界,原生生物界
+hard,biology,What is the study of insects?,Entomology,Ornithology,Ichthyology,Herpetology,0,昆虫的研究叫什么？,昆虫学,鸟类学,鱼类学,爬行动物学
+hard,biology,What connects the two hemispheres of the brain?,Cerebellum,Corpus Callosum,Brainstem,Thalamus,1,什么连接大脑的两个半球？,小脑,胼胝体,脑干,丘脑
+hard,biology,Which cranial nerve is for vision?,Olfactory,Optic,Oculomotor,Vagus,1,哪条脑神经负责视觉？,嗅神经,视神经,动眼神经,迷走神经
+hard,biology,What is the master gland?,Thyroid,Pituitary,Adrenal,Pineal,1,主腺是什么？,甲状腺,脑下垂体,肾上腺,松果体
+hard,biology,Where is insulin produced?,Alpha Cells,Beta Cells,Delta Cells,Gamma Cells,1,胰岛素在哪里产生？,Alpha细胞,Beta细胞,Delta细胞,Gamma细胞
+hard,biology,"What hormone prepares body for ""fight or flight""?",Insulin,Melatonin,Adrenaline,Thyroxine,2,什么激素让身体准备“战斗或逃跑”？,胰岛素,褪黑激素,肾上腺素,甲状腺素
+hard,biology,Which vessel carries oxygenated blood to the heart?,Pulmonary Artery,Pulmonary Vein,Vena Cava,Aorta,1,哪条血管将含氧血带到心脏？,肺动脉,肺静脉,腔静脉,主动脉
+hard,biology,What is the pacemaker of the heart?,AV Node,SA Node,Purkinje Fibers,Bundle of His,1,心脏的起搏器是什么？,房室结,窦房结,浦肯野纤维,希氏束
+hard,biology,Which layer of skin contains blood vessels?,Epidermis,Dermis,Hypodermis,Stratum Corneum,1,哪层皮肤包含血管？,表皮,真皮,皮下组织,角质层
+hard,biology,What is the covering of the lungs called?,Pericardium,Pleura,Peritoneum,Meninges,1,肺的覆盖物叫什么？,心包,胸膜,腹膜,脑膜
+hard,biology,Which bone is the kneecap?,Patella,Tibia,Fibula,Femur,0,哪块骨头是膝盖骨？,髌骨,胫骨,腓骨,股骨
+hard,biology,Which vitamin is synthesized by sunlight?,A,B12,C,D,3,哪种维生素由阳光合成？,A,B12,C,D
+hard,biology,What is the storage form of glucose in animals?,Starch,Glycogen,Cellulose,Chitin,1,动物体内葡萄糖的储存形式是什么？,淀粉,糖原,纤维素,几丁质
+hard,biology,Where does meiosis occur in humans?,Skin,Liver,Gonads,Brain,2,人类减数分裂发生在哪里？,皮肤,肝脏,性腺,大脑
+hard,biology,Which base is replaced by Uracil in RNA?,Adenine,Guanine,Cytosine,Thymine,3,RNA中哪个碱基被尿嘧啶取代？,腺嘌呤,鸟嘌呤,胞嘧啶,胸腺嘧啶
+hard,biology,What is the coding regio of a gene called?,Intron,Exon,Promoter,Telomere,1,基因的编码区叫什么？,内含子,外显子,启动子,端粒
+hard,biology,Who is the father of genetics?,Darwin,Mendel,Watson,Crick,1,谁是遗传学之父？,达尔文,孟德尔,沃森,克里克
+hard,physics,What is Newton's First Law known as?,Law of Force,Law of Inertia,Law of Action-Reaction,Law of Gravity,1,牛顿第一定律被称为什么？,力定律,惯性定律,作用反作用定律,万有引力定律
+hard,physics,Force equals mass times what?,Velocity,Speed,Acceleration,Distance,2,力等于质量乘以什么？,速度,速率,加速度,距离
+hard,physics,What is the speed of light in vacuum (approx)?,3x10^5 m/s,3x10^6 m/s,3x10^8 m/s,3x10^9 m/s,2,真空中的光速是多少（大约）？,3x10^5 m/s,3x10^6 m/s,3x10^8 m/s,3x10^9 m/s
+hard,physics,What particle mediates the electromagnetic force?,Gluon,Photon,Boson,Graviton,1,什么粒子介导电磁力？,胶子,光子,玻色子,引力子
+hard,physics,What is the unit of frequency?,Pascal,Hertz,Newton,Joule,1,频率的单位是什么？,帕斯卡,赫兹,牛顿,焦耳
+hard,physics,What is the resistance of an ideal voltmeter?,Zero,Infinite,One Ohm,Variable,1,理想电压表的电阻是多少？,零,无穷大,一欧姆,可变
+hard,physics,"What law relates V, I, and R?",Newton's Law,Ohm's Law,Hooke's Law,Boyle's Law,1,什么定律联系V，I和R？,牛顿定律,欧姆定律,胡克定律,波义耳定律
+hard,physics,Kinetic energy depends on mass and ...?,Height,Time,Velocity,Gravity,2,动能取决于质量和……？,高度,时间,速度,重力
+hard,physics,"Potential energy depends on mass, gravity and ...?",Velocity,Height,Time,Speed,1,势能取决于质量，重力和……？,速度,高度,时间,速率
+hard,physics,What is the unit of electrical charge?,Volt,Ampere,Coulomb,Farad,2,电荷的单位是什么？,伏特,安培,库仑,法拉
+hard,physics,What device converts mechanical energy to electrical?,Motor,Generator,Battery,Resistor,1,什么装置将机械能转化为电能？,马达,发电机,电池,电阻
+hard,physics,What device converts electrical energy to mechanical?,Generator,Motor,Transformer,Rectifier,1,什么装置将电能转化为机械能？,发电机,马达,变压器,整流器
+hard,physics,What is the bending of light around obstacles?,Reflection,Refraction,Diffraction,Interference,2,光绕过障碍物的弯曲叫什么？,反射,折射,衍射,干涉
+hard,physics,Who formulated the Theory of General Relativity?,Newton,Maxwell,Einstein,Bohr,2,谁提出了广义相对论？,牛顿,麦克斯韦,爱因斯坦,玻尔
+hard,physics,What is the absolute zero temperature?,-273 C,0 C,-100 C,-459 C,0,绝对零度是多少？,-273 C,0 C,-100 C,-459 C
+hard,physics,What kind of wave is sound?,Transverse,Longitudinal,Electromagnetic,Surface,1,声音是哪种波？,横波,纵波,电磁波,表面波
+hard,physics,What kind of wave is light?,Transverse / Electromagnetic,Longitudinal,Mechanical,Sound,0,光是哪种波？,横波/电磁波,纵波,机械,声波
+hard,physics,What is the rate of doing work?,Energy,Force,Power,Momentum,2,做功的速率是什么？,能量,力,功率,动量
+hard,physics,Which particle is an antiparticle of electron?,Proton,Neutron,Positron,Photon,2,哪个粒子是电子的反粒子？,质子,中子,正电子,光子
+hard,physics,What force holds the nucleus together?,Gravity,Electromagnetic,Strong Nuclear,Weak Nuclear,2,什么力将原子核结合在一起？,重力,电磁,强核力,弱核力
+hard,physics,What is the value of gravity on Earth (approx)?,9.8 m/s²,8.9 m/s²,10.5 m/s²,9.1 m/s²,0,地球上的重力值大约是多少？,9.8 m/s²,8.9 m/s²,10.5 m/s²,9.1 m/s²
+hard,physics,What principle explains why airplanes fly?,Bernoulli's,Archimedes',Pascal's,Newton's,0,什么原理解释了飞机为什么会飞？,伯努利,阿基米德,帕斯卡,牛顿
+hard,physics,What principle explains buoyancy?,Bernoulli's,Archimedes',Pascal's,Newton's,1,什么原理解释了浮力？,伯努利,阿基米德,帕斯卡,牛顿
+hard,physics,Which color has the highest frequency?,Red,Green,Blue,Violet,3,哪种颜色频率最高？,红色,绿色,蓝色,紫色
+hard,physics,What is the unit of capacitance?,Henry,Farad,Ohm,Weber,1,电容的单位是什么？,亨利,法拉,欧姆,韦伯
+hard,physics,What is the unit of magnetic field strength?,Tesla,Weber,Gauss,Henry,0,磁场强度的单位是什么？,特斯拉,韦伯,高斯,亨利
+hard,physics,Heisenberg Uncertainty Principle involves position and ...?,Time,Energy,Momentum,Mass,2,海森堡测不准原理涉及位置和……？,时间,能量,动量,质量
+hard,physics,Who discovered the electron?,Rutherford,Bohr,Thomson,Dalton,2,谁发现了电子？,卢瑟福,玻尔,汤姆逊,道尔顿
+hard,physics,Who discovered the atomic nucleus?,Thomson,Rutherford,Bohr,Chadwick,1,谁发现了原子核？,汤姆逊,卢瑟福,玻尔,查德威克
+hard,physics,What is the charge of a neutron?,+1,-1,0,+2,2,中子的电荷是多少？,+1,-1,0,+2
+hard,physics,Which quark flavor is not real?,Up,Down,Charm,Spicy,3,哪个夸克味道不是真的？,上,下,粲,辣
+hard,physics,What is the path of a projectile?,Line,Parabola,Circle,Hyperbola,1,抛射体的路径是什么？,线,抛物线,圆,双曲线
+hard,physics,Force is a change in ... per time?,Velocity,Momentum,Energy,Mass,1,力是单位时间内……的变化？,速度,动量,能量,质量
+hard,physics,Hooke's Law applies to ...?,Gases,Liquids,Springs,Magnets,2,胡克定律适用于……？,气体,液体,弹簧,磁铁
+hard,physics,What state of matter exists at very high temps?,Gas,Liquid,Plasma,Solid,2,在极高温度下存在什么物质状态？,气体,液体,等离子体,固体
+hard,physics,Zero Kelvin is also called ...?,Freezing Point,Boiling Point,Absolute Zero,Tripple Point,2,零开尔文也叫……？,冰点,沸点,绝对零度,三相点
+hard,physics,Entropy is a measure of ...?,Heat,Energy,Disorder,Work,2,熵是……的度量？,热,能量,无序,功
+hard,physics,What is the speed of sound in air (approx)?,343 m/s,3 m/s,3000 m/s,343 km/h,0,空气中的声速是多少（大约）？,343 m/s,3 m/s,3000 m/s,343 km/h
+hard,physics,Refractive index compares speed of light to ...?,Sound,Vacuum,Water,Glass,1,折射率将光速与……比较？,声音,真空,水,玻璃
+hard,physics,Snell's Law relates to ...?,Reflection,Refraction,Diffraction,Polarization,1,斯涅尔定律涉及……？,反射,折射,衍射,偏振
+hard,physics,Doppler Effect changes ...?,Speed,Frequency,Amplitude,Phase,1,多普勒效应改变……？,速度,频率,振幅,相位
+hard,physics,What boson gives particles mass?,Gluon,Higgs,W,Z,1,什么玻色子给粒子质量？,胶子,希格斯,W,Z
+hard,physics,What is the escape velocity of Earth (approx)?,7.9 km/s,11.2 km/s,30 km/s,42 km/s,1,地球的逃逸速度是多少（大约）？,7.9 km/s,11.2 km/s,30 km/s,42 km/s
+hard,physics,Kepler's Laws describe ...?,Planetary Motion,Electron Orbits,Fluid Flow,Thermodynamics,0,开普勒定律描述……？,行星运动,电子轨道,流体流动,热力学
+hard,physics,The Big Bang theory explains the origin of ...?,Earth,Life,The Universe,The Galaxy,2,大爆炸理论解释了……的起源？,地球,生命,宇宙,银河系
+hard,physics,Schrodinger's Cat is a thought experiment about ...?,Gravity,Relativity,Quantum Superposition,Evolution,2,薛定谔的猫是关于……的思想实验？,重力,相对论,量子叠加,进化
+hard,physics,Fusion powers the ...?,Nuclear Plant,Sun,Battery,Engine,1,聚变通过为……提供能量？,核电站,太阳,电池,引擎
+hard,physics,Fission is sending in ...?,Reactors,Stars,Batteries,Human Body,0,裂变用于……？,反应堆,恒星,电池,人体
+hard,physics,Dark Matter interacts via ...?,Electromagnetic,Strong Force,Gravity,Weak Force,2,暗物质通过……相互作用？,电磁,强力,重力,弱力
+hard,physics,Lenz's Law relates to ...?,Induction,Electrostatics,Capacitance,Resistance,0,楞次定律关于……？,感应,静电,电容,电阻
+hard,chemistry,What is the pH of a strong acid?,1,7,14,10,0,强酸的pH值是多少？,1,7,14,10
+hard,chemistry,How many valence electrons does Carbon have?,2,4,6,8,1,碳有几个价电子？,2,4,6,8
+hard,chemistry,What bond involves sharing electrons?,Ionic,Covalent,Metallic,Hydrogen,1,什么键涉及共享电子？,离子,共价,金属,氢
+hard,chemistry,What bond involves transferring electrons?,Covalent,Ionic,Metallic,Hydrogen,1,什么键涉及转移电子？,共价,离子,金属,氢
+hard,chemistry,What is the layout of the Periodic Table based on?,Atomic Mass,Atomic Number,Density,Date Discovered,1,元素周期表的布局基于什么？,原子质量,原子序数,密度,发现日期
+hard,chemistry,Which group contains Noble Gases?,1,2,17,18,3,哪一组包含稀有气体？,1,2,17,18
+hard,chemistry,Which group contains Halogens?,1,2,17,18,2,哪一组包含卤素？,1,2,17,18
+hard,chemistry,Which group contains Alkali Metals?,1,2,17,18,0,哪一组包含碱金属？,1,2,17,18
+hard,chemistry,What is Avogadro's Constant?,6.02 x 10^23,3.14 x 10^23,1.6 x 10^-19,9.8,0,阿伏伽德罗常数是多少？,6.02 x 10^23,3.14 x 10^23,1.6 x 10^-19,9.8
+hard,chemistry,What is the molar mass of water (approx)?,16 g/mol,18 g/mol,20 g/mol,22 g/mol,1,水的摩尔质量是多少（大约）？,16 g/mol,18 g/mol,20 g/mol,22 g/mol
+hard,chemistry,What reaction releases heat?,Endothermic,Exothermic,Adiabatic,Isothermic,1,什么反应释放热量？,吸热,放热,绝热,等温
+hard,chemistry,What reaction absorbs heat?,Exothermic,Endothermic,Combustion,Oxidation,1,什么反应吸收热量？,放热,吸热,燃烧,氧化
+hard,chemistry,What speeds up a reaction without being consumed?,Reactant,Product,Catalyst,Inhibitor,2,什么在不被消耗的情况下加速反应？,反应物,产物,催化剂,抑制剂
+hard,chemistry,Oxidation is the loss of ...?,Protons,Neutrons,Electrons,Atoms,2,氧化是失去……？,质子,中子,电子,原子
+hard,chemistry,Reduction is the gain of ...?,Protons,Electrons,Neutrons,Oxygen,1,还原是获得……？,质子,电子,中子,氧
+hard,chemistry,Isotopes have different numbers of ...?,Protons,Electrons,Neutrons,Positrons,2,同位素有不同数量的……？,质子,电子,中子,正电子
+hard,chemistry,What is the main ingredient in glass?,Silica,Carbon,Calcium,Iron,0,玻璃的主要成分是什么？,二氧化硅,碳,钙,铁
+hard,chemistry,Which acid is in car batteries?,Hydrochloric,Sulfuric,Nitric,Acetic,1,汽车电池里有什么酸？,盐酸,硫酸,硝酸,醋酸
+hard,chemistry,What element is diamond and graphite?,Silicon,Nitrogen,Carbon,Oxygen,2,钻石和石墨是什么元素？,硅,氮,碳,氧
+hard,chemistry,What is the most electronegative element?,Oxygen,Fluorine,Chlorine,Nitrogen,1,电负性最强的元素是什么？,氧,氟,氯,氮
+hard,chemistry,Brass is an alloy of Copper and ...?,Tin,Zinc,Iron,Gold,1,黄铜是铜和……的合金？,锡,锌,铁,金
+hard,chemistry,Bronze is an alloy of Copper and ...?,Zinc,Tin,Aluminum,Nickel,1,青铜是铜和……的合金？,锌,锡,铝,镍
+hard,chemistry,Steel is mostly Iron and ...?,Carbon,Chromium,Nickel,Zinc,0,钢主要是铁和……？,碳,铬,镍,锌
+hard,chemistry,What is the heaviest naturally occurring element?,Lead,Gold,Uranus,Uranium,3,最重的天然元素是什么？,铅,金,天王星,铀
+hard,chemistry,Which law states matter is not created or destroyed?,Conservation of Energy,Conservation of Mass,Ideal Gas Law,Hess's Law,1,哪条定律指出物质不被创造或破坏？,能量守恒,质量守恒,理想气体定律,赫斯定律
+hard,chemistry,Molarity is moles per ...?,Kg,Liter,Gram,Second,1,摩尔浓度是摩尔每……？,千克,升,克,秒
+hard,chemistry,Boyle's Law relates Pressure and ...?,Temperature,Volume,Moles,Mass,1,波义耳定律涉及压力和……？,温度,体积,摩尔,质量
+hard,chemistry,Charles's Law relates Volume and ...?,Pressure,Temperature,Moles,Mass,1,查理定律涉及体积和……？,压力,温度,摩尔,质量
+hard,chemistry,What functional group is -OH?,Aldehyde,Ketone,Alcohol,Acid,2,-OH是什么官能团？,醛,酮,醇,酸
+hard,chemistry,What functional group is -COOH?,Alcohol,Carboxylic Acid,Amine,Ester,1,-COOH是什么官能团？,醇,羧酸,胺,酯
+hard,chemistry,Alkanes have ... bonds?,Single,Double,Triple,Ionic,0,烷烃有……键？,单,双,三,离子
+hard,chemistry,Alkenes have ... bonds?,Single,Double,Triple,Ionic,1,烯烃有……键？,单,双,三,离子
+hard,chemistry,Alkynes have ... bonds?,Single,Double,Triple,Quadrable,2,炔烃有……键？,单,双,三,四
+hard,chemistry,Benzene has a ... structure?,Linear,Ring,Pyramid,Cube,1,苯有……结构？,线性,环,金字塔,立方体
+hard,chemistry,Which element burns with a dazzling white flame?,Sodium,Magnesium,Copper,Iron,1,哪种元素燃烧时发出耀眼的白光？,钠,镁,铜,铁
+hard,chemistry,What gas smells like rotten eggs?,Oxygen,Hydrogen Sulfide,Methane,Chlorine,1,什么气体闻起来像臭鸡蛋？,氧气,硫化氢,甲烷,氯
+hard,chemistry,Which halogen is a liquid at room temp?,Fluorine,Chlorine,Bromine,Iodine,2,哪种卤素在室温下是液体？,氟,氯,溴,碘
+hard,chemistry,Which halogen is a solid at room temp?,Fluorine,Chlorine,Bromine,Iodine,3,哪种卤素在室温下是固体？,氟,氯,溴,碘
+hard,chemistry,The Haber process produces ...?,Sulfuric Acid,Ammonia,Nitric Acid,Soap,1,哈伯法生产……？,硫酸,氨,硝酸,肥皂
+hard,chemistry,Electrolysis splits water into ...?,H and O,H2 and O2,Hydroxide,Steam,1,电解将水分解成……？,H和O,H2和O2,氢氧化物,蒸汽
+hard,chemistry,Litmus turns ... in acid?,Blue,Red,Green,Yellow,1,石蕊在酸中变……？,蓝,红,绿,黄
+hard,chemistry,Phenolphthalein turns ... in base?,Colorless,Pink,Blue,Red,1,酚酞在碱中变……？,无色,粉色,蓝,红
+hard,chemistry,Subatomic particle with +1 charge?,Electron,Neutron,Proton,Photon,2,带+1电荷的亚原子粒子？,电子,中子,质子,光子
+hard,chemistry,Mass Number is Sum of Protons and ...?,Electrons,Neutrons,Positrons,Quarks,1,质量数是质子和……之和？,电子,中子,正电子,夸克
+hard,chemistry,Isomers have same formula but different ...?,Mass,Structure,Element,Color,1,同分异构体有相同的式子但不同的……？,质量,结构,元素,颜色
+hard,chemistry,Polymer is a chain of ...?,Dimers,Monomers,Isomers,Atoms,1,聚合物是……的链？,二聚体,单体,同分异构体,原子
+hard,chemistry,What acid is in vinegar?,Citric,Acetic,Formic,Lactic,1,醋里有什么酸？,柠檬酸,醋酸,甲酸,乳酸
+hard,chemistry,What acid is in lemons?,Citric,Acetic,Sulfuric,Nitric,0,柠檬里有什么酸？,柠檬酸,醋酸,硫酸,硝酸
+hard,chemistry,Noble gases are ...?,Reactive,Inert,Explosive,Toxic,1,稀有气体是……？,各,惰性,爆炸性,有毒
+hard,chemistry,Which element is a semiconductor?,Copper,Silicon,Sulfur,Helium,1,哪种元素是半导体？,铜,硅,硫,氦
+hard,earth_science,What is the study of fossils?,Archaeology,Paleontology,Geology,Biology,1,化石的研究叫什么？,考古学,古生物学,地质学,生物学
+hard,earth_science,What are the layers of Earth (In -> Out)?,"Core, Mantle, Crust","Mantle, Core, Crust","Crust, Mantle, Core","Core, Crust, Mantle",0,地球的层（内->外）是什么？,"地核, 地幔, 地壳","地幔, 地核, 地壳","地壳, 地幔, 地核","地核, 地壳, 地幔"
+hard,earth_science,Which rock type forms from lava?,Sedimentary,Metamorphic,Igneous,Fossil,2,哪种岩石类型由熔岩形成？,沉积,变质,火成,化石
+hard,earth_science,Which rock type forms from pressure/heat?,Igneous,Sedimentary,Metamorphic,Sand,2,哪种岩石类型由压力/热量形成？,火成,沉积,变质,沙
+hard,earth_science,Which rock type forms from layers of sediment?,Igneous,Metamorphic,Sedimentary,Diamond,2,哪种岩石类型由沉积层形成？,火成,变质,沉积,钻石
+hard,earth_science,What scale measures earthquake magnitude?,Fujita,Richter,Mohs,Beaufort,1,什么量表测量地震震级？,藤田,里氏,莫氏,蒲福
+hard,earth_science,What scale measures mineral hardness?,Richter,Kelvin,Mohs,Newton,2,什么量表测量矿物硬度？,里氏,开尔文,莫氏,牛顿
+hard,earth_science,What is the boundary between tectonic plates?,Fault,Ridge,Trench,Zone,0,构造板块之间的边界是什么？,断层,山脊,海沟,区域
+hard,earth_science,What is the supercontinent called?,Gondwana,Laurasia,Pangaea,Atlantis,2,超大陆叫什么？,冈瓦纳,劳亚,盘古,亚特兰蒂斯
+hard,earth_science,Which layer of atmosphere contains ozone?,Troposphere,Stratosphere,Mesosphere,Thermosphere,1,哪层大气包含臭氧？,对流层,平流层,中间层,热层
+hard,earth_science,In which layer does weather occur?,Troposphere,Stratosphere,Exosphere,Mesosphere,0,哪一层发生天气？,对流层,平流层,外逸层,中间层
+hard,earth_science,What is the most abundant metal in Earth's crust?,Iron,Aluminum,Copper,Gold,1,地壳中最丰富的金属是什么？,铁,铝,铜,金
+hard,earth_science,What drives tectonic plate movement?,Gravity,Magnetism,Convection Currents,Wind,2,什么驱动构造板块运动？,重力,磁力,对流,风
+hard,earth_science,What is molten rock underground?,Lava,Magma,Basalt,Granite,1,地下的熔岩是什么？,熔岩,岩浆,玄武岩,花岗岩
+hard,earth_science,What is molten rock above ground?,Magma,Lava,Obsidian,Pumice,1,地上的熔岩是什么？,岩浆,熔岩,黑曜石,浮石
+hard,earth_science,What is the study of weather?,Astronomy,Meteorology,Geology,Ecology,1,天气的确研究叫什么？,天文学,气象学,地质学,生态学
+hard,earth_science,What instrument measures pressure?,Thermometer,Barometer,Anemometer,Hygrometer,1,什么仪器测量压力？,温度计,气压计,风速计,湿度计
+hard,earth_science,What instrument measures wind speed?,Barometer,Anemometer,Thermometer,Rain Gauge,1,什么仪器测量风速？,气压计,风速计,温度计,雨量计
+hard,earth_science,What prevents UV radiation reaching Earth?,Clouds,Ozone Layer,Greenhouse Gases,Ionosphere,1,什么阻止紫外线辐射到达地球？,云,臭氧层,温室气体,电离层
+hard,earth_science,What is the process of water entering soil?,Evaporation,Infiltration,Condensation,Transpiration,1,水进入土壤的过程是什么？,蒸发,渗透,冷凝,蒸腾
+hard,earth_science,What is water loss from plants?,Respiration,Transpiration,Photosynthesis,Sublimation,1,植物失水是什么？,呼吸,蒸腾,光合作用,升华
+hard,earth_science,"Which era is ""Age of Dinosaurs""?",Paleozoic,Mesozoic,Cenozoic,Precambrian,1,哪个时代是“恐龙时代”？,古生代,中生代,新生代,前寒武纪
+hard,earth_science,Which planet has the strongest magnetic field?,Earth,Jupiter,Saturn,Mars,1,哪个行星有最强的磁场？,地球,木星,土星,火星
+hard,earth_science,What is the source of a star's energy?,Combustion,Nuclear Fission,Nuclear Fusion,Gravity,2,恒星能量的来源是什么？,燃烧,核裂变,核聚变,重力
+hard,earth_science,What is a neutron star?,Collapsed Core,Gas Cloud,Black Hole,Planet,0,中子星是什么？,坍塌的核心,气体云,黑洞,行星
+hard,earth_science,What is the event horizon?,Star Surface,Black Hole Boundary,Galaxy Edge,Sun Spot,1,事件视界是什么？,恒星表面,黑洞边界,星系边缘,太阳黑子
+hard,earth_science,What is the expansion of the universe called?,Big Bang,Big Crunch,Inflation/Hubble,Redshift,2,宇宙的膨胀叫什么？,大爆炸,大挤压,暴胀/哈勃,红移
+hard,earth_science,Redshift indicates an object is ...?,Approaching,Receding,Stationary,Spinning,1,红移表明物体是……？,接近,后退,静止,旋转
+hard,earth_science,Blueshift indicates an object is ...?,Approaching,Receding,Stationary,Exploding,0,蓝移表明物体是……？,接近,后退,静止,爆炸
+hard,earth_science,What is the hottest part of the Sun?,Surface,Corona,Core,Chromosphere,2,太阳最热的部分是什么？,表面,日冕,核心,色球层
+hard,earth_science,What are Saturn's rings made of?,Gas,Ice and Rock,Liquid,Metal,1,土星环是由什么组成的？,气体,冰和岩石,液体,金属
+hard,earth_science,Where is the asteroid belt located?,Earth-Mars,Mars-Jupiter,Jupiter-Saturn,Saturn-Uranus,1,小行星带位于哪里？,地球-火星,火星-木星,木星-土星,土星-天王星
+hard,earth_science,What is the Oort Cloud?,Star Cluster,Comet Shell,Gas Nebula,Asteroid Belt,1,奥尔特云是什么？,星团,彗星壳,气体星云,小行星带
+hard,earth_science,What is a pulsar?,Rotating Neutron Star,Black Hole,White Dwarf,Quasar,0,脉冲星是什么？,旋转中子星,黑洞,白矮星,类星体
+hard,earth_science,Which planet has seasons like Earth?,Venus,Mars,Jupiter,Mercury,1,哪个行星像地球一样有季节？,金星,火星,木星,水星
+hard,earth_science,What is the Great Dark Spot?,Storm on Jupiter,Storm on Neptune,Crater on Mars,Hole in Sun,1,大黑斑是什么？,木星风暴,海王星风暴,火星陨石坑,太阳洞
+hard,earth_science,What makes the poles colder?,Distance from Sun,Tilt/Angle of Sunlight,Elevation,Wind,1,什么使极地更冷？,距离太阳,阳光倾斜/角度,海拔,风
+hard,earth_science,What measures humidity?,Barometer,Hygrometer,Thermometer,Anemometer,1,什么测量湿度？,气压计,湿度计,温度计,风速计
+hard,earth_science,What cloud type is thunderstorm?,Cirrus,Stratus,Cumulonimbus,Cumulus,2,雷暴是什么云类型？,卷云,层云,积雨云,积云
+hard,earth_science,What defines a mineral?,"Liquid, Man-made","Solid, Inorganic, Crystal","Gas, Organic",Rock mixture,1,什么定义矿物？,液体，人造,固体，无机，晶体,气体，有机,岩石混合物
+hard,earth_science,What is metamorphic rock before change?,Parent Rock/Protolith,Lava,Sediment,Magma,0,变质岩变化前是什么？,母岩/原岩,熔岩,沉积物,岩浆
+hard,earth_science,What mineral is pencil lead?,Lead,Graphite,Carbon,Coal,1,铅笔芯是什么矿物？,铅,石墨,碳,煤
+hard,earth_science,What causes tides?,Sun only,Moon only,Moon and Sun Gravity,Wind,2,什么引起潮汐？,仅太阳,仅月亮,月亮和太阳重力,风
+hard,earth_science,Spring tides occur when?,"Sun, Moon, Earth align",Moon is quarter,Winter,Summer,0,大潮发生在什么时候？,太阳，月亮，地球对齐,月亮是四分之一,冬天,夏天
+hard,earth_science,Neap tides occur when?,"Sun, Moon, Earth align","Sun, Moon at 90 deg",Spring,Fall,1,小潮发生在什么时候？,太阳，月亮，地球对齐,太阳，月亮成90度,春天,秋天
+hard,earth_science,What is the Coriolis Effect?,Wind speed,Deflection due to rotation,Temperature change,Pressure drop,1,科里奥利效应是什么？,风速,由于旋转引起的偏转,温度变化,压降
+hard,earth_science,El Nino warms which ocean?,Atlantic,Pacific,Indian,Arctic,1,厄尔尼诺使哪个海洋变暖？,大西洋,太平洋,印度洋,北冰洋
+hard,earth_science,What is cleavage in minerals?,Breaking unevenly,Breaking along planes,Scratching,Shining,1,矿物的解理是什么？,不均匀破裂,沿平面破裂,划伤,发光
+hard,earth_science,Which is a renewable resource?,Coal,Oil,Wind,Natural Gas,2,哪个是可再生资源？,煤,油,风,天然气
+hard,earth_science,Which is a fossil fuel?,Solar,Hydro,Coal,Geothermal,2,哪个是化石燃料？,太阳能,水力,煤,地热

@@ -366,6 +366,7 @@ async function startGameLoop(roomId, settings, options = {}) {
     }
 
     const baseSettings = {
+        gameType: settings?.gameType || GAME_TYPES.MATH,
         delaySeconds: Number(settings?.delaySeconds) || 5,
         roundSeconds: Number(settings?.roundSeconds) || 10,
         questionsCount: Number(settings?.questionsCount) || 10,
@@ -392,8 +393,8 @@ async function startGameLoop(roomId, settings, options = {}) {
             return;
         }
 
-        // Generate a new question using the provider
-        const question = questionProvider.generateQuestion(resolvedSettings.questionDifficulty);
+        // Generate a new question using the provider (await for async providers like science)
+        const question = await questionProvider.generateQuestion(resolvedSettings.questionDifficulty);
 
         await roomRef.update({
             questionNumber: currentQuestion,

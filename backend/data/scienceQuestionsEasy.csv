@@ -1,0 +1,216 @@
+difficulty,category,question,option1,option2,option3,option4,correctIndex,questionChinese,optionChinese1,optionChinese2,optionChinese3,optionChinese4
+easy,biology,Which animal is known as the King of the Jungle?,Tiger,Lion,Elephant,Bear,1,哪种动物被称为丛林之王？,老虎,狮子,大象,熊
+easy,biology,What is the largest mammal in the world?,African Elephant,Blue Whale,Giraffe,Hippo,1,世界上最大的哺乳动物是什么？,非洲象,蓝鲸,长颈鹿,河马
+easy,biology,Which animal has a long trunk?,Elephant,Monkey,Snake,Lion,0,哪种动物有长鼻子？,大象,猴子,蛇,狮子
+easy,biology,Which bird cannot fly?,Eagle,Sparrow,Penguin,Parrot,2,哪种鸟不会飞？,老鹰,麻雀,企鹅,鹦鹉
+easy,biology,What food do pandas mainly eat?,Bamboo,Meat,Fish,Fruit,0,熊猫主要吃什么食物？,竹子,肉,鱼,水果
+easy,biology,How many legs does a spider have?,4,6,8,10,2,蜘蛛有几条腿？,4,6,8,10
+easy,biology,Which animal produces wool?,Cow,Sheep,Horse,Pig,1,哪种动物产羊毛？,奶牛,绵羊,马,猪
+easy,biology,Which animal hops and carries a baby in a pouch?,Kangaroo,Rabbit,Frog,Dog,0,哪种动物会跳跃并用育儿袋携带宝宝？,袋鼠,兔子,青蛙,狗
+easy,biology,What is a baby dog called?,Kitten,Puppy,Calf,Cub,1,小狗叫什么？,小猫,小狗,小牛,幼兽
+easy,biology,which animal moves very slowly and has a shell?,Turtle,Rabbit,Snake,Lizard,0,哪种动物爬得很慢通过有壳？,乌龟,兔子,蛇,蜥蜴
+easy,biology,Which insect makes honey?,Ant,Butterfly,Bee,Mosquito,2,哪种昆虫制造蜂蜜？,蚂蚁,蝴蝶,蜜蜂,蚊子
+easy,biology,What is a group of lions called?,Pack,Herd,Pride,Flock,2,一群狮子叫什么？,群,兽群,狮群,鸟群
+easy,biology,Which animal has a long neck?,Elephant,Giraffe,Zebra,Lion,1,哪种动物有长脖子？,大象,长颈鹿,斑马,狮子
+easy,biology,Which animal is famous for its black and white stripes?,Tiger,Leopard,Zebra,Panda,2,哪种动物以其黑白条纹而闻名？,老虎,豹子,斑马,熊猫
+easy,biology,What does a caterpillar turn into?,Beetle,Butterfly,Fly,Spider,1,毛毛虫会变成什么？,甲虫,蝴蝶,苍蝇,蜘蛛
+easy,biology,Which animal sleeps upside down?,Monkey,Bat,Owl,Cat,1,哪种动物倒着睡觉？,猴子,蝙蝠,猫头鹰,猫
+easy,biology,Which bird is a symbol of peace?,Eagle,Dove,Crow,Owl,1,哪种鸟是和平的象征？,老鹰,鸽子,乌鸦,猫头鹰
+easy,biology,What do bees collect from flowers?,Pollen,Water,Leaves,Seeds,0,蜜蜂从花朵中采集什么？,花粉,水,树叶,种子
+easy,biology,Which animal is the fastest land animal?,Lion,Tiger,Cheetah,Horse,2,哪种动物是陆地上最快的动物？,狮子,老虎,猎豹,马
+easy,biology,Which sea animal has 8 arms?,Shark,Whale,Octopus,Fish,2,哪种海洋动物有8条手臂？,鲨鱼,鲸鱼,章鱼,鱼
+easy,biology,What is a baby cat called?,Puppy,Kitten,Cub,Calf,1,小猫叫什么？,小狗,小猫,幼兽,小牛
+easy,biology,Which animal has a hump on its back?,Horse,Camel,Donkey,Cow,1,哪种动物背上有驼峰？,马,骆驼,驴,奶牛
+easy,biology,What do cows drink?,Milk,Water,Juice,Tea,1,奶牛喝什么？,牛奶,水,果汁,茶
+easy,biology,Which animal can change its color?,Frog,Chameleon,Lizard,Snake,1,哪种动物会变色？,青蛙,变色龙,蜥蜴,蛇
+easy,biology,Which animal quacks?,Chicken,Duck,Cow,Dog,1,哪种动物会嘎嘎叫？,鸡,鸭子,奶牛,狗
+easy,biology,Which animal has big ears and tusks?,Elephant,Hippo,Rhino,Lion,0,哪种动物有大耳朵和长牙？,大象,河马,犀牛,狮子
+easy,biology,What is the national bird of the USA?,Bald Eagle,Sparrow,Robin,Hawk,0,美国的国鸟是什么？,白头海雕,麻雀,知更鸟,老鹰
+easy,biology,Which fish is famous for swimming upstream to lay eggs?,Goldfish,Salmon,Shark,Tuna,1,哪种鱼以逆流而上去产卵而闻名？,金鱼,鲑鱼,鲨鱼,金枪鱼
+easy,biology,Which animal is man's best friend?,Cat,Dog,Horse,Bird,1,哪种动物是人类最好的朋友？,猫,狗,马,鸟
+easy,biology,Which animal gives us milk?,Pig,Chicken,Cow,Lizard,2,哪种动物给我们提供牛奶？,猪,鸡,奶牛,蜥蜴
+easy,biology,What covers a bird's body?,Fur,Scales,Feathers,Skin,2,鸟的身体覆盖着什么？,毛皮,鳞片,羽毛,皮肤
+easy,biology,Which animal is pink and likes mud?,Cow,Pig,Sheep,Horse,1,哪种动物是粉红色的并且喜欢泥巴？,奶牛,猪,绵羊,马
+easy,biology,Which animal lives in a coop?,Dog,Chicken,Horse,Pig,1,哪种动物住在笼子里？,狗,鸡,马,猪
+easy,biology,What is a female chicken called?,Rooster,Hen,Chick,Duck,1,母鸡叫什么？,公鸡,母鸡,小鸡,鸭子
+easy,biology,Which animal pulls Santa's sleigh?,Horse,Reindeer,Dog,Polar Bear,1,哪种动物拉圣诞老人的雪橇？,马,驯鹿,狗,北极熊
+easy,biology,Which animal has a mane?,Tiger,Lion,Bear,Wolf,1,哪种动物有鬃毛？,老虎,狮子,熊,狼
+easy,biology,What is a shark's skeleton made of?,Bone,Cartilage,Muscle,Skin,1,鲨鱼的骨骼是用什么做的？,骨头,软骨,肌肉,皮肤
+easy,biology,Which animal uses echolocation?,Eagle,Bat,Cat,Dog,1,哪种动物使用回声定位？,老鹰,蝙蝠,猫,狗
+easy,biology,Which reptile has no legs?,Lizard,Snake,Turtle,Crocodile,1,哪种爬行动物没有腿？,蜥蜴,蛇,乌龟,鳄鱼
+easy,biology,What is the largest bird in the world?,Eagle,Ostrich,Penguin,Owl,1,世界上最大的鸟是什么？,老鹰,鸵鸟,企鹅,猫头鹰
+easy,biology,Which animal is the tallest?,Elephant,Giraffe,Tree,Horse,1,哪种动物最高？,大象,长颈鹿,树,马
+easy,biology,Which animal barks?,Cat,Dog,Cow,Pig,1,哪种动物会吠叫？,猫,狗,奶牛,猪
+easy,biology,Which farm animal lays eggs?,Cow,Pig,Chicken,Horse,2,哪种农场动物产卵？,奶牛,猪,鸡,马
+easy,biology,What animal is Mickey?,Cat,Dog,Mouse,Duck,2,米奇是什么动物？,猫,狗,老鼠,鸭子
+easy,biology,Which animal has a pouch?,Kangaroo,Dog,Cat,Bear,0,哪种动物有育儿袋？,袋鼠,狗,猫,熊
+easy,biology,Which animal loves bananas?,Lion,Monkey,Dog,Cat,1,哪种动物喜欢香蕉？,狮子,猴子,狗,猫
+easy,biology,Which bird hunts at night?,Eagle,Owl,Sparrow,Parrot,1,哪种鸟在夜间捕猎？,老鹰,猫头鹰,麻雀,鹦鹉
+easy,biology,What is a baby cow called?,Calf,Cub,Puppy,Kitten,0,小牛叫什么？,小牛,幼兽,小狗,小猫
+easy,biology,Which animal has stripes?,Lion,Zebra,Bear,Dog,1,哪种动物有条纹？,狮子,斑马,熊,狗
+easy,biology,What part of the plant absorbs water?,Leaves,Stem,Roots,Flower,2,植物的哪个部分吸收水分？,叶子,茎,根,花
+easy,biology,What part of the plant makes food?,Roots,Stem,Leaves,Seeds,2,植物的哪个部分制造食物？,根,茎,叶子,种子
+easy,biology,What is the colorful part of a plant?,Root,Stem,Flower,Leaf,2,植物的彩色部分是什么？,根,茎,花,叶
+easy,biology,What grows from a seed?,Rock,Plant,Water,Air,1,种子会长成什么？,岩石,植物,水,空气
+easy,biology,What do plants need to grow?,Candy,Sunlight,Soda,Toys,1,植物生长需要什么？,糖果,阳光,汽水,玩具
+easy,biology,Which part of the tree is underground?,Trunk,Rooots,Leaves,Branches,1,树的哪一部分在地下？,树干,根,叶子,树枝
+easy,biology,What is the main stem of a tree called?,Branch,Trunk,Root,Leaf,1,树的主茎叫什么？,树枝,树干,根,叶
+easy,biology,What falls from trees in autumn?,Flowers,Leaves,Branches,Roots,1,秋天树上掉下什么？,花,叶子,树枝,根
+easy,biology,Which flower follows the sun?,Rose,Tulip,Sunflower,Daisy,2,哪种花跟随太阳？,玫瑰,郁金香,向日葵,雏菊
+easy,biology,What color is a leaf usually?,Blue,Red,Green,Purple,2,叶子通常是什么颜色？,蓝色,红色,绿色,紫色
+easy,biology,Do plants need water?,Yes,No,Maybe,Sometimes,0,植物需要水吗？,是,否,也许,有时
+easy,biology,What supports the plant?,Roots,Stem,Leaves,Flowers,1,什么支撑着植物？,根,茎,叶子,花
+easy,biology,Where do seeds form?,Roots,Stem,Leaves,Flower/Fruit,3,种子在哪里形成？,根,茎,叶子,花/果实
+easy,biology,Which of these is a fruit?,Carrot,Potato,Apple,Spinach,2,这些中哪一个是水果？,胡萝卜,土豆,苹果,菠菜
+easy,biology,Which of these is a vegetable?,Apple,Banana,Carrot,Orange,2,这些中哪一个是蔬菜？,苹果,香蕉,胡萝卜,橙子
+easy,biology,What makes plants green?,Chlorophyll,Paint,Blood,Juice,0,什么使植物变绿？,叶绿素,油漆,血液,果汁
+easy,biology,What do we breathe that plants give off?,Carbon Dioxide,Oxygen,Nitrogen,Helium,1,我们呼吸植物释放的什么？,二氧化碳,氧气,氮气,氦气
+easy,biology,Which plant grows in the desert?,Rose,Cactus,Lily,Fern,1,哪种植物生长在沙漠中？,玫瑰,仙人掌,百合,蕨类
+easy,biology,What is the seed of an oak tree?,Pinecone,Acorn,Walnut,Berry,1,橡树的种子是什么？,松果,橡子,核桃,浆果
+easy,biology,Which fruit is yellow and curved?,Apple,Orange,Banana,Grape,2,哪种水果是黄色并且弯曲的？,苹果,橙子,香蕉,葡萄
+easy,biology,Which fruit is red and has seeds on the outside?,Apple,Strawberry,Cherry,Grape,1,哪种水果是红色的并且种子在外面？,苹果,草莓,樱桃,葡萄
+easy,biology,What is a pumpkin?,Fruit,Vegetable,Meat,Mineral,0,南瓜是什么？,水果,蔬菜,肉类,矿物
+easy,biology,What gas do plants take in?,Oxygen,Carbon Dioxide,Helium,Nitrogen,1,植物吸收什么气体？,氧气,二氧化碳,氦气,氮气
+easy,biology,What protects a seed?,Leaf,Fruit,Root,Stem,1,什么保护种子？,叶子,果实,根,茎
+easy,biology,What color is a rose usually associated with love?,Yellow,White,Red,Black,2,与爱相关的玫瑰通常是什么颜色？,黄色,白色,红色,黑色
+easy,biology,Which vegetable makes you cry when you cut it?,Carrot,Potato,Onion,Cucumber,2,切哪种蔬菜会让你哭？,胡萝卜,土豆,洋葱,黄瓜
+easy,biology,What is the sweet liquid in flowers?,Honey,Nectar,Water,Syrup,1,花朵中的甜液体是什么？,蜂蜜,花蜜,水,糖浆
+easy,biology,Which tree has needles instead of leaves?,Oak,Maple,Pine,Birch,2,哪种树有针叶而不是叶子？,橡树,枫树,松树,桦树
+easy,biology,What do roots take from the soil?,Sunlight,Air,Water and Nutrients,Seeds,2,根从土壤中吸收什么？,阳光,空气,水和营养,种子
+easy,biology,Which part of the plant becomes the fruit?,Leaf,Stem,Root,Flower,3,植物的哪一部分变成从果实？,叶,茎,根,花
+easy,astronomy,What gives us light during the day?,Moon,Stars,Sun,Comet,2,白天什么给我们光？,月亮,星星,太阳,彗星
+easy,astronomy,What comes out at night?,Sun,Clouds,Moon and Stars,Rainbow,2,晚上什么出来？,太阳,云,月亮和星星,彩虹
+easy,astronomy,What is the name of our planet?,Mars,Venus,Earth,Jupiter,2,我们星球的名字是什么？,火星,金星,地球,木星
+easy,astronomy,Which planet is the Red Planet?,Venus,Mars,Jupiter,Saturn,1,哪个行星是红色星球？,金星,火星,木星,土星
+easy,astronomy,Which is the largest planet?,Earth,Mars,Jupiter,Pluto,2,哪个是最大的行星？,地球,火星,木星,冥王星
+easy,astronomy,Which planet has rings?,Mars,Earth,Saturn,Mercury,2,哪个行星有环？,火星,地球,土星,水星
+easy,astronomy,What is the Sun?,Planet,Star,Moon,Asteroid,1,太阳是什么？,行星,恒星,月亮,小行星
+easy,astronomy,What orbits the Earth?,Sun,Mars,Moon,Jupiter,2,什么绕着地球转？,太阳,火星,月亮,木星
+easy,astronomy,How many planets are in the Solar System?,7,8,9,10,1,太阳系有几个行星？,7,8,9,10
+easy,astronomy,Which planet is closest to the Sun?,Mercury,Venus,Earth,Mars,0,哪个行星离太阳最近？,水星,金星,地球,火星
+easy,astronomy,What do astronauts wear?,Swimsuits,Space Suits,Pajamas,Jeans,1,宇航员穿什么？,泳衣,宇航服,睡衣,牛仔裤
+easy,astronomy,What do you use to look at the stars?,Microscope,Telescope,Glasses,Magnifying Glass,1,你用什么看星星？,显微镜,望远镜,眼镜,放大镜
+easy,astronomy,Which planet do we live on?,Mars,Earth,Venus,Moon,1,我们住在哪个星球上？,火星,地球,金星,月亮
+easy,astronomy,What is likely to be found on the Moon?,Water,Trees,Craters,Cars,2,月球上可能有什么？,水,树,陨石坑,汽车
+easy,astronomy,Does the Sun move around the Earth?,Yes,No,Maybe,Sometimes,1,太阳绕着地球转吗？,是,否,也许,有时
+easy,astronomy,What is a shooting star?,Star,Comet,Meteor,Planet,2,流星是什么？,恒星,彗星,流星,行星
+easy,astronomy,Which planet is known as Earth's twin?,Mars,Venus,Jupiter,Mercury,1,哪个行星被称为地球的孪生兄弟？,火星,金星,木星,水星
+easy,astronomy,What makes the tides?,Sun,Wind,Moon,Fish,2,什么引起潮汐？,太阳,风,月亮,鱼
+easy,astronomy,Which is the hottest planet?,Mercury,Venus,Mars,Earth,1,哪个行星最热？,水星,金星,火星,地球
+easy,astronomy,Which planet is the coldest?,Saturn,Uranus,Neptune,Mars,2,哪个行星最冷？,土星,天王星,海王星,火星
+easy,astronomy,What galaxy is Earth in?,Andromeda,Milky Way,Whirlpool,Sombrero,1,地球在哪个星系？,仙女座,银河系,漩涡,草帽
+easy,astronomy,What is the center of the Solar System?,Earth,Moon,Sun,Mars,2,太阳系的中心是什么？,地球,月亮,太阳,火星
+easy,astronomy,Who was the first man on the Moon?,Buzz Aldrin,Neil Armstrong,Yuri Gagarin,John Glenn,1,谁是第一个登上月球的人？,巴兹·奥尔德林,尼尔·阿姆斯特朗,尤里·加加林,约翰·格伦
+easy,astronomy,What shape is the Earth?,Flat,Square,Round/Sphere,Triangle,2,地球是什么形状？,平的,方形,圆形/球体,三角形
+easy,astronomy,How long does it take Earth to orbit the Sun?,1 Day,1 Month,1 Year,1 Week,2,地球绕太阳一圈需要多长时间？,1天,1个月,1年,1周
+easy,astronomy,How long does it take Earth to rotate once?,1 Hour,12 Hours,24 Hours,48 Hours,2,地球自转一圈需要多长时间？,1小时,12小时,24小时,48小时
+easy,astronomy,Which planet is blue?,Mars,Earth,Venus,Mercury,1,哪个行星是蓝色的？,火星,地球,金星,水星
+easy,astronomy,What separates the inner and outer planets?,The Sun,Asteroid Belt,The Moon,A Black Hole,1,什么分隔了内行星和外行星？,太阳,小行星带,月亮,黑洞
+easy,astronomy,Which planet has the Great Red Spot?,Mars,Jupiter,Saturn,Neptune,1,哪个行星有大红斑？,火星,木星,土星,海王星
+easy,astronomy,What is the path a planet takes around the Sun called?,Road,Orbit,Line,Circle,1,行星绕太阳运行的路径叫什么？,路,轨道,线,圆
+easy,astronomy,Are there aliens in our solar system?,Yes,No,Maybe,Unknown,3,我们太阳系有外星人吗？,有,没有,也许,未知
+easy,astronomy,What is the moon made of?,Cheese,Rock,Ice,Gas,1,月亮是用什么做的？,奶酪,岩石,冰,气体
+easy,astronomy,Which star is closest to Earth?,Sirius,Polaris,The Sun,Alpha Centauri,2,哪颗星星离地球最近？,天狼星,北极星,太阳,半人马座阿尔法星
+easy,astronomy,Can we breathe in space?,Yes,No,Maybe,Sometimes,1,我们能在太空中呼吸吗？,能,不能,也许,有时
+easy,astronomy,What is the force that keeps us on Earth?,Magnetism,Gravity,Wind,Glue,1,什么力量让我们留在地球上？,磁力,重力,风,胶水
+easy,astronomy,Do stars twinkle?,Yes,No,Maybe,Sometimes,0,星星会闪烁吗？,会,不会,也许,有时
+easy,astronomy,Is the Sun a planet?,Yes,No,Maybe,Sometimes,1,太阳是行星吗？,是,不是,也许,有时
+easy,astronomy,Does the moon have its own light?,Yes,No,Maybe,Sometimes,1,月亮有自己的光吗？,有,没有,也许,有时
+easy,astronomy,What color is the sky during the day?,Red,Blue,Green,Black,1,白天的天空是什么颜色？,红色,蓝色,绿色,黑色
+easy,astronomy,What color is the sunset?,Blue,Orange/Red,Green,Black,1,日落是什么颜色？,蓝色,橙色/红色,绿色,黑色
+easy,earth_science,What falls from the sky as rain?,Sand,Water,Rocks,Leaves,1,什么作为雨从天上掉下来？,沙子,水,岩石,叶子
+easy,earth_science,What is the frozen form of water?,Steam,Ice,Gas,Liquid,1,水的冻结形式是什么？,蒸汽,冰,气体,液体
+easy,earth_science,What covers most of the Earth?,Land,Water,Ice,Forest,1,什么覆盖了地球的大部分？,陆地,水,冰,森林
+easy,earth_science,What season is the hottest?,Winter,Spring,Summer,Autumn,2,哪个季节最热？,冬天,春天,夏天,秋天
+easy,earth_science,What season is the coldest?,Winter,Spring,Summer,Autumn,0,哪个季节最冷？,冬天,春天,夏天,秋天
+easy,earth_science,In which season do leaves change color?,Winter,Spring,Summer,Autumn,3,哪个季节叶子变色？,冬天,春天,夏天,秋天
+easy,earth_science,In which season do flowers bloom?,Winter,Spring,Summer,Autumn,1,哪个季节花开？,冬天,春天,夏天,秋天
+easy,earth_science,What is a mountain that erupts called?,Hill,Valley,Volcano,Canyon,2,会喷发的山叫什么？,小山,山谷,火山,峡谷
+easy,earth_science,What is the shaking of the Earth called?,Storm,Earthquake,Tornado,Flood,1,地球的震动叫什么？,风暴,地震,龙卷风,洪水
+easy,earth_science,What is moving air called?,Rain,Wind,Snow,Fog,1,流动的空气叫什么？,雨,风,雪,雾
+easy,earth_science,What do you use to measure temperature?,Ruler,Scale,Thermometer,Clock,2,你用什么测量温度？,尺子,秤,温度计,时钟
+easy,earth_science,What brings rain?,Sun,Clouds,Stars,Moon,1,什么带来雨？,太阳,云,星星,月亮
+easy,earth_science,What is a large body of salt water?,Pond,Lake,River,Ocean,3,大片的咸水体叫什么？,池塘,湖泊,河流,海洋
+easy,earth_science,What is the solid part of the Earth surface?,Air,Water,Crust/Land,Fire,2,地球表面的固体部分是什么？,空气,水,地壳/陆地,火
+easy,earth_science,Where do rivers flow into?,Mountains,Ocean/Sea,Sky,Space,1,河流流向哪里？,山脉,海洋/海,天空,太空
+easy,earth_science,What is sand made of?,Tiny Rocks,Sugar,Salt,Plastic,0,沙子是用什么做的？,小石头,糖,盐,塑料
+easy,earth_science,What color is the ocean usually?,Red,Blue,Green,Yellow,1,海洋通常是什么颜色？,红色,蓝色,绿色,黄色
+easy,earth_science,What is a rainbow made of?,Light and Water,Paint,Fabric,Plastic,0,彩虹是用什么做的？,光和水,颜料,织物,塑料
+easy,earth_science,What is a heavy snowstorm called?,Rain,Blizzard,Tornado,Hurricane,1,大暴雪叫什么？,雨,暴风雪,龙卷风,飓风
+easy,earth_science,Which one is a natural resource?,Plastic,Water,Glass,Paper,1,哪一个是自然资源？,塑料,水,玻璃,纸
+easy,earth_science,What do we drink to stay alive?,Oil,Water,Glue,Ink,1,我们喝什么来维持生命？,油,水,胶水,墨水
+easy,earth_science,What helps plants grow in the ground?,Soil,Concrete,Plastic,Metal,0,什么帮助植物在地下生长？,土壤,混凝土,塑料,金属
+easy,earth_science,What is the hardest rock?,Chalk,Diamond,Sandstone,Coal,1,最硬的岩石是什么？,粉笔,钻石,砂岩,煤
+easy,earth_science,Which season comes after Winter?,Autumn,Summer,Spring,Winter Again,2,冬天之后是什么季节？,秋天,夏天,春天,又是冬天
+easy,earth_science,How many seasons are there?,2,3,4,5,2,有几个季节？,2,3,4,5
+easy,earth_science,What obscures vision like a cloud on the ground?,Rain,Fog,Snow,Hail,1,什么像地上的云一样遮挡视线？,雨,雾,雪,冰雹
+easy,earth_science,What is frozen rain called?,Snow,Hail,Fog,Dew,1,冻雨叫什么？,雪,冰雹,雾,露水
+easy,earth_science,What is the loud sound during a storm?,Lightning,Thunder,Rain,Wind,1,暴风雨中的巨响是什么？,闪电,雷声,雨,风
+easy,earth_science,What is the flash of light during a storm?,Thunder,Lightning,Sun,Moon,1,暴风雨中的闪光是什么？,雷声,闪电,太阳,月亮
+easy,earth_science,What is a very strong wind storm that spins?,Rain,Tornado,Snow,Fog,1,旋转的强风暴叫什么？,雨,龙卷风,雪,雾
+easy,physics,What force pulls things down?,Magnetism,Gravity,Friction,Push,1,什么力量把东西往下拉？,磁力,重力,摩擦,推力
+easy,physics,What happens to ice when it gets hot?,It freezes,It melts,It grows,It flies,1,冰变热会发生什么？,它结冰,它融化,它生长,它飞
+easy,physics,What happens to water when it gets very cold?,Boils,Freezes,Evaporates,Burns,1,水变很冷会发生什么？,它沸腾,它结冰,它蒸发,它燃烧
+easy,physics,Which is faster?,Walking,Running,Crawling,Sitting,1,哪个更快？,走路,跑步,爬行,坐着
+easy,physics,What makes a car move?,Engine,Wheels,Seats,Windows,0,什么使汽车移动？,引擎,轮子,座位,窗户
+easy,physics,What creates sound?,Silence,Vibrations,Stillness,Darkness,1,什么产生声音？,寂静,振动,静止,黑暗
+easy,physics,Which is a source of heat?,Ice,Sun,Water,Moon,1,哪个是热源？,冰,太阳,水,月亮
+easy,physics,Which material attracts magnets?,Wood,Plastic,Iron,Glass,2,哪种材料吸引磁铁？,木头,塑料,铁,玻璃
+easy,physics,What do you use to see yourself?,Wall,Mirror,Floor,Door,1,你用什么看自己？,墙,镜子,地板,门
+easy,physics,What provides electricity for a toy car?,String,Battery,Water,Air,1,什么为玩具车提供电力？,绳子,电池,水,空气
+easy,physics,What is the opposite of hot?,Warm,Cold,Spicy,Dry,1,热的反义词是什么？,暖,冷,辣,干
+easy,physics,What is the opposite of fast?,Quick,Slow,Speedy,Rapid,1,快的反义词是什么？,快,慢,迅速,急速
+easy,physics,Does a ball roll?,Yes,No,Maybe,Sometimes,0,球会滚吗？,会,不会,也许,有时
+easy,physics,Which object floats on water?,Rock,Iron Ball,Plastic Duck,Coin,2,哪个物体漂浮在水面上？,岩石,铁球,塑料鸭,硬币
+easy,physics,Which object sinks in water?,Feather,Paper,Rock,Wood,2,哪个物体在水中下沉？,羽毛,纸,岩石,木头
+easy,physics,What shape is a wheel?,Square,Triangle,Circle,Star,2,轮子是什么形状？,正方形,三角形,圆形,星星
+easy,physics,What do you need to see in the dark?,Sound,Light,Heat,Cold,1,你在黑暗中需要什么才能看见？,声音,光,热,冷
+easy,physics,Which color absorbs the most heat?,White,Black,Red,Yellow,1,哪种颜色吸收最多的热量？,白色,黑色,红色,黄色
+easy,physics,Which color reflects the most light?,White,Black,Blue,Green,0,哪种颜色反射最多的光？,白色,黑色,蓝色,绿色
+easy,physics,What makes a swing move?,Looking at it,Pushing it,Sitting on it,Ignoring it,1,什么使秋千移动？,看着它,推它,坐在上面,忽略它
+easy,physics,How many colors are in a rainbow?,5,6,7,8,2,彩虹有几种颜色？,5,6,7,8
+easy,physics,What is water in gas form?,Ice,Steam,Snow,Hail,1,气体形式的水是什么？,冰,蒸汽,雪,冰雹
+easy,physics,What do we use to tell time?,Ruler,Scale,Clock,Thermometer,2,我们用什么看时间？,尺子,秤,时钟,温度计
+easy,physics,What machine washes clothes?,Oven,Fridge,Washing Machine,TV,2,什么机器洗衣服？,烤箱,冰箱,洗衣机,电视
+easy,physics,What machine keeps food cold?,Oven,Refrigerator,Toaster,Microwave,1,什么机器保持食物冷却？,烤箱,冰箱,烤面包机,微波炉
+easy,physics,Which is heavier?,Feather,Brick,Leaf,Paper,1,哪个更重？,羽毛,砖头,叶子,纸
+easy,physics,Which is lighter?,Elephant,Mouse,Car,House,1,哪个更轻？,大象,老鼠,汽车,房子
+easy,physics,What attracts paperclips?,Wood,Magnet,Plastic,Glass,1,什么吸引回形针？,木头,磁铁,塑料,玻璃
+easy,physics,What is the source of energy for the Earth?,Moon,Sun,Mars,Stars,1,地球的能量来源是什么？,月亮,太阳,火星,星星
+easy,physics,Can sound travel through water?,Yes,No,Maybe,Sometimes,0,声音能在水中传播吗？,能,不能,也许,有时
+easy,chemistry,What is water made of?,H2O,CO2,O2,NaCl,0,水是用什么做的？,H2O,CO2,O2,NaCl
+easy,chemistry,What do we breathe in?,Oxygen,Carbon Dioxide,Helium,Neon,0,我们吸入什么？,氧气,二氧化碳,氦气,氖气
+easy,chemistry,What do we breathe out?,Oxygen,Carbon Dioxide,Gold,Silver,1,我们呼出什么？,氧气,二氧化碳,金,银
+easy,chemistry,What is the state of water at room temperature?,Solid,Liquid,Gas,Plasma,1,室温下水的状态是什么？,固体,液体,气体,等离子体
+easy,chemistry,What is the state of ice?,Solid,Liquid,Gas,Plasma,0,冰的状态是什么？,固体,液体,气体,等离子体
+easy,chemistry,What is the state of steam?,Solid,Liquid,Gas,Plasma,2,蒸汽的状态是什么？,固体,液体,气体,等离子体
+easy,chemistry,Is air common matter?,Yes,No,Maybe,Only in space,0,空气是普通物质吗？,是,否,也许,只在太空中
+easy,chemistry,What happens when you mix sugar and boiling water?,Explosion,Dissolves,Solidifies,Floats,1,当你混合糖和沸水时会发生什么？,爆炸,溶解,凝固,漂浮
+easy,chemistry,What tastes sweet?,Lemon,Sugar,Salt,Vinegar,1,什么尝起来是甜的？,柠檬,糖,盐,醋
+easy,chemistry,What tastes sour?,Candy,Lemon,Bread,Potato,1,什么尝起来是酸的？,糖果,柠檬,面包,土豆
+easy,chemistry,What tastes salty?,Sugar,Chips,Apple,Banana,1,什么尝起来是咸的？,糖,薯片,苹果,香蕉
+easy,chemistry,Is fire hot?,Yes,No,Maybe,Sometimes,0,火热吗？,是,否,也许,有时
+easy,chemistry,What is H2O?,Salt,Water,Gold,Silver,1,H2O是什么？,盐,水,金,银
+easy,chemistry,What freezes into ice?,Milk,Water,Oil,Juice,1,什么冻结成冰？,牛奶,水,油,果汁
+easy,chemistry,What melts into water?,Rock,Ice,Wood,Metal,1,什么融化成水？,岩石,冰,木头,金属
+easy,chemistry,Can you see air?,Yes,No,Maybe,Sometimes,1,你能看见空气吗？,能,不能,也许,有时
+easy,chemistry,"Is a rock a solid, liquid, or gas?",Solid,Liquid,Gas,None,0,岩石是固体，液体还是气体？,固体,液体,气体,无
+easy,chemistry,"Is milk a solid, liquid, or gas?",Solid,Liquid,Gas,None,1,牛奶是固体，液体还是气体？,固体,液体,气体,无
+easy,chemistry,"Is smoke a solid, liquid, or gas?",Solid,Liquid,Gas,None,2,烟是固体，液体还是气体？,固体,液体,气体,无
+easy,chemistry,What bubble gum does?,Explodes,Stretches,Freezes,Melts,1,泡泡糖会怎么样？,爆炸,拉伸,冻结,融化
+easy,biology,Which animal is orange with black stripes?,Tiger,Lion,Leopard,Cheetah,0,哪种动物是橙色带黑条纹的？,老虎,狮子,豹子,猎豹
+easy,biology,What color is a polar bear?,Brown,Black,White,Grey,2,北极熊是什么颜色？,棕色,黑色,白色,灰色
+easy,biology,What color is a crow?,White,Black,Red,Blue,1,乌鸦是什么颜色？,白色,黑色,红色,蓝色
+easy,biology,What color is a blueberry?,Red,Orange,Green,Blue,3,蓝莓是什么颜色？,红色,橙色,绿色,蓝色
+easy,biology,What color is a flamingo?,Pink,Blue,Green,Black,0,火烈鸟是什么颜色？,粉色,蓝色,绿色,黑色
+easy,biology,Which animal has a long trunk?,Elephant,Lion,Tiger,Bear,0,哪种动物有长鼻子？,大象,狮子,老虎,熊
+easy,biology,Which animal has a shell?,Turtle,Lion,Tiger,Bear,0,哪种动物有壳？,乌龟,狮子,老虎,熊
+easy,biology,Which animal has a pouch?,Kangaroo,Lion,Tiger,Bear,0,哪种动物有育儿袋？,袋鼠,狮子,老虎,熊
+easy,biology,Which animal has a mane?,Lion,Tiger,Bear,Wolf,0,哪种动物有鬃毛？,狮子,老虎,熊,狼
+easy,biology,Which animal has antlers?,Deer,Lion,Tiger,Bear,0,哪种动物有鹿角？,鹿,狮子,老虎,熊
+easy,biology,Which animal has 8 legs?,Spider,Ant,Bee,Fly,0,哪种动物有8条腿？,蜘蛛,蚂蚁,蜜蜂,苍蝇
+easy,biology,Which animal has no legs?,Snake,Lizard,Turtle,Frog,0,哪种动物没有腿？,蛇,蜥蜴,乌龟,青蛙
+easy,biology,Which animal makes a web?,Spider,Bee,Ant,Fly,0,哪种动物织网？,蜘蛛,蜜蜂,蚂蚁,苍蝇
+easy,biology,Which animal eats grass?,Cow,Lion,Tiger,Wolf,0,哪种动物吃草？,奶牛,狮子,老虎,狼
+easy,biology,Which animal eats meat?,Lion,Cow,Sheep,Horse,0,哪种动物吃肉？,狮子,奶牛,绵羊,马
+easy,biology,Which animal is very tall?,Giraffe,Lion,Tiger,Bear,0,哪种动物很高？,长颈鹿,狮子,老虎,熊
