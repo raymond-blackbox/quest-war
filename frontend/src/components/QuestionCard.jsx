@@ -30,7 +30,7 @@ function QuestionCard({
 
     const isLongAnswer = options.some(opt => {
         const text = getDisplayOption(opt);
-        return text.length > 9;
+        return text.length > 8;
     });
 
     const getButtonClass = (index) => {
