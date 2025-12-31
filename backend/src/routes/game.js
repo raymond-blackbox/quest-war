@@ -4,6 +4,7 @@ import { getQuestionProvider, GAME_TYPES } from '../services/questionProviders/i
 import { logTransaction, TRANSACTION_TYPES } from './transactions.js';
 import logger from '../services/logger.js';
 import { updateMultipleQuestProgress } from '../services/quests.js';
+import { updateUserStats } from '../services/userStats.js';
 
 // Get the default math provider and its exports
 const mathProvider = getQuestionProvider(GAME_TYPES.MATH);
@@ -34,7 +35,9 @@ function incrementQuestCounter(roomId, playerId, field) {
     const roomCounters = getRoomQuestCounters(roomId);
     const playerCounters = roomCounters.get(playerId) || {
         dailyCorrect: 0,
-        speedCorrect: 0
+        speedCorrect: 0,
+        totalAnswered: 0,
+        totalCorrect: 0
     };
     playerCounters[field] += 1;
     roomCounters.set(playerId, playerCounters);
@@ -535,12 +538,19 @@ router.post('/:roomId/answer', async (req, res) => {
                 }
             }
 
+            // Track for user stats (always track, even if solo)
+            incrementQuestCounter(roomId, playerId, 'totalAnswered');
+            incrementQuestCounter(roomId, playerId, 'totalCorrect');
+
             // Clear timeout and schedule next
             clearRoomTimeout(roomId); // Use the helper function
             scheduleNextQuestion(roomId, room);
         } else {
             // Mark that this player answered incorrectly
             await roomRef.child(`currentQuestion/incorrectAnswers/${playerId}`).set(true);
+
+            // Track for user stats (incorrect answer)
+            incrementQuestCounter(roomId, playerId, 'totalAnswered');
 
             // Trigger round completion check
             await checkRoundCompletion(roomId);
@@ -797,6 +807,20 @@ async function endGame(roomId, aborted = false) {
                 await awardTokens(db, playerId, playerLabel, totalEarned, reason, roomId, {
                     updateLeaderboard: !isSolo
                 });
+            }
+
+            // Update user stats in Firestore (Multiplayer only)
+            const roomCounters = getRoomQuestCounters(roomId);
+            const playerCounters = roomCounters.get(playerId);
+            if (!isSolo && playerCounters && playerCounters.totalAnswered > 0) {
+                await updateUserStats(
+                    playerId,
+                    roomSettings.gameType || GAME_TYPES.MATH,
+                    roomSettings.questionDifficulty || DIFFICULTY.MEDIUM,
+                    playerCounters.totalAnswered,
+                    playerCounters.totalCorrect,
+                    { updateLeaderboard: !isSolo }
+                );
             }
 
             // Update quest progress for game completion
