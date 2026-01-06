@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { playQuestClaimSound } from '../utils/audio';
+import logger from '../utils/logger';
 
 function Quests() {
     const [quests, setQuests] = useState([]);
@@ -27,7 +28,7 @@ function Quests() {
             setQuests(questData);
         } catch (err) {
             setError('Failed to load quests');
-            console.error('Load quests error:', err);
+            logger.error('Load quests error:', err);
         } finally {
             setLoading(false);
         }
@@ -43,7 +44,7 @@ function Quests() {
             await loadQuests(); // Refresh quests
         } catch (err) {
             setError('Failed to claim reward');
-            console.error('Claim reward error:', err);
+            logger.error('Claim reward error:', err);
         } finally {
             setClaiming(null);
         }

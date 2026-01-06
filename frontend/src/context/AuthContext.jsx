@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { api } from '../services/api';
 import { auth } from '../services/firebase';
 import { onIdTokenChanged } from 'firebase/auth';
+import logger from '../utils/logger';
 
 const AuthContext = createContext(null);
 
@@ -18,18 +19,18 @@ export function AuthProvider({ children }) {
             if (user) {
                 try {
                     const idToken = await user.getIdToken();
-                    console.log('[AUTH DEBUG] Firebase user changed:', {
+                    logger.debug('[AUTH DEBUG] Firebase user changed:', {
                         uid: user.uid,
                         email: user.email,
                         displayName: user.displayName
                     });
                     api.setToken(idToken);
                 } catch (err) {
-                    console.error('Failed to get ID token:', err);
+                    logger.error('Failed to get ID token:', err);
                     api.setToken(null);
                 }
             } else {
-                console.log('[AUTH DEBUG] No Firebase user - signed out');
+                logger.debug('[AUTH DEBUG] No Firebase user - signed out');
                 api.setToken(null);
             }
             setAuthReady(true);

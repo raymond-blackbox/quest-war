@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import logger from '../utils/logger';
 import { getDatabase, ref, onValue, off, query, orderByChild, equalTo, onDisconnect, set, remove } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithCustomToken, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth';
 
@@ -41,7 +42,7 @@ export function subscribeToLobbyRooms(callback) {
     const waitingRoomsQuery = query(roomsRef, orderByChild('status'), equalTo('waiting'));
 
     onValue(waitingRoomsQuery, (snapshot) => {
-        console.log('[FIREBASE] Lobby snapshot received. Exists:', snapshot.exists());
+        logger.info('[FIREBASE] Lobby snapshot received. Exists:', snapshot.exists());
         if (!snapshot.exists()) {
             callback([]);
             return;
@@ -57,7 +58,7 @@ export function subscribeToLobbyRooms(callback) {
             const hostData = room.players?.[room.hostId];
 
             if (!hostData) {
-                console.log(`[FIREBASE] Room ${childSnapshot.key} filtered out. HostData missing.`);
+                logger.info(`[FIREBASE] Room ${childSnapshot.key} filtered out. HostData missing.`);
                 return;
             }
             if (room.isSolo) {
@@ -92,7 +93,7 @@ export async function signInWithCustomAuthToken(token) {
 
 export async function signInWithGoogle() {
     const result = await signInWithPopup(auth, googleProvider);
-    console.log('[GOOGLE AUTH DEBUG] Signed in user:', {
+    logger.debug('[GOOGLE AUTH DEBUG] Signed in user:', {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName

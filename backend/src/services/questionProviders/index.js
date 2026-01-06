@@ -6,6 +6,7 @@
 
 import * as mathProvider from './mathProvider.js';
 import * as scienceProvider from './scienceProvider.js';
+import logger from '../logger.js';
 
 // Provider registry
 const providers = {
@@ -31,7 +32,7 @@ export const GAME_TYPES = {
 export function getQuestionProvider(gameType = GAME_TYPES.MATH) {
     const provider = providers[gameType];
     if (!provider) {
-        console.warn(`Unknown game type "${gameType}", falling back to math`);
+        logger.warn(`Unknown game type "${gameType}", falling back to math`);
         return providers.math;
     }
     return provider;

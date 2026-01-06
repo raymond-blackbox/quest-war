@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import logger from '../utils/logger';
 
 function Leaderboard() {
     const [leaderboard, setLeaderboard] = useState([]);
@@ -22,7 +23,7 @@ function Leaderboard() {
             const data = await api.getLeaderboard(category);
             setLeaderboard(data);
         } catch (err) {
-            console.error('Failed to load leaderboard:', err);
+            logger.error('Failed to load leaderboard:', err);
         } finally {
             setLoading(false);
         }

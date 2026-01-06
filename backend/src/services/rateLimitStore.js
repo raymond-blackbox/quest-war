@@ -1,3 +1,4 @@
+import logger from './logger.js';
 
 /**
  * A custom store for express-rate-limit that uses Firebase Realtime Database
@@ -23,7 +24,7 @@ export class DistributedRateLimitStore {
 
         const db = this.getDb();
         if (!db) {
-            console.error('[RATELIMIT] Error: Realtime Database is not initialized.');
+            logger.error('[RATELIMIT] Error: Realtime Database is not initialized.');
             return { totalHits: 0, resetTime: new Date(now + this.windowMs) };
         }
 
@@ -35,7 +36,7 @@ export class DistributedRateLimitStore {
                 resetTime: new Date((windowId + 1) * this.windowMs)
             };
         } catch (err) {
-            console.error('[RATELIMIT] Distributed store failed, falling back:', err);
+            logger.error('[RATELIMIT] Distributed store failed, falling back:', err);
             return { totalHits: 1, resetTime: new Date(now + this.windowMs) };
         }
     }
@@ -49,7 +50,7 @@ export class DistributedRateLimitStore {
             const ref = db.ref(`${this.prefix}/${windowId}/${safeKey}`);
             await ref.transaction((current) => (!current || current <= 0) ? 0 : current - 1);
         } catch (err) {
-            console.error('[RATELIMIT] Decrement failed:', err);
+            logger.error('[RATELIMIT] Decrement failed:', err);
         }
     }
 
@@ -61,7 +62,7 @@ export class DistributedRateLimitStore {
             const safeKey = key.replace(/[.$#\[\]\/]/g, '_');
             await db.ref(`${this.prefix}/${windowId}/${safeKey}`).remove();
         } catch (err) {
-            console.error('[RATELIMIT] Reset failed:', err);
+            logger.error('[RATELIMIT] Reset failed:', err);
         }
     }
 }

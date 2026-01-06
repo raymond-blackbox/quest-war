@@ -8,6 +8,7 @@ import { subscribeToRoom, unsubscribeFromRoom, onDisconnect, ref, database, set,
 import Timer from '../components/Timer';
 import QuestionCard from '../components/QuestionCard';
 import PlayerList from '../components/PlayerList';
+import logger from '../utils/logger';
 
 const truncateDisplayName = (value) => {
     if (!value) return 'Unknown';
@@ -71,7 +72,7 @@ function Game() {
         // Set up presence
         if (player?.id) {
             const presenceRef = ref(database, `rooms/${roomId}/presence/${player.id}`);
-            set(presenceRef, true).catch(err => console.error("Presence Set Error:", err));
+            set(presenceRef, true).catch(err => logger.error("Presence Set Error:", err));
             const connectedDisconnectRef = onDisconnect(presenceRef);
             connectedDisconnectRef.remove();
         }
@@ -105,7 +106,7 @@ function Game() {
                     const latest = await api.getProfile(player.id);
                     refreshPlayer(latest);
                 } catch (err) {
-                    console.error('Failed to refresh player tokens:', err);
+                    logger.error('Failed to refresh player tokens:', err);
                 } finally {
                     setHasSyncedTokens(true);
                 }
@@ -172,11 +173,11 @@ function Game() {
         setSelection({ forQuestion: currentQNum, answerIndex: answerIndex });
 
         try {
-            console.log('[FRONTEND] Sending submitAnswer API code...');
+            logger.info('[FRONTEND] Sending submitAnswer API code...');
             const res = await api.submitAnswer(roomId, player.username, answerIndex);
-            console.log('[FRONTEND] SubmitAnswer success:', res);
+            logger.info('[FRONTEND] SubmitAnswer success:', res);
         } catch (err) {
-            console.error('[FRONTEND] Failed to submit answer:', err);
+            logger.error('[FRONTEND] Failed to submit answer:', err);
             setHasAnswered(false);
         }
     }, [hasAnswered, roomId, player.id, player.username, room?.currentQuestion]);
@@ -186,7 +187,7 @@ function Game() {
         if (showResult && room?.currentQuestion && !hasPlayedResultSound) {
             const { correctIndex } = room.currentQuestion;
 
-            console.log('[AUDIO DEBUG]', {
+            logger.debug('[AUDIO DEBUG]', {
                 showResult,
                 selectedAnswer,
                 correctIndex,
@@ -196,10 +197,10 @@ function Game() {
 
             if (selectedAnswer !== null && correctIndex !== undefined && correctIndex !== null) {
                 if (Number(selectedAnswer) === Number(correctIndex)) {
-                    console.log('[AUDIO] Playing correct sound!');
+                    logger.info('[AUDIO] Playing correct sound!');
                     playCorrectSound();
                 } else {
-                    console.log('[AUDIO] Answer incorrect, no sound.');
+                    logger.info('[AUDIO] Answer incorrect, no sound.');
                 }
                 setHasPlayedResultSound(true);
             }
@@ -230,7 +231,7 @@ function Game() {
             await api.resetGame(roomId, player.id);
             navigate(`/room/${roomId}`);
         } catch (err) {
-            console.error('Failed to reset game:', err);
+            logger.error('Failed to reset game:', err);
             alert('Failed to reset game. Please try again.');
         } finally {
             setRematchLoading(false);
@@ -244,7 +245,7 @@ function Game() {
                 await api.quitGame(roomId, player.id);
                 navigate('/lobby');
             } catch (err) {
-                console.error('Failed to quit game:', err);
+                logger.error('Failed to quit game:', err);
                 alert('Failed to quit game. Please try again or refresh.');
             }
         }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import logger from '../utils/logger';
 
 function Profile() {
     const { player, refreshPlayer, authReady } = useAuth();
@@ -32,8 +33,8 @@ function Profile() {
                 }
             } catch (error) {
                 if (isMounted) {
-                    // Silent fail on load or log to console
-                    console.error('Failed to load profile:', error);
+                    // Silent fail on load or log to logger
+                    logger.error('Failed to load profile:', error);
                 }
             } finally {
                 if (isMounted) {

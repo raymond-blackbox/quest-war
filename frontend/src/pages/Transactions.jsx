@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import logger from '../utils/logger';
 
 function Transactions() {
     const { player, authReady } = useAuth();
@@ -19,7 +20,7 @@ function Transactions() {
             const data = await api.getTransactions(player.id, 15);
             setTransactions(data.transactions || []);
         } catch (err) {
-            console.error('Failed to load transactions:', err);
+            logger.error('Failed to load transactions:', err);
             setError('Failed to load transactions');
         } finally {
             setLoading(false);

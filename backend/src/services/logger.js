@@ -22,7 +22,10 @@ const formatLog = (severity, message, meta = {}) => {
 };
 
 const logger = {
-    info: (message, meta) => console.log(formatLog('INFO', message, meta)),
+    info: (message, meta) => {
+        if (isProduction) return;
+        console.log(formatLog('INFO', message, meta));
+    },
     error: (message, meta) => {
         const errorMeta = meta instanceof Error
             ? { stack: meta.stack, message: meta.message }
@@ -30,7 +33,10 @@ const logger = {
         console.error(formatLog('ERROR', message, errorMeta));
     },
     warn: (message, meta) => console.warn(formatLog('WARNING', message, meta)),
-    debug: (message, meta) => console.log(formatLog('DEBUG', message, meta)),
+    debug: (message, meta) => {
+        if (isProduction) return;
+        console.log(formatLog('DEBUG', message, meta));
+    },
     // Support for setting a requestId context if needed in the future
 };
 

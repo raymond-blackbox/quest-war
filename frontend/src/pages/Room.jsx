@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { subscribeToRoom, unsubscribeFromRoom, onDisconnect, ref, database, set } from '../services/firebase';
 import PlayerList from '../components/PlayerList';
+import logger from '../utils/logger';
 
 function Room() {
     const { roomId } = useParams();
@@ -154,7 +155,7 @@ function Room() {
             await api.leaveRoom(roomId, player.id);
             navigate('/lobby');
         } catch (err) {
-            console.error('Failed to leave room:', err);
+            logger.error('Failed to leave room:', err);
             navigate('/lobby');
         }
     };

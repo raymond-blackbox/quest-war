@@ -1,3 +1,5 @@
+import logger from './logger';
+
 /**
  * Audio utility for Game Effects
  */
@@ -41,7 +43,7 @@ export const playTickSound = () => {
         osc.start();
         osc.stop(ctx.currentTime + 0.1);
     } catch (e) {
-        console.error("Audio play failed", e);
+        logger.error("Audio play failed", e);
     }
 };
 
@@ -83,7 +85,7 @@ export const playCountdownBeep = (type) => {
             osc.stop(now + 0.2);
         }
     } catch (e) {
-        console.error("Audio play failed", e);
+        logger.error("Audio play failed", e);
     }
 };
 
@@ -95,9 +97,9 @@ export const playCorrectSound = () => {
     try {
         const audio = new Audio('/sounds/positive.mp3');
         audio.volume = 0.5;
-        audio.play().catch(e => console.error("Could not play correct sound:", e));
+        audio.play().catch(e => logger.error("Could not play correct sound:", e));
     } catch (e) {
-        console.error("Audio error:", e);
+        logger.error("Audio error:", e);
     }
 };
 
@@ -109,9 +111,9 @@ export const playWinSound = () => {
     try {
         const audio = new Audio('/sounds/win.mp3');
         audio.volume = 0.6;
-        audio.play().catch(e => console.error("Could not play win sound:", e));
+        audio.play().catch(e => logger.error("Could not play win sound:", e));
     } catch (e) {
-        console.error("Audio error:", e);
+        logger.error("Audio error:", e);
     }
 };
 
@@ -123,9 +125,9 @@ export const playLoseSound = () => {
     try {
         const audio = new Audio('/sounds/lose.mp3');
         audio.volume = 0.7;
-        audio.play().catch(e => console.error("Could not play lose sound:", e));
+        audio.play().catch(e => logger.error("Could not play lose sound:", e));
     } catch (e) {
-        console.error("Audio error:", e);
+        logger.error("Audio error:", e);
     }
 };
 
@@ -137,8 +139,8 @@ export const playQuestClaimSound = () => {
     try {
         const audio = new Audio('/sounds/questClaim.mp3');
         audio.volume = 0.4;
-        audio.play().catch(e => console.error("Could not play quest claim sound:", e));
+        audio.play().catch(e => logger.error("Could not play quest claim sound:", e));
     } catch (e) {
-        console.error("Audio error:", e);
+        logger.error("Audio error:", e);
     }
 };

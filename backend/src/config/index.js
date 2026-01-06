@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import logger from '../services/logger.js';
 
 const configSchema = z.object({
     PORT: z.coerce.number().default(3001),
@@ -16,7 +17,7 @@ const envVars = {
 const parsedEnv = configSchema.safeParse(envVars);
 
 if (!parsedEnv.success) {
-    console.error('❌ Invalid environment variables:', parsedEnv.error.format());
+    logger.error('❌ Invalid environment variables:', parsedEnv.error.format());
     process.exit(1);
 }
 

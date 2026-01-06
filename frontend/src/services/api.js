@@ -1,3 +1,5 @@
+import logger from '../utils/logger';
+
 const API_BASE = '/api';
 
 class ApiService {
@@ -10,7 +12,7 @@ class ApiService {
     }
 
     async request(endpoint, options = {}) {
-        console.log(`[API] Starting request to ${endpoint}`, { method: options.method || 'GET' });
+        logger.info(`[API] Starting request to ${endpoint}`, { method: options.method || 'GET' });
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
@@ -19,9 +21,9 @@ class ApiService {
         if (this.token) {
             const authHeader = `Bearer ${this.token}`;
             headers['Authorization'] = authHeader;
-            console.log('[API] Token attached. Header length:', authHeader.length);
+            logger.info('[API] Token attached. Header length:', authHeader.length);
         } else {
-            console.warn('[API] No token available for request to', endpoint);
+            logger.warn('[API] No token available for request to', endpoint);
         }
 
         try {
@@ -29,17 +31,17 @@ class ApiService {
                 ...options,
                 headers
             });
-            console.log(`[API] Response received from ${endpoint}: ${response.status}`);
+            logger.info(`[API] Response received from ${endpoint}: ${response.status}`);
 
             if (!response.ok) {
                 const error = await response.json().catch(() => ({ error: 'Request failed' }));
-                console.error(`[API] Request failed for ${endpoint}:`, error);
+                logger.error(`[API] Request failed for ${endpoint}:`, error);
                 throw new Error(error.message || error.error || 'Request failed');
             }
 
             return response.json();
         } catch (err) {
-            console.error(`[API] Fetch error for ${endpoint}:`, err);
+            logger.error(`[API] Fetch error for ${endpoint}:`, err);
             throw err;
         }
     }

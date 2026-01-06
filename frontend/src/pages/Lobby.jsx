@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { subscribeToLobbyRooms, unsubscribeFromRoom } from '../services/firebase';
+import logger from '../utils/logger';
 
 function Lobby() {
     const [rooms, setRooms] = useState([]);
@@ -66,9 +67,9 @@ function Lobby() {
     useEffect(() => {
         if (!authReady) return;
         syncPlayer();
-        console.log('[LOBBY] Subscribing to rooms...');
+        logger.info('[LOBBY] Subscribing to rooms...');
         const lobbyRef = subscribeToLobbyRooms((newRooms) => {
-            console.log('[LOBBY] Received rooms:', newRooms.length);
+            logger.info('[LOBBY] Received rooms:', newRooms.length);
             setRooms(newRooms);
         });
         return () => {
@@ -101,7 +102,7 @@ function Lobby() {
             const latestData = await api.getProfile(player.id);
             refreshPlayer(latestData);
         } catch (err) {
-            console.error('Failed to sync player:', err);
+            logger.error('Failed to sync player:', err);
         }
     };
 
@@ -115,7 +116,7 @@ function Lobby() {
             const readyCount = quests.filter((quest) => quest.completed && !quest.claimed).length;
             setQuestReadyCount(readyCount);
         } catch (err) {
-            console.error('Failed to load quest notifications:', err);
+            logger.error('Failed to load quest notifications:', err);
         }
     };
 
@@ -209,7 +210,7 @@ function Lobby() {
     const handleJoinRoom = async (roomId, password = '') => {
         if (!player?.id || !player?.username) {
             setError('Player data is not fully loaded. Please refresh or re-login.');
-            console.error('Missing player data:', player);
+            logger.error('Missing player data:', player);
             return;
         }
 
@@ -224,7 +225,7 @@ function Lobby() {
             playerDisplayName: player.displayName || player.username
         };
 
-        console.log('Sending join request:', { roomId, joinData });
+        logger.info('Sending join request:', { roomId, joinData });
 
         try {
             await api.joinRoom(roomId, joinData);

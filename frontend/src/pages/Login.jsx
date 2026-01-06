@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { signInWithGoogle, signInWithCustomAuthToken, loginWithEmail, registerWithEmail, sendVerificationEmail, resetPassword } from '../services/firebase';
 import { appVersion, fetchVersionInfo, getReloadBlockedVersion } from '../services/version';
+import logger from '../utils/logger';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -71,7 +72,7 @@ function Login() {
             }
             navigate('/lobby');
         } catch (err) {
-            console.error(err);
+            logger.error(err);
             setError(err.message || 'Authentication failed');
         } finally {
             setLoading(false);
@@ -89,7 +90,7 @@ function Login() {
             await resetPassword(email.trim());
             setMessage('Password reset email sent. Please check your inbox.');
         } catch (err) {
-            console.error(err);
+            logger.error(err);
             setError(err.message || 'Failed to send reset email');
         } finally {
             setLoading(true); // Keep loading state or reset
@@ -112,7 +113,7 @@ function Login() {
             }
             navigate('/lobby');
         } catch (err) {
-            console.error(err);
+            logger.error(err);
             setError(err.message || 'Google sign-in failed');
         } finally {
             setLoading(false);
