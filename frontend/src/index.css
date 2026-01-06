@@ -1310,6 +1310,20 @@ body {
   transform: translateX(4px);
 }
 
+.join-action .player-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-md);
+}
+
+.room-item:hover .join-action .player-count {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .room-badge {
   display: flex;
   align-items: center;

@@ -339,15 +339,14 @@ function Lobby() {
                                         <h3>{room.name}</h3>
                                         <div className="room-meta">
                                             <span className={`status-badge ${room.isPrivate ? 'private' : 'public'}`}>
-                                                {room.isPrivate ? '� Private' : '🌐 Public'}
+                                                {room.isPrivate ? '🔒 Private' : '🌐 Public'}
                                             </span>
                                             <span>👤 {truncateDisplayName(room.hostUsername)}</span>
-                                            <span>👥 {room.playerCount}/{MAX_ROOM_PLAYERS}</span>
                                         </div>
                                     </div>
                                     <div className="join-action">
+                                        <span className="player-count">{room.playerCount}/{MAX_ROOM_PLAYERS}</span>
                                         <span>{isRoomFull ? 'Full' : 'Join'}</span>
-                                        <span className="arrow">→</span>
                                     </div>
                                 </div>
                             );
