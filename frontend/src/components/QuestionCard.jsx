@@ -10,9 +10,10 @@ function QuestionCard({
     selectedAnswer,
     correctIndex,
     showResult,
-    isWaiting
+    isWaiting,
+    lang,
+    onLangChange
 }) {
-    const [lang, setLang] = useState('en'); // 'en' or 'zh'
 
     const getDisplayQuestion = () => {
         if (typeof question === 'object' && question !== null) {
@@ -57,7 +58,7 @@ function QuestionCard({
             {hasTranslation && (
                 <button
                     className="lang-toggle"
-                    onClick={() => setLang(prev => prev === 'en' ? 'zh' : 'en')}
+                    onClick={() => onLangChange(prev => prev === 'en' ? 'zh' : 'en')}
                     title="Switch Language"
                 >
                     {lang === 'en' ? 'zh' : 'en'}

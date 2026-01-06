@@ -28,6 +28,7 @@ function Game() {
     const [hasPlayedResultSound, setHasPlayedResultSound] = useState(false);
     const [hasPlayedGameEndSound, setHasPlayedGameEndSound] = useState(false);
     const [rematchLoading, setRematchLoading] = useState(false);
+    const [lang, setLang] = useState('en'); // 'en' or 'zh'
 
 
     // Derive effective selected answer - only valid if it's for the current question
@@ -478,6 +479,8 @@ function Game() {
                 correctIndex={currentQuestion.correctIndex}
                 showResult={showResult}
                 isWaiting={!showResult && hasAnswered}
+                lang={lang}
+                onLangChange={setLang}
             />
 
             <button
