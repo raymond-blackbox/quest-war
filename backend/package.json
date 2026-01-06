@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon --watch src --ext js,json src/index.js"
+    "dev": "nodemon --watch src --ext js,json src/index.js",
+    "test": "vitest run"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -17,6 +18,8 @@
     "helmet": "^8.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "supertest": "^7.1.4",
+    "vitest": "^4.0.16"
   }
 }

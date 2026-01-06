@@ -69,3 +69,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     logger.info(`Quest War API running on port ${PORT}`);
 });
+
+export { app };
