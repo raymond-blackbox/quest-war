@@ -8,11 +8,13 @@ function Leaderboard() {
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState('balance'); // 'balance' or 'earnings'
     const navigate = useNavigate();
-    const { player: currentPlayer } = useAuth();
+    const { player: currentPlayer, authReady } = useAuth();
 
     useEffect(() => {
-        loadLeaderboard();
-    }, [category]);
+        if (authReady) {
+            loadLeaderboard();
+        }
+    }, [category, authReady]);
 
     const loadLeaderboard = async () => {
         setLoading(true);

@@ -17,7 +17,7 @@ function Lobby() {
     const [fabVisible, setFabVisible] = useState(true);
     const [questReadyCount, setQuestReadyCount] = useState(0);
     const lastScrollY = useRef(0);
-    const { player, refreshPlayer } = useAuth();
+    const { player, refreshPlayer, authReady } = useAuth();
     const navigate = useNavigate();
 
     // Difficulty options (used for both create room and filter)
@@ -64,16 +64,23 @@ function Lobby() {
     }, [handleScroll]);
 
     useEffect(() => {
+        if (!authReady) return;
         syncPlayer();
-        const lobbyRef = subscribeToLobbyRooms(setRooms);
+        console.log('[LOBBY] Subscribing to rooms...');
+        const lobbyRef = subscribeToLobbyRooms((newRooms) => {
+            console.log('[LOBBY] Received rooms:', newRooms.length);
+            setRooms(newRooms);
+        });
         return () => {
             unsubscribeFromRoom(lobbyRef);
         };
-    }, []);
+    }, [authReady]);
 
     useEffect(() => {
-        loadQuestReadyCount();
-    }, [player?.id]);
+        if (authReady && player?.id) {
+            loadQuestReadyCount();
+        }
+    }, [player?.id, authReady]);
 
     useEffect(() => {
         if (isSolo) {

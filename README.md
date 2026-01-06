@@ -15,9 +15,15 @@ A real-time multiplayer quiz game where players compete to answer questions firs
 quest-war/
 |-- backend/                     # Express API for Cloud Run
 |   |-- src/
-|   |   |-- routes/              # API endpoints
-|   |   |-- services/            # Firebase, questions, logging
-|   |   `-- index.js             # Server entry
+|   |   |-- config/              # Configuration & Env validation (Zod)
+|   |   |-- controllers/         # Request handlers & logic orchestration
+|   |   |-- middlewares/         # Auth, Error, and Validation middlewares
+|   |   |-- repositories/        # Data access layer (Firestore/RTDB)
+|   |   |-- routes/              # API endpoint definitions
+|   |   |-- services/            # Core business logic & external integrations
+|   |   |-- utils/               # Custom errors & helper utilities
+|   |   |-- validations/         # Request schemas (Zod)
+|   |   `-- index.js             # Server entry point
 |   |-- Dockerfile
 |   `-- package.json
 |-- frontend/                    # React application (Vite)
@@ -30,9 +36,9 @@ quest-war/
 |   |-- src/
 |   |   |-- assets/              # Static app assets
 |   |   |-- components/          # Reusable UI components
-|   |   |-- context/             # Auth context
+|   |   |-- context/             # Auth context & token syncing
 |   |   |-- pages/               # Route screens
-|   |   |-- services/            # API + Firebase helpers
+|   |   |-- services/            # API client (with Auth) + Firebase helpers
 |   |   |-- utils/               # Client utilities
 |   |   |-- App.jsx
 |   |   |-- App.css
@@ -69,10 +75,14 @@ The UI uses a neon, glassmorphism game aesthetic with bold typography, gradients
 
 - **Frontend routing**: `frontend/src/App.jsx` defines protected routes, the global navbar, and login gating.
 - **UI composition**: Route screens live in `frontend/src/pages`, reusable widgets in `frontend/src/components`.
-- **State and auth**: `frontend/src/context/AuthContext.jsx` owns the player session (persisted in `sessionStorage`).
-- **API and data**: `frontend/src/services/api.js` is the single API client, with `/api` proxied via `frontend/vite.config.js`.
-- **Styling**: Global tokens and component styles live in `frontend/src/index.css`; `frontend/src/App.css` is a leftover template and is not imported.
-- **Backend layout**: `backend/src/index.js` wires middleware, rate limiting, and routes in `backend/src/routes`, with Firebase and utilities in `backend/src/services`.
+- **State and auth**: `frontend/src/context/AuthContext.jsx` owns the player session and syncs the ID token with the API service.
+- **API and data**: `frontend/src/services/api.js` is the centralized API client. It automatically includes the `Authorization: Bearer <token>` header for all requests.
+- **Styling**: Global tokens and component styles live in `frontend/src/index.css`.
+- **Backend architecture**: Follows a clean **Repository -> Service -> Controller** pattern:
+    - **Controllers**: Handle HTTP requests/responses.
+    - **Services**: Contain core business logic.
+    - **Repositories**: Handle all data access (Firestore/Realtime DB).
+    - **Middlewares**: Centralized error handling, Zod-based request validation, and Firebase Auth verification.
 
 ## Developer Notes (New Contributors)
 

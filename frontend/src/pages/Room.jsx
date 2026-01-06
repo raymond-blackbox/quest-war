@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -12,6 +12,9 @@ function Room() {
     const [room, setRoom] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Track if disconnect handlers have been set up to prevent re-registration
+    const disconnectSetupRef = useRef({ done: false, isHost: null });
 
 
     useEffect(() => {
@@ -34,26 +37,47 @@ function Room() {
                     connectedDisconnectRef.cancel();
                     connectedDisconnectRef = null;
                 }
+                // Reset for next time room enters waiting
+                disconnectSetupRef.current = { done: false, isHost: null };
                 navigate(`/game/${roomId}`);
                 return;
             }
 
             setRoom(roomData);
 
-            // Handle presence/disconnect logic
+            // Handle presence - this needs to happen every time to maintain presence
             const presenceRef = ref(database, `rooms/${roomId}/presence/${player.id}`);
             set(presenceRef, true);
-            connectedDisconnectRef = onDisconnect(presenceRef);
-            connectedDisconnectRef.remove();
 
-            if (roomData.hostId === player.id) {
-                // Host: remove entire room on disconnect (Best effort)
-                disconnectRef = onDisconnect(ref(database, `rooms/${roomId}`));
-                disconnectRef.remove();
-            } else if (roomData.players?.[player.id]) {
-                // Player: remove self on disconnect (Best effort, only works if waiting)
-                disconnectRef = onDisconnect(ref(database, `rooms/${roomId}/players/${player.id}`));
-                disconnectRef.remove();
+            // Only set up presence disconnect handler once
+            if (!connectedDisconnectRef) {
+                connectedDisconnectRef = onDisconnect(presenceRef);
+                connectedDisconnectRef.remove();
+            }
+
+            // Determine if this player is the host based on CURRENT room data
+            const isHost = roomData.hostId === player.id;
+            const isPlayerInRoom = !!roomData.players?.[player.id];
+
+            // Only set up disconnect handlers ONCE, or if host status changed
+            if (!disconnectSetupRef.current.done || disconnectSetupRef.current.isHost !== isHost) {
+                // Cancel any existing disconnect handler before setting a new one
+                if (disconnectRef) {
+                    disconnectRef.cancel();
+                    disconnectRef = null;
+                }
+
+                if (isHost) {
+                    // Host: remove entire room on disconnect (Best effort)
+                    disconnectRef = onDisconnect(ref(database, `rooms/${roomId}`));
+                    disconnectRef.remove();
+                } else if (isPlayerInRoom) {
+                    // Player: remove self on disconnect (Best effort, only works if waiting)
+                    disconnectRef = onDisconnect(ref(database, `rooms/${roomId}/players/${player.id}`));
+                    disconnectRef.remove();
+                }
+
+                disconnectSetupRef.current = { done: true, isHost };
             }
         });
 
@@ -62,9 +86,14 @@ function Room() {
             if (disconnectRef) {
                 disconnectRef.cancel();
             }
-            if (disconnectRef) disconnectRef.cancel();
+            if (connectedDisconnectRef) {
+                connectedDisconnectRef.cancel();
+            }
+            // Reset on unmount
+            disconnectSetupRef.current = { done: false, isHost: null };
         };
     }, [roomId, navigate, player.id]);
+
 
     const isHost = room?.hostId === player.id;
     const isSolo = room?.isSolo === true;

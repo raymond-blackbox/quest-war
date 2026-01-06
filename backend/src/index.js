@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import { config } from './config/index.js';
 import { initializeFirebase, getRealtimeDb } from './services/firebase.js';
 import { DistributedRateLimitStore } from './services/rateLimitStore.js';
 import authRoutes from './routes/auth.js';
@@ -11,9 +12,10 @@ import leaderboardRoutes from './routes/leaderboard.js';
 import transactionsRoutes from './routes/transactions.js';
 import questRoutes from './routes/quests.js';
 import logger from './services/logger.js';
+import { errorHandler } from './middlewares/error.middleware.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = config.PORT;
 
 // Trust proxy if behind Cloud Run or similar
 app.set('trust proxy', true);
@@ -48,7 +50,13 @@ app.use(globalLimiter);
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        memoryUsage: process.memoryUsage(),
+        version: config.NODE_ENV
+    });
 });
 
 // Routes
@@ -59,15 +67,74 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/transactions', transactionsRoutes);
 app.use('/api/quests', questRoutes);
 
-// Error handling
-app.use((err, req, res, next) => {
-    logger.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-});
+// Error handling - MUST be after all routes
+app.use(errorHandler);
 
 // Start server
-app.listen(PORT, () => {
-    logger.info(`Quest War API running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+    logger.info(`Quest War API running on port ${PORT} in ${config.NODE_ENV} mode`);
+});
+
+// Forceful shutdown helper: Track and destroy connections
+const connections = new Set();
+server.on('connection', (socket) => {
+    connections.add(socket);
+    socket.on('close', () => connections.delete(socket));
+});
+
+const shutdown = (signal) => {
+    logger.info(`[${signal}] Shutting down server...`);
+
+    // Immediately stop accepting new connections
+    server.close(() => {
+        logger.info('Server closed');
+        process.exit(0);
+    });
+
+    // Forcefully destroy existing connections
+    if (connections.size > 0) {
+        logger.info(`Destroying ${connections.size} active connections...`);
+        for (const socket of connections) {
+            socket.destroy();
+        }
+        connections.clear();
+    }
+
+    // Backup force shutdown
+    setTimeout(() => {
+        logger.error('Forceful shutdown timeout');
+        process.exit(1);
+    }, 2000);
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+// Handle nodemon restart
+process.once('SIGUSR2', () => {
+    logger.info('[SIGUSR2] Nodemon restart...');
+    // In dev, we want to be very fast
+    for (const socket of connections) {
+        socket.destroy();
+    }
+    server.close(() => {
+        process.kill(process.pid, 'SIGUSR2');
+    });
+});
+
+// Handle unhandled rejections
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Handle uncaught exceptions 
+process.on('uncaughtException', (err) => {
+    logger.error('Uncaught Exception thrown:', err.message);
+    if (err.code === 'EADDRINUSE') {
+        logger.error('Port 3001 is busy. Please ensure no other instances are running.');
+        process.exit(1);
+    }
+    shutdown('UNCAUGHT_EXCEPTION');
 });
 
 export { app };

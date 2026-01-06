@@ -1,5 +1,6 @@
 import express from 'express';
 import { getFirestore, admin } from '../services/firebase.js';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 import logger from '../services/logger.js';
 
 const router = express.Router();
@@ -35,9 +36,14 @@ async function logTransaction(db, { playerId, type, amount, reason, roomId = nul
 }
 
 // GET /api/transactions/:playerId - Fetch player transactions
-router.get('/:playerId', async (req, res) => {
+router.get('/:playerId', authMiddleware, async (req, res) => {
     try {
         const { playerId } = req.params;
+
+        // Ensure user is fetching their own transactions
+        if (req.user.uid !== playerId) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
         const limit = Math.min(parseInt(req.query.limit) || 50, 100);
         const offset = parseInt(req.query.offset) || 0;
 

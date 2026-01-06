@@ -4,7 +4,7 @@ import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 function Transactions() {
-    const { player } = useAuth();
+    const { player, authReady } = useAuth();
     const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,8 +27,10 @@ function Transactions() {
     }, [player?.id]);
 
     useEffect(() => {
-        loadTransactions();
-    }, [loadTransactions]);
+        if (authReady) {
+            loadTransactions();
+        }
+    }, [loadTransactions, authReady]);
 
     const formatDate = (isoString) => {
         if (!isoString) return 'N/A';

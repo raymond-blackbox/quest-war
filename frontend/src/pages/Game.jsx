@@ -172,7 +172,7 @@ function Game() {
 
         try {
             console.log('[FRONTEND] Sending submitAnswer API code...');
-            const res = await api.submitAnswer(roomId, player.id, player.username, answerIndex);
+            const res = await api.submitAnswer(roomId, player.username, answerIndex);
             console.log('[FRONTEND] SubmitAnswer success:', res);
         } catch (err) {
             console.error('[FRONTEND] Failed to submit answer:', err);

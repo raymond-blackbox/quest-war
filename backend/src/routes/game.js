@@ -1,10 +1,12 @@
 import express from 'express';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { getRealtimeDb, getFirestore } from '../services/firebase.js';
 import { getQuestionProvider, GAME_TYPES } from '../services/questionProviders/index.js';
 import { logTransaction, TRANSACTION_TYPES } from './transactions.js';
 import logger from '../services/logger.js';
 import { updateMultipleQuestProgress } from '../services/quests.js';
 import { updateUserStats } from '../services/userStats.js';
+import leaderboardService from '../services/leaderboard.service.js';
 
 // Get the default math provider and its exports
 const mathProvider = getQuestionProvider(GAME_TYPES.MATH);
@@ -92,18 +94,12 @@ async function awardTokens(
     const resolvedUsername = playerDoc.data().username;
 
     if (updateLeaderboard) {
-        // Get current totalTokensEarned from leaderboard, then add the delta
-        const leaderboardDocRef = db.collection('leaderboard').doc(playerId);
-        const leaderboardDoc = await leaderboardDocRef.get();
-        const currentTotalEarned = Number(leaderboardDoc.exists ? leaderboardDoc.data().totalTokensEarned || 0 : 0);
-
-        await leaderboardDocRef.set({
+        await leaderboardService.syncPlayer(playerId, {
             username: resolvedUsername,
             displayName: resolvedDisplayName,
             tokens: newTokens,
-            totalTokensEarned: currentTotalEarned + tokenDelta, // Lifetime earnings - only increases
-            updatedAt: new Date()
-        }, { merge: true });
+            totalTokensEarned: tokenDelta // LeaderboardService uses increment
+        });
     }
 
     // Log the transaction
@@ -219,10 +215,10 @@ function buildGameSessionSummary({ sessionId, roomId, room, aborted, singleWinne
 }
 
 // POST /api/game/:roomId/start - Start the game
-router.post('/:roomId/start', async (req, res) => {
+router.post('/:roomId/start', authMiddleware, async (req, res) => {
     try {
         const { roomId } = req.params;
-        const { playerId } = req.body;
+        const playerId = req.user.uid;
 
         const rtdb = getRealtimeDb();
         const roomRef = rtdb.ref(`rooms/${roomId}`);
@@ -278,14 +274,10 @@ router.post('/:roomId/start', async (req, res) => {
 });
 
 // POST /api/game/:roomId/reset - Reset room for a new game (host only)
-router.post('/:roomId/reset', async (req, res) => {
+router.post('/:roomId/reset', authMiddleware, async (req, res) => {
     try {
         const { roomId } = req.params;
-        const { playerId } = req.body;
-
-        if (!playerId) {
-            return res.status(400).json({ error: 'Missing playerId' });
-        }
+        const playerId = req.user.uid;
 
         const rtdb = getRealtimeDb();
         const roomRef = rtdb.ref(`rooms/${roomId}`);
@@ -462,11 +454,12 @@ async function startGameLoop(roomId, settings, options = {}) {
 }
 
 // POST /api/game/:roomId/answer - Submit an answer
-router.post('/:roomId/answer', async (req, res) => {
+router.post('/:roomId/answer', authMiddleware, async (req, res) => {
     //console.log(`[BACKEND] Received answer request for Room ${req.params.roomId}`);
     try {
         const { roomId } = req.params;
-        const { playerId, playerUsername, answerIndex } = req.body;
+        const { playerUsername, answerIndex } = req.body;
+        const playerId = req.user.uid;
 
         const rtdb = getRealtimeDb();
         const db = getFirestore();
@@ -672,14 +665,10 @@ function clearGameIntervals(roomId) {
 }
 
 // POST /api/game/:roomId/quit - Quit/Surrender the game
-router.post('/:roomId/quit', async (req, res) => {
+router.post('/:roomId/quit', authMiddleware, async (req, res) => {
     try {
         const { roomId } = req.params;
-        const { playerId } = req.body;
-
-        if (!playerId) {
-            return res.status(400).json({ error: 'Missing playerId' });
-        }
+        const playerId = req.user.uid;
 
         const rtdb = getRealtimeDb();
         const roomRef = rtdb.ref(`rooms/${roomId}`);

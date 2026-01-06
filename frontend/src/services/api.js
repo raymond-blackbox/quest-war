@@ -1,39 +1,48 @@
 const API_BASE = '/api';
 
 class ApiService {
-    async request(endpoint, options = {}) {
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
-            },
-            ...options
-        });
+    constructor() {
+        this.token = null;
+    }
 
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Request failed' }));
-            throw new Error(error.error || 'Request failed');
+    setToken(token) {
+        this.token = token;
+    }
+
+    async request(endpoint, options = {}) {
+        console.log(`[API] Starting request to ${endpoint}`, { method: options.method || 'GET' });
+        const headers = {
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        if (this.token) {
+            const authHeader = `Bearer ${this.token}`;
+            headers['Authorization'] = authHeader;
+            console.log('[API] Token attached. Header length:', authHeader.length);
+        } else {
+            console.warn('[API] No token available for request to', endpoint);
         }
 
-        return response.json();
-    }
+        try {
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                ...options,
+                headers
+            });
+            console.log(`[API] Response received from ${endpoint}: ${response.status}`);
 
-    /* 
-    // Manual auth disabled - Use Google login instead
-    async login(username, password) {
-        return this.request('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ username, password })
-        });
-    }
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ error: 'Request failed' }));
+                console.error(`[API] Request failed for ${endpoint}:`, error);
+                throw new Error(error.message || error.error || 'Request failed');
+            }
 
-    async register({ username, password, email }) {
-        return this.request('/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({ username, password, email })
-        });
+            return response.json();
+        } catch (err) {
+            console.error(`[API] Fetch error for ${endpoint}:`, err);
+            throw err;
+        }
     }
-    */
 
     async loginWithFirebase(idToken) {
         return this.request('/auth/firebase', {
@@ -72,46 +81,42 @@ class ApiService {
         });
     }
 
-    async leaveRoom(roomId, playerId) {
+    async leaveRoom(roomId) {
         return this.request(`/rooms/${roomId}/leave`, {
-            method: 'POST',
-            body: JSON.stringify({ playerId })
+            method: 'POST'
         });
     }
 
-    async toggleReady(roomId, playerId, ready) {
+    async toggleReady(roomId, ready) {
         return this.request(`/rooms/${roomId}/ready`, {
             method: 'POST',
-            body: JSON.stringify({ playerId, ready })
+            body: JSON.stringify({ ready })
         });
     }
 
     // Game
-    async startGame(roomId, playerId) {
+    async startGame(roomId) {
         return this.request(`/game/${roomId}/start`, {
-            method: 'POST',
-            body: JSON.stringify({ playerId })
+            method: 'POST'
         });
     }
 
-    async submitAnswer(roomId, playerId, playerUsername, answerIndex) {
+    async submitAnswer(roomId, playerUsername, answerIndex) {
         return this.request(`/game/${roomId}/answer`, {
             method: 'POST',
-            body: JSON.stringify({ playerId, playerUsername, answerIndex })
+            body: JSON.stringify({ playerUsername, answerIndex })
         });
     }
 
-    async quitGame(roomId, playerId) {
+    async quitGame(roomId) {
         return this.request(`/game/${roomId}/quit`, {
-            method: 'POST',
-            body: JSON.stringify({ playerId })
+            method: 'POST'
         });
     }
 
-    async resetGame(roomId, playerId) {
+    async resetGame(roomId) {
         return this.request(`/game/${roomId}/reset`, {
-            method: 'POST',
-            body: JSON.stringify({ playerId })
+            method: 'POST'
         });
     }
 
@@ -131,9 +136,8 @@ class ApiService {
     }
 
     async claimQuestReward(playerId, questId) {
-        return this.request(`/quests/${playerId}/claim`, {
-            method: 'POST',
-            body: JSON.stringify({ questId })
+        return this.request(`/quests/${playerId}/claim/${questId}`, {
+            method: 'POST'
         });
     }
 }

@@ -4,7 +4,7 @@ import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 function Profile() {
-    const { player, refreshPlayer } = useAuth();
+    const { player, refreshPlayer, authReady } = useAuth();
     const [displayName, setDisplayName] = useState(player?.displayName || player?.username || '');
     const [status, setStatus] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -42,11 +42,13 @@ function Profile() {
             }
         };
 
-        loadProfile();
+        if (authReady) {
+            loadProfile();
+        }
         return () => {
             isMounted = false;
         };
-    }, [player?.id, refreshPlayer]);
+    }, [player?.id, refreshPlayer, authReady]);
 
     const initial = useMemo(() => {
         const source = player?.displayName || player?.username || '?';

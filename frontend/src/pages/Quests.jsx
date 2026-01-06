@@ -9,12 +9,14 @@ function Quests() {
     const [loading, setLoading] = useState(true);
     const [claiming, setClaiming] = useState(null);
     const [error, setError] = useState('');
-    const { player, refreshPlayer } = useAuth();
+    const { player, refreshPlayer, authReady } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        loadQuests();
-    }, [player]);
+        if (authReady) {
+            loadQuests();
+        }
+    }, [player, authReady]);
 
     const loadQuests = async () => {
         if (!player?.id) return;

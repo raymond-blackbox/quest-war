@@ -1,14 +1,10 @@
-import { admin, getFirestore } from './firebase.js';
-import questRepository from '../repositories/quest.repository.js';
-import { AppError, NotFoundError } from '../utils/errors.js';
-import { logTransaction, TRANSACTION_TYPES } from '../routes/transactions.js';
-import leaderboardService from './leaderboard.service.js';
+﻿import { getFirestore, admin } from './firebase.js';
 
 export const QUEST_DEFINITIONS = [
     {
         id: 'daily_math_warrior',
         type: 'daily',
-        title: 'Daily Warrior',
+        title: 'Daily Math Warrior',
         description: 'Answer 25 questions correctly in any game',
         target: 25,
         reward: 50,
@@ -183,7 +179,10 @@ export async function updateQuestProgress(playerId, questId, increment = 1, game
     const questDef = getQuestDefinition(questId);
     if (!questDef) return null;
 
-    const progressPayload = await questRepository.getProgress(playerId);
+    const db = getFirestore();
+    const progressRef = db.collection('questProgress').doc(playerId);
+    const progressDoc = await progressRef.get();
+    const progressPayload = progressDoc.exists ? progressDoc.data() : {};
     const quests = progressPayload.quests || {};
     let questProgress = quests[questId] || {
         progress: 0,
@@ -196,19 +195,33 @@ export async function updateQuestProgress(playerId, questId, increment = 1, game
     questProgress = applyQuestProgressUpdate(questId, questDef, questProgress, increment, gameData);
     questProgress.lastUpdated = admin.firestore.FieldValue.serverTimestamp();
 
-    await questRepository.updateProgress(playerId, { [questId]: questProgress });
+    await progressRef.set({
+        playerId,
+        quests: {
+            [questId]: questProgress
+        }
+    }, { merge: true });
+
     return questProgress;
 }
 
 export async function updateMultipleQuestProgress(playerId, updates = []) {
-    if (!Array.isArray(updates) || updates.length === 0) return null;
+    if (!Array.isArray(updates) || updates.length === 0) {
+        return null;
+    }
 
-    const progressPayload = await questRepository.getProgress(playerId);
+    const db = getFirestore();
+    const progressRef = db.collection('questProgress').doc(playerId);
+    const progressDoc = await progressRef.get();
+    const progressPayload = progressDoc.exists ? progressDoc.data() : {};
     const quests = progressPayload.quests || {};
+
     const questsUpdate = {};
 
     updates.forEach((update) => {
         const questId = update?.questId;
+        if (!questId) return;
+
         const questDef = getQuestDefinition(questId);
         if (!questDef) return;
 
@@ -231,102 +244,14 @@ export async function updateMultipleQuestProgress(playerId, updates = []) {
         questsUpdate[questId] = questProgress;
     });
 
-    if (Object.keys(questsUpdate).length === 0) return null;
+    if (Object.keys(questsUpdate).length === 0) {
+        return null;
+    }
 
-    await questRepository.updateProgress(playerId, questsUpdate);
+    await progressRef.set({
+        playerId,
+        quests: questsUpdate
+    }, { merge: true });
+
     return questsUpdate;
 }
-
-export class QuestService {
-    async updateQuestProgress(playerId, questId, increment = 1, gameData = {}) {
-        return updateQuestProgress(playerId, questId, increment, gameData);
-    }
-
-    async updateMultipleQuestProgress(playerId, updates = []) {
-        return updateMultipleQuestProgress(playerId, updates);
-    }
-
-    async getPlayerQuests(playerId) {
-        const progress = await questRepository.getProgress(playerId);
-        // Merge definitions with progress
-        const playerQuests = QUEST_DEFINITIONS.map(def => {
-            const p = resetProgressIfNeeded(progress.quests?.[def.id] || { progress: 0 }, def.resetType);
-            return {
-                ...def,
-                ...p
-            };
-        });
-        return playerQuests;
-    }
-
-    async claimQuestReward(playerId, questId) {
-        const questDef = getQuestDefinition(questId);
-        if (!questDef) throw new AppError('Quest not found', 404);
-
-        const db = getFirestore();
-        const playerRef = db.collection('players').doc(playerId);
-        const progressRef = db.collection('questProgress').doc(playerId);
-
-        await db.runTransaction(async (transaction) => {
-            const [playerDoc, progressDoc] = await Promise.all([
-                transaction.get(playerRef),
-                transaction.get(progressRef)
-            ]);
-
-            if (!playerDoc.exists) throw new NotFoundError('Player not found');
-            if (!progressDoc.exists) throw new AppError('Quest progress not found', 404);
-
-            const progressData = progressDoc.data();
-            const quests = progressData.quests || {};
-            const questProgress = quests[questId];
-
-            if (!questProgress) throw new AppError('Quest progress not found', 404);
-
-            // Check if reset is needed
-            const resetQuestProgress = resetProgressIfNeeded(questProgress, questDef.resetType);
-            if (!resetQuestProgress.completed) {
-                throw new AppError('Quest not completed yet', 400);
-            }
-            if (resetQuestProgress.claimed) {
-                throw new AppError('Reward already claimed', 400);
-            }
-
-            // Update player balance
-            const currentTokens = Number(playerDoc.data().tokens || 0);
-            transaction.update(playerRef, {
-                tokens: currentTokens + questDef.reward,
-                updatedAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            // Mark quest as claimed (using dot notation for safety)
-            transaction.update(progressRef, {
-                [`quests.${questId}.claimed`]: true,
-                [`quests.${questId}.claimedAt`]: admin.firestore.FieldValue.serverTimestamp(),
-                updatedAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            // Sync with leaderboard
-            leaderboardService.syncPlayerWithTransaction(transaction, playerId, {
-                tokens: currentTokens + questDef.reward,
-                totalTokensEarned: questDef.reward
-            });
-        });
-
-        // Log transaction (mirroring original behavior: logging AFTER transaction)
-        await logTransaction(db, {
-            playerId,
-            type: TRANSACTION_TYPES.EARN,
-            amount: questDef.reward,
-            reason: `Quest Completed: ${questDef.title}`
-        });
-
-        return {
-            success: true,
-            questId,
-            reward: questDef.reward,
-            message: `Claimed ${questDef.reward} tokens for completing "${questDef.title}"!`
-        };
-    }
-}
-
-export default new QuestService();

@@ -41,6 +41,7 @@ export function subscribeToLobbyRooms(callback) {
     const waitingRoomsQuery = query(roomsRef, orderByChild('status'), equalTo('waiting'));
 
     onValue(waitingRoomsQuery, (snapshot) => {
+        console.log('[FIREBASE] Lobby snapshot received. Exists:', snapshot.exists());
         if (!snapshot.exists()) {
             callback([]);
             return;
@@ -55,11 +56,8 @@ export function subscribeToLobbyRooms(callback) {
             // Only exclude if explicitly false
             const hostData = room.players?.[room.hostId];
 
-            // Filter out stale rooms:
-            // 1. Host is explicitly disconnected (missing from presence node)
-            // 2. Host data is completely missing (host removed themselves)
-            const isHostConnected = room.presence?.[room.hostId] === true;
-            if (!isHostConnected || !hostData) {
+            if (!hostData) {
+                console.log(`[FIREBASE] Room ${childSnapshot.key} filtered out. HostData missing.`);
                 return;
             }
             if (room.isSolo) {
@@ -94,6 +92,11 @@ export async function signInWithCustomAuthToken(token) {
 
 export async function signInWithGoogle() {
     const result = await signInWithPopup(auth, googleProvider);
+    console.log('[GOOGLE AUTH DEBUG] Signed in user:', {
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName
+    });
     const idToken = await result.user.getIdToken();
 
     return {
@@ -128,4 +131,4 @@ export async function resetPassword(email) {
     await sendPasswordResetEmail(auth, email);
 }
 
-export { database, ref, onValue, off, onDisconnect, set, remove };
+export { auth, database, ref, onValue, off, onDisconnect, set, remove };
