@@ -149,7 +149,7 @@ function applyQuestProgressUpdate(questId, questDef, progressData, increment, ga
             const difficulties = Array.isArray(progressData.difficulties)
                 ? [...progressData.difficulties]
                 : [];
-            if (gameData?.difficulty && gameData?.won && !difficulties.includes(gameData.difficulty)) {
+            if (gameData?.difficulty && !difficulties.includes(gameData.difficulty)) {
                 difficulties.push(gameData.difficulty);
             }
             progressData.difficulties = difficulties;

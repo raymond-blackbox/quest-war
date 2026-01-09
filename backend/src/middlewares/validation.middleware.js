@@ -15,10 +15,10 @@ export const validate = (schema) => (req, res, next) => {
 
         next();
     } catch (error) {
-        const details = error.errors.map((err) => ({
+        const details = error.errors ? error.errors.map((err) => ({
             path: err.path.join('.'),
             message: err.message,
-        }));
+        })) : [{ message: error.message }];
         next(new ValidationError('Validation failed', details));
     }
 };

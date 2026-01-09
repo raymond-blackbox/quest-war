@@ -2,6 +2,9 @@ import express from 'express';
 import roomController from '../controllers/room.controller.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
+import { validate } from '../middlewares/validation.middleware.js';
+import { createRoomSchema, joinRoomSchema } from '../validations/room.validation.js';
+
 const router = express.Router();
 
 /**
@@ -14,13 +17,13 @@ router.get('/', authMiddleware, roomController.listRooms);
  * POST /api/rooms
  * Create a new room (protected)
  */
-router.post('/', authMiddleware, roomController.createRoom);
+router.post('/', authMiddleware, validate(createRoomSchema), roomController.createRoom);
 
 /**
  * POST /api/rooms/:id/join
  * Join a room
  */
-router.post('/:id/join', authMiddleware, roomController.joinRoom);
+router.post('/:id/join', authMiddleware, validate(joinRoomSchema), roomController.joinRoom);
 
 /**
  * POST /api/rooms/:id/ready

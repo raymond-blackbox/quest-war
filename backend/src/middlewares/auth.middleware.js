@@ -17,7 +17,9 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
         req.user = decodedToken;
         next();
     } catch (error) {
-        logger.error(`[AUTH] Token verification failed for ${req.path}:`, error);
+        if (process.env.NODE_ENV !== 'test') {
+            logger.error(`[AUTH] Token verification failed for ${req.path}:`, error);
+        }
         throw new AuthError('Invalid or expired token');
     }
 });

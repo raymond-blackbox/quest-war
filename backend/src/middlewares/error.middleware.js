@@ -15,14 +15,17 @@ export const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const errorCode = err.errorCode || 'INTERNAL_ERROR';
 
-    logger.error(err.message, {
-        stack: err.stack,
-        errorCode,
-        statusCode,
-        path: req.path,
-        method: req.method,
-        requestId: req.requestId,
-    });
+    // Suppress logs for client errors during tests to keep output clean
+    if (process.env.NODE_ENV !== 'test' || statusCode >= 500) {
+        logger.error(err.message, {
+            stack: err.stack,
+            errorCode,
+            statusCode,
+            path: req.path,
+            method: req.method,
+            requestId: req.requestId,
+        });
+    }
 
     res.status(statusCode).json({
         error: err.message || 'Internal server error',

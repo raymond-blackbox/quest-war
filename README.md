@@ -4,16 +4,20 @@ A real-time multiplayer quiz game where players compete to answer questions firs
 
 ## Tech Stack
 
-- **Frontend**: React + Vite
+- **Frontend**: React + Vite (PWA)
 - **Backend**: Node.js + Express (Cloud Run)
+- **Auth**: Firebase Auth (Email + Google)
 - **Database**: Firebase Realtime Database + Firestore
 - **Hosting**: Firebase Hosting
+- **Testing**: Vitest (frontend + backend)
 
 ## Project Structure
 
 ```
 quest-war/
 |-- backend/                     # Express API for Cloud Run
+|   |-- data/                    # CSV question banks (seed source)
+|   |-- scripts/                 # Admin scripts (seeding, stats)
 |   |-- src/
 |   |   |-- config/              # Configuration & Env validation (Zod)
 |   |   |-- controllers/         # Request handlers & logic orchestration
@@ -21,34 +25,34 @@ quest-war/
 |   |   |-- repositories/        # Data access layer (Firestore/RTDB)
 |   |   |-- routes/              # API endpoint definitions
 |   |   |-- services/            # Core business logic & external integrations
+|   |   |   `-- questionProviders/ # Game-type question generators
 |   |   |-- utils/               # Custom errors & helper utilities
 |   |   |-- validations/         # Request schemas (Zod)
 |   |   `-- index.js             # Server entry point
+|   |-- tests/                   # Vitest tests
 |   |-- Dockerfile
 |   `-- package.json
 |-- frontend/                    # React application (Vite)
 |   |-- public/
 |   |   |-- assets/              # Character images
 |   |   |-- sounds/              # Game audio
-|   |   |-- pwa-192x192.png
-|   |   |-- pwa-512x512.png
 |   |   `-- version.json         # App version + release note
 |   |-- src/
 |   |   |-- assets/              # Static app assets
 |   |   |-- components/          # Reusable UI components
 |   |   |-- context/             # Auth context & token syncing
 |   |   |-- pages/               # Route screens
-|   |   |-- services/            # API client (with Auth) + Firebase helpers
+|   |   |-- services/            # API client + Firebase helpers
 |   |   |-- utils/               # Client utilities
-|   |   |-- App.jsx
-|   |   |-- App.css
-|   |   |-- index.css            # Global tokens + styles
 |   |   `-- main.jsx             # App entry
 |   |-- index.html
 |   |-- vite.config.js
 |   `-- package.json
-|-- scripts/                     # Initialization scripts
-|   `-- init-players.js          # Create test accounts
+|-- scripts/                     # Local tooling and QA helpers
+|   |-- qa-check/
+|   |-- timer-test.js
+|   `-- package.json
+|-- verify-logs.mjs              # Logger output sanity check
 |-- deploy.ps1
 |-- deploy_backend.ps1
 |-- deploy_frontend.ps1
@@ -57,6 +61,15 @@ quest-war/
 |-- firestore.rules              # Firestore security
 `-- database.rules.json          # RTDB security
 ```
+
+## System Overview (Knowledge Base)
+
+- **Realtime gameplay**: Room state and presence live in RTDB (`rooms/{roomId}`); frontend subscribes via `frontend/src/services/firebase.js`, backend updates state in `backend/src/routes/game.js`.
+- **Persistent data**: Firestore stores `players`, `questProgress`, `leaderboard`, `transactions`, `questions`, `gameSessions`, and `config/tokenRewards`.
+- **Auth flow**: Firebase Auth on the client; backend verifies ID tokens (`Authorization: Bearer <idToken>`) in `backend/src/middlewares/auth.middleware.js`.
+- **Token economy + quests**: `backend/src/routes/game.js` awards tokens, logs transactions, and updates quests/stats at game end.
+- **Question sources**: Math questions are generated on the fly; science questions are Firestore-backed via `backend/src/services/questionProviders`.
+- **Scaling guardrails**: Global rate limiting uses RTDB-backed `DistributedRateLimitStore` for multi-instance deployments.
 
 ## Design System
 
@@ -74,24 +87,24 @@ The UI uses a neon, glassmorphism game aesthetic with bold typography, gradients
 ## Code Design
 
 - **Frontend routing**: `frontend/src/App.jsx` defines protected routes, the global navbar, and login gating.
-- **UI composition**: Route screens live in `frontend/src/pages`, reusable widgets in `frontend/src/components`.
-- **State and auth**: `frontend/src/context/AuthContext.jsx` owns the player session and syncs the ID token with the API service.
-- **API and data**: `frontend/src/services/api.js` is the centralized API client. It automatically includes the `Authorization: Bearer <token>` header for all requests.
+- **Realtime subscriptions**: `frontend/src/services/firebase.js` owns RTDB listeners and presence handling; pages wire them in `frontend/src/pages/Room.jsx` and `frontend/src/pages/Game.jsx`.
+- **State, auth, and API**: `frontend/src/context/AuthContext.jsx` syncs ID tokens into `frontend/src/services/api.js` for `Authorization: Bearer <token>` requests.
 - **Styling**: Global tokens and component styles live in `frontend/src/index.css`.
-- **Backend architecture**: Follows a clean **Repository -> Service -> Controller** pattern:
-    - **Controllers**: Handle HTTP requests/responses.
-    - **Services**: Contain core business logic.
-    - **Repositories**: Handle all data access (Firestore/Realtime DB).
-    - **Middlewares**: Centralized error handling, Zod-based request validation, and Firebase Auth verification.
+- **Backend architecture**: Routes -> controllers -> services -> repositories, with Zod validation and centralized error handling.
+- **Gameplay engine**: `backend/src/routes/game.js` runs the game loop, updates RTDB room state, and settles tokens/quests/stats in Firestore.
+- **Question providers**: `backend/src/services/questionProviders` maps game types to generators (math) or Firestore-backed providers (science).
 
 ## Developer Notes (New Contributors)
 
 - **Environment setup**: Copy `frontend/.env.example` to `frontend/.env` and fill in Firebase web config values.
-- **Firestore database ID**: The backend and `scripts/init-players.js` target `questwardb`. Update those files if you use a different database ID.
+- **Backend credentials**: Local dev expects `backend/serviceAccountKey.json`; Cloud Run uses default credentials with `FIREBASE_DATABASE_URL`.
+- **Firestore database ID**: `backend/src/services/firebase.js` and `backend/scripts/seedQuestions.js` target `questwardb`. Update both if you use a different database ID.
+- **Question seeding**: `backend/scripts/seedQuestions.js` loads CSVs from `backend/data`.
 - **API proxy**: Frontend calls `/api/*`, which is proxied to `http://127.0.0.1:3001` in `frontend/vite.config.js`.
 - **Versioning**: `frontend/public/version.json` drives the in-app version prompt via `frontend/src/services/version.js`.
 - **PWA assets**: Icons in `frontend/public` are wired in `frontend/vite.config.js`.
 - **Audio and assets**: Sound effects live in `frontend/public/sounds`, character images in `frontend/public/assets`.
+- **Local utilities**: `scripts/timer-test.js` and `verify-logs.mjs` are quick sanity checks.
 - **Docs**: The root `README.md` is the source of truth; `frontend/README.md` is the Vite template.
 
 ## Setup Instructions
@@ -132,6 +145,20 @@ npm run dev
 ```
 
 Open http://localhost:5173 in your browser.
+
+## Testing
+
+**Backend:**
+```bash
+cd backend
+npm test
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm test
+```
 
 ## Deployment
 

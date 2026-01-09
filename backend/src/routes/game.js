@@ -214,8 +214,11 @@ function buildGameSessionSummary({ sessionId, roomId, room, aborted, singleWinne
     };
 }
 
+import { validate } from '../middlewares/validation.middleware.js';
+import { startGameSchema, submitAnswerSchema } from '../validations/game.validation.js';
+
 // POST /api/game/:roomId/start - Start the game
-router.post('/:roomId/start', authMiddleware, async (req, res) => {
+router.post('/:roomId/start', authMiddleware, validate(startGameSchema), async (req, res) => {
     try {
         const { roomId } = req.params;
         const playerId = req.user.uid;
@@ -268,8 +271,9 @@ router.post('/:roomId/start', authMiddleware, async (req, res) => {
         res.json({ success: true });
 
     } catch (error) {
+        console.error('Start game error:', error.message, error.stack);
         logger.error('Start game error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error', message: error.message });
     }
 });
 
@@ -362,7 +366,7 @@ async function startGameLoop(roomId, settings, options = {}) {
 
     const baseSettings = {
         gameType: settings?.gameType || GAME_TYPES.MATH,
-        delaySeconds: Number(settings?.delaySeconds) || 5,
+        delaySeconds: Number(settings?.delaySeconds) || 2,
         roundSeconds: Number(settings?.roundSeconds) || 10,
         questionsCount: Number(settings?.questionsCount) || 10,
         questionDifficulty: settings?.questionDifficulty || DIFFICULTY.MEDIUM
@@ -454,7 +458,7 @@ async function startGameLoop(roomId, settings, options = {}) {
 }
 
 // POST /api/game/:roomId/answer - Submit an answer
-router.post('/:roomId/answer', authMiddleware, async (req, res) => {
+router.post('/:roomId/answer', authMiddleware, validate(submitAnswerSchema), async (req, res) => {
     //console.log(`[BACKEND] Received answer request for Room ${req.params.roomId}`);
     try {
         const { roomId } = req.params;

@@ -7,7 +7,7 @@ export class RoomController {
             ...req.body,
             hostId: req.user.uid
         });
-        res.json(room);
+        res.status(201).json(room);
     });
 
     joinRoom = asyncHandler(async (req, res) => {

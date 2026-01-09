@@ -36,17 +36,18 @@ logger.info('[RESTART] Applying security and stability fixes...');
 const rtdb = getRealtimeDb();
 
 // Global Rate Limiting
-const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    limit: 500, // Limit each IP to 500 requests per window
-    standardHeaders: 'draft-7',
-    legacyHeaders: false,
-    store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_global' }),
-    message: { error: 'Too many requests from this IP, please try again later.' },
-    validate: { trustProxy: false }
-});
-
-app.use(globalLimiter);
+if (process.env.NODE_ENV !== 'test') {
+    const globalLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        limit: 500, // Limit each IP to 500 requests per window
+        standardHeaders: 'draft-7',
+        legacyHeaders: false,
+        store: new DistributedRateLimitStore(getRealtimeDb, { prefix: 'rl_global' }),
+        message: { error: 'Too many requests from this IP, please try again later.' },
+        validate: { trustProxy: false }
+    });
+    app.use(globalLimiter);
+}
 
 // Health check
 app.get('/health', (req, res) => {
@@ -71,25 +72,34 @@ app.use('/api/quests', questRoutes);
 app.use(errorHandler);
 
 // Start server
-const server = app.listen(PORT, () => {
-    logger.info(`Quest War API running on port ${PORT} in ${config.NODE_ENV} mode`);
-});
+let server;
+if (process.env.NODE_ENV !== 'test') {
+    server = app.listen(PORT, () => {
+        logger.info(`Quest War API running on port ${PORT} in ${config.NODE_ENV} mode`);
+    });
+}
 
 // Forceful shutdown helper: Track and destroy connections
 const connections = new Set();
-server.on('connection', (socket) => {
-    connections.add(socket);
-    socket.on('close', () => connections.delete(socket));
-});
+if (server) {
+    server.on('connection', (socket) => {
+        connections.add(socket);
+        socket.on('close', () => connections.delete(socket));
+    });
+}
 
 const shutdown = (signal) => {
     logger.info(`[${signal}] Shutting down server...`);
 
     // Immediately stop accepting new connections
-    server.close(() => {
-        logger.info('Server closed');
+    if (server) {
+        server.close(() => {
+            logger.info('Server closed');
+            process.exit(0);
+        });
+    } else {
         process.exit(0);
-    });
+    }
 
     // Forcefully destroy existing connections
     if (connections.size > 0) {
@@ -117,9 +127,13 @@ process.once('SIGUSR2', () => {
     for (const socket of connections) {
         socket.destroy();
     }
-    server.close(() => {
+    if (server) {
+        server.close(() => {
+            process.kill(process.pid, 'SIGUSR2');
+        });
+    } else {
         process.kill(process.pid, 'SIGUSR2');
-    });
+    }
 });
 
 // Handle unhandled rejections

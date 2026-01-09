@@ -49,7 +49,7 @@ export class UserService {
 
             transaction.update(playerRef, {
                 ...updatedData,
-                updatedAt: getFirestore().constructor.FieldValue.serverTimestamp(),
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             });
 
             // Sync with leaderboard
