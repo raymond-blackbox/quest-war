@@ -4,6 +4,9 @@ import { asyncHandler } from '../middlewares/error.middleware.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from '../routes/transactions.js';
 import { getFirestore } from '../services/firebase.js';
 
+/**
+ * Handle Firebase login and user creation/retrieval
+ */
 export class AuthController {
     loginWithFirebase = asyncHandler(async (req, res) => {
         const { idToken } = req.body;
@@ -18,29 +21,30 @@ export class AuthController {
         });
     });
 
+    /**
+     * Fetch player profile
+     */
     getProfile = asyncHandler(async (req, res) => {
         const { playerId } = req.params;
         const profile = await userService.getProfile(playerId);
         res.json(profile);
     });
 
+    /**
+     * Update player profile (display name)
+     */
     updateProfile = asyncHandler(async (req, res) => {
         const { playerId } = req.params;
         const { displayName } = req.body;
 
         // Security check: only own profile can be updated
         if (req.user.uid !== playerId) {
-            // Since we are moving to req.user, the playerId param might become redundant
-            // but for now, we keep it for backward compatibility or explicit check.
+            throw new ForbiddenError('You can only update your own profile');
         }
 
         const updatedProfile = await userService.updateDisplayName(playerId, displayName);
 
         // Log transaction if name changed (tokens were spent)
-        // userService returns the updated user. We compare tokens if needed.
-        // However, the transaction logging in old code was outside the DB transaction.
-        // In our new service, we might want to handle logging more robustly.
-        // For now, mirroring old behavior:
         await logTransaction(getFirestore(), {
             playerId,
             type: TRANSACTION_TYPES.SPEND,
