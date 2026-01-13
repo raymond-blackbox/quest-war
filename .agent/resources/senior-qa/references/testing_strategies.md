@@ -1,8 +1,4 @@
----
-description: Test Automation Patterns
----
-
-# Test Automation Patterns
+# Testing Strategies
 
 ## Overview
 

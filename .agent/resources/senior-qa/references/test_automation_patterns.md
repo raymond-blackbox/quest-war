@@ -1,8 +1,4 @@
----
-description: Qa Best Practices
----
-
-# Qa Best Practices
+# Test Automation Patterns
 
 ## Overview
 

@@ -3,6 +3,7 @@ import { admin } from '../services/firebase.js';
 import { asyncHandler } from '../middlewares/error.middleware.js';
 import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from '../routes/transactions.js';
 import { getFirestore } from '../services/firebase.js';
+import { ForbiddenError } from '../utils/errors.js';
 
 /**
  * Handle Firebase login and user creation/retrieval

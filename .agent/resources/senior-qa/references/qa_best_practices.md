@@ -1,8 +1,4 @@
----
-description: Testing Strategies
----
-
-# Testing Strategies
+# Qa Best Practices
 
 ## Overview
 

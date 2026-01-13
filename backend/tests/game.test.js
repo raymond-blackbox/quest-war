@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import './testSetup.js';
 import request from 'supertest';
+import { app } from '../src/index.js';
+import { admin, getRealtimeDb, getFirestore } from '../src/services/firebase.js';
+import { getAuthHeader, mockUser } from './testSetup.js';
 
-// Mock Question Providers to avoid real dependency issues
+// Mock Question Providers
 vi.mock('../src/services/questionProviders/index.js', () => {
     const mockProvider = {
-        generateQuestion: vi.fn(),
+        generateQuestion: vi.fn().mockResolvedValue({
+            question: 'What is 1+1?',
+            options: ['1', '2', '3', '4'],
+            correctIndex: 1
+        }),
         DIFFICULTY: { EASY: 'easy', MEDIUM: 'medium', HARD: 'hard' }
     };
     return {
@@ -13,217 +21,316 @@ vi.mock('../src/services/questionProviders/index.js', () => {
     };
 });
 
-// Mock Firebase BEFORE importing app or routes
-vi.mock('../src/services/firebase.js', () => {
-    const mockAuthSingleton = {
-        verifyIdToken: vi.fn(),
-    };
-
-    const makeMockDoc = (id = 'test-id', data = {}) => ({
-        exists: true,
-        id,
-        data: vi.fn().mockReturnValue({
-            uid: id,
-            username: 'testuser',
-            tokens: 1000,
-            ...data
-        }),
-        get: vi.fn().mockResolvedValue({
-            exists: true,
-            id,
-            data: () => ({
-                uid: id,
-                username: 'testuser',
-                tokens: 1000,
-                ...data
-            })
-        }),
-        update: vi.fn().mockResolvedValue(true),
-        set: vi.fn().mockResolvedValue(true),
-    });
-
-    const mockCollectionSingleton = {
-        doc: vi.fn().mockImplementation((id) => makeMockDoc(id)),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockReturnThis(),
-        orderBy: vi.fn().mockReturnThis(),
-        get: vi.fn().mockResolvedValue({
-            empty: true,
-            docs: [],
-            forEach: vi.fn()
-        }),
-        add: vi.fn().mockResolvedValue({ id: 'new-doc-id' })
-    };
-
-    class MockFirestore {
-        constructor() {
-            this.collection = vi.fn().mockReturnValue(mockCollectionSingleton);
-            this.doc = vi.fn().mockImplementation((id) => makeMockDoc(id));
-            this.runTransaction = vi.fn().mockImplementation(async (cb) => {
-                return cb({
-                    get: vi.fn().mockImplementation((ref) => ref.get ? ref.get() : makeMockDoc()),
-                    update: vi.fn(),
-                    set: vi.fn(),
-                });
-            });
-        }
-        static FieldValue = {
-            serverTimestamp: () => 'mock-timestamp',
-            increment: (val) => ({ _increment: val })
-        }
-    }
-
-    const mockFirestoreInstance = new MockFirestore();
-
-    const makeSnapshot = (data = {}) => ({
-        exists: () => data !== null,
-        val: () => data,
-        key: 'mock-key',
-    });
-
-    const mockRtdbSingleton = {
-        ref: vi.fn().mockReturnThis(),
-        orderByChild: vi.fn().mockReturnThis(),
-        equalTo: vi.fn().mockReturnThis(),
-        get: vi.fn().mockResolvedValue(makeSnapshot({ status: 'waiting', hostId: 'test-user-id' })),
-        update: vi.fn().mockResolvedValue(true),
-        set: vi.fn().mockResolvedValue(true),
-        on: vi.fn(),
-        off: vi.fn(),
-        remove: vi.fn(),
-        child: vi.fn().mockReturnThis(),
-        push: vi.fn().mockReturnValue({ key: 'new-key', set: vi.fn().mockResolvedValue(true) }),
-    };
-
-    const FieldValue = {
-        serverTimestamp: () => 'mock-timestamp',
-        increment: (val) => ({ _increment: val })
-    };
-
-    const firestoreMock = vi.fn(() => mockFirestoreInstance);
-    firestoreMock.FieldValue = FieldValue;
-
-    return {
-        admin: {
-            auth: () => mockAuthSingleton,
-            firestore: firestoreMock,
-            database: () => mockRtdbSingleton
-        },
-        initializeFirebase: vi.fn(),
-        getFirestore: () => mockFirestoreInstance,
-        getRealtimeDb: () => mockRtdbSingleton
-    };
-});
-
-import { app } from '../src/index.js';
-import { admin, getRealtimeDb } from '../src/services/firebase.js';
-
-const mockUser = {
-    uid: 'test-user-id',
-    email: 'test@example.com',
-};
-
-const getAuthHeader = (token = 'valid-token') => {
-    return { Authorization: `Bearer ${token}` };
-};
-
 describe('Game API', () => {
+    const roomId = 'room-123';
+
     beforeEach(() => {
         vi.clearAllMocks();
+        // Reset default mock behaviors
         admin.auth().verifyIdToken.mockResolvedValue(mockUser);
     });
 
-    describe('POST /api/game/:roomId/start', () => {
-        it('should start a solo game successfully', async () => {
+    describe('Authentication & Authorization', () => {
+        it('should return 401 if no auth header is provided', async () => {
+            const response = await request(app).post(`/api/game/${roomId}/start`);
+            expect(response.status).toBe(401);
+        });
+
+        it('should return 403 if user is not the host (for start)', async () => {
             getRealtimeDb().ref().get.mockResolvedValue({
                 exists: () => true,
                 val: () => ({
-                    status: 'waiting',
-                    isSolo: true,
-                    hostId: mockUser.uid,
-                    settings: { questionsCount: 10 },
+                    hostId: 'other-user',
                     players: { [mockUser.uid]: { ready: true } }
-                }),
-                key: 'room-1'
+                })
             });
 
             const response = await request(app)
-                .post('/api/game/room-1/start')
+                .post(`/api/game/${roomId}/start`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(403);
+            expect(response.body.error).toContain('Only host');
+        });
+    });
+
+    describe('POST /api/game/:roomId/start', () => {
+        it('should return 404 if room does not exist', async () => {
+            getRealtimeDb().ref().get.mockResolvedValue({ exists: () => false });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/start`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(404);
+        });
+
+        it('should return 400 if not enough players for multiplayer', async () => {
+            getRealtimeDb().ref().get.mockResolvedValue({
+                exists: () => true,
+                val: () => ({
+                    hostId: mockUser.uid,
+                    isSolo: false,
+                    players: { [mockUser.uid]: { ready: true } }
+                })
+            });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/start`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('at least 2 players');
+        });
+
+        it('should return 400 if players are not ready', async () => {
+            getRealtimeDb().ref().get.mockResolvedValue({
+                exists: () => true,
+                val: () => ({
+                    hostId: mockUser.uid,
+                    isSolo: false,
+                    players: {
+                        [mockUser.uid]: { ready: true },
+                        'player-2': { ready: false }
+                    }
+                })
+            });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/start`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('must be ready');
+        });
+
+        it('should start solo game successfully', async () => {
+            getRealtimeDb().ref().get.mockResolvedValue({
+                exists: () => true,
+                val: () => ({
+                    hostId: mockUser.uid,
+                    isSolo: true,
+                    settings: { questionsCount: 5 },
+                    players: { [mockUser.uid]: { ready: true } }
+                })
+            });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/start`)
                 .set(getAuthHeader());
 
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
+
+            // Verify RTDB update
+            expect(getRealtimeDb().ref().update).toHaveBeenCalledWith(expect.objectContaining({
+                status: 'starting',
+                totalQuestions: 5
+            }));
         });
     });
 
     describe('POST /api/game/:roomId/answer', () => {
-        it('should submit an answer', async () => {
+        it('should return 400 for missing answerIndex', async () => {
+            const response = await request(app)
+                .post(`/api/game/${roomId}/answer`)
+                .set(getAuthHeader())
+                .send({ playerUsername: 'test' });
+
+            expect(response.status).toBe(400);
+        });
+
+        it('should return 400 if game is not in progress', async () => {
             getRealtimeDb().ref().get.mockResolvedValue({
                 exists: () => true,
                 val: () => ({
-                    status: 'playing',
-                    isSolo: true,
-                    currentQuestion: { id: 'q-1', answerIndex: 0, correctIndex: 0 },
-                    players: { [mockUser.uid]: { score: 0 } }
-                }),
-                key: 'room-1'
+                    status: 'waiting',
+                    players: { [mockUser.uid]: {} }
+                })
             });
 
             const response = await request(app)
-                .post('/api/game/room-1/answer')
+                .post(`/api/game/${roomId}/answer`)
                 .set(getAuthHeader())
-                .send({ answerIndex: 0, playerUsername: 'testuser' });
+                .send({ answerIndex: 0, playerUsername: 'test' });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('not in progress');
+        });
+
+        it('should submit correct answer and update RTDB', async () => {
+            const roomData = {
+                status: 'playing',
+                currentQuestion: { correctIndex: 1, startedAt: Date.now() },
+                players: { [mockUser.uid]: { score: 10, tokensEarned: 5 } },
+                settings: { tokenPerCorrectAnswer: 2 }
+            };
+
+            // First get: roomRef.get()
+            // Second get: playerRef.get()
+            getRealtimeDb().ref().get
+                .mockResolvedValueOnce({
+                    exists: () => true,
+                    val: () => roomData
+                })
+                .mockResolvedValueOnce({
+                    exists: () => true,
+                    val: () => roomData.players[mockUser.uid]
+                });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/answer`)
+                .set(getAuthHeader())
+                .send({ answerIndex: 1, playerUsername: 'test' });
 
             expect(response.status).toBe(200);
             expect(response.body.correct).toBe(true);
-            expect(response.body.correctIndex).toBe(0);
+            expect(response.body.tokenReward).toBe(2);
+
+            // Verify score update
+            // Note: with current mockRtdb, all updates go to the same mock function
+            expect(getRealtimeDb().ref().update).toHaveBeenCalledWith(expect.objectContaining({
+                score: 11,
+                tokensEarned: 7
+            }));
         });
 
-        // XSS Security Test for playerUsername
-        it('should handle playerUsername with script tags (XSS attempt)', async () => {
+        it('should handle incorrect answer', async () => {
+            const roomData = {
+                status: 'playing',
+                currentQuestion: { correctIndex: 1, startedAt: Date.now() },
+                players: { [mockUser.uid]: {} }
+            };
+
+            // First get: roomRef.get() in answering logic
+            // Second get: roomRef.get() in checkRoundCompletion
+            getRealtimeDb().ref().get
+                .mockResolvedValueOnce({
+                    exists: () => true,
+                    val: () => roomData
+                })
+                .mockResolvedValueOnce({
+                    exists: () => true,
+                    val: () => roomData
+                });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/answer`)
+                .set(getAuthHeader())
+                .send({ answerIndex: 0, playerUsername: 'test' });
+
+            expect(response.status).toBe(200);
+            expect(response.body.correct).toBe(false);
+
+            // Verify incorrect answer record
+            expect(getRealtimeDb().ref().set).toHaveBeenCalledWith(true);
+        });
+
+        it('should prevent multiple answers from same player', async () => {
             getRealtimeDb().ref().get.mockResolvedValue({
                 exists: () => true,
                 val: () => ({
                     status: 'playing',
-                    isSolo: true,
-                    currentQuestion: { id: 'q-1', answerIndex: 0, correctIndex: 0 },
-                    players: { [mockUser.uid]: { score: 0 } }
-                }),
-                key: 'room-1'
+                    currentQuestion: {
+                        correctIndex: 1,
+                        incorrectAnswers: { [mockUser.uid]: true }
+                    }
+                })
             });
 
             const response = await request(app)
-                .post('/api/game/room-1/answer')
+                .post(`/api/game/${roomId}/answer`)
                 .set(getAuthHeader())
-                .send({
-                    answerIndex: 0,
-                    playerUsername: '<script>alert("xss")</script>'
-                });
+                .send({ answerIndex: 1, playerUsername: 'test' });
 
-            // The endpoint might accept it (200), but we check it doesn't crash or return the script raw in a sensitive way.
-            // Since this API typically returns { correct: bool }, the input might not be reflected directly in this response.
-            // But good to ensure 200/400 and no 500.
-            expect([200, 400]).toContain(response.status);
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('already answered this question incorrectly');
+        });
+    });
+
+    describe('Security & XSS', () => {
+        it('should reject XSS payloads via validation (400 Bad Request)', async () => {
+            const xssPayload = '<script>alert("xss")</script>';
+            const response = await request(app)
+                .post(`/api/game/${roomId}/answer`)
+                .set(getAuthHeader())
+                .send({ answerIndex: 1, playerUsername: xssPayload });
+
+            // The safeString validation schema rejects characters like < > /
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('Validation');
         });
     });
 
     describe('POST /api/game/:roomId/quit', () => {
-        it('should quit game successfully', async () => {
+        it('should quit game and remove player', async () => {
             getRealtimeDb().ref().get.mockResolvedValue({
                 exists: () => true,
                 val: () => ({
                     status: 'playing',
-                    players: { [mockUser.uid]: { username: 'testuser' } }
-                }),
-                key: 'room-1'
+                    players: {
+                        [mockUser.uid]: { username: 'test' },
+                        'other-player': {}
+                    },
+                    hostId: mockUser.uid
+                })
             });
 
             const response = await request(app)
-                .post('/api/game/room-1/quit')
+                .post(`/api/game/${roomId}/quit`)
                 .set(getAuthHeader());
 
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
+
+            // Verify player removal
+            const playerRef = getRealtimeDb().ref(`rooms/${roomId}/players/${mockUser.uid}`);
+            expect(playerRef.remove).toHaveBeenCalled();
+
+            // Verify host reassignment
+            expect(getRealtimeDb().ref(`rooms/${roomId}`).update).toHaveBeenCalledWith(expect.objectContaining({
+                hostId: 'other-player'
+            }));
+        });
+    });
+
+    describe('POST /api/game/:roomId/reset', () => {
+        it('should reset game if ended', async () => {
+            getRealtimeDb().ref().get.mockResolvedValue({
+                exists: () => true,
+                val: () => ({
+                    status: 'ended',
+                    hostId: mockUser.uid,
+                    players: { [mockUser.uid]: {} }
+                })
+            });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/reset`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(200);
+            expect(response.body.success).toBe(true);
+
+            expect(getRealtimeDb().ref(`rooms/${roomId}`).update).toHaveBeenCalledWith(expect.objectContaining({
+                status: 'waiting'
+            }));
+        });
+
+        it('should return 400 if reset attempted during play', async () => {
+            getRealtimeDb().ref().get.mockResolvedValue({
+                exists: () => true,
+                val: () => ({
+                    status: 'playing',
+                    hostId: mockUser.uid
+                })
+            });
+
+            const response = await request(app)
+                .post(`/api/game/${roomId}/reset`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(400);
         });
     });
 });

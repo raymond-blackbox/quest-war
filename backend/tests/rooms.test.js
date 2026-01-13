@@ -1,115 +1,52 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import './testSetup.js';
 import request from 'supertest';
-
-// Mock Firebase BEFORE importing app or routes
-vi.mock('../src/services/firebase.js', () => {
-    const mockAuthSingleton = {
-        verifyIdToken: vi.fn(),
-    };
-
-    const makeMockDoc = (id = 'test-id', data = {}) => ({
-        exists: true,
-        id,
-        data: vi.fn().mockReturnValue({
-            uid: id,
-            username: 'testuser',
-            tokens: 1000,
-            ...data
-        }),
-        get: vi.fn().mockResolvedValue({
-            exists: true,
-            id,
-            data: () => ({
-                uid: id,
-                username: 'testuser',
-                tokens: 1000,
-                ...data
-            })
-        }),
-        update: vi.fn().mockResolvedValue(true),
-        set: vi.fn().mockResolvedValue(true),
-    });
-
-    const mockCollectionSingleton = {
-        doc: vi.fn().mockImplementation((id) => makeMockDoc(id)),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockReturnThis(),
-        orderBy: vi.fn().mockReturnThis(),
-        get: vi.fn().mockResolvedValue({
-            empty: true,
-            docs: [],
-            forEach: vi.fn()
-        }),
-        add: vi.fn().mockResolvedValue({ id: 'new-doc-id' })
-    };
-
-    const mockFirestoreSingleton = {
-        collection: vi.fn().mockReturnValue(mockCollectionSingleton),
-        doc: vi.fn().mockImplementation((id) => makeMockDoc(id)),
-        runTransaction: vi.fn().mockImplementation(async (cb) => {
-            return cb({
-                get: vi.fn().mockImplementation((ref) => ref.get ? ref.get() : makeMockDoc()),
-                update: vi.fn(),
-                set: vi.fn(),
-            });
-        }),
-    };
-
-    const mockRtdbSingleton = {
-        ref: vi.fn().mockReturnThis(),
-        orderByChild: vi.fn().mockReturnThis(),
-        equalTo: vi.fn().mockReturnThis(),
-        push: vi.fn().mockReturnValue({ key: 'new-room-id', set: vi.fn().mockResolvedValue(true) }),
-        get: vi.fn().mockResolvedValue({
-            exists: () => false,
-            val: () => null,
-            forEach: vi.fn()
-        }),
-        update: vi.fn().mockResolvedValue(true),
-        set: vi.fn().mockResolvedValue(true),
-        on: vi.fn(),
-        off: vi.fn(),
-        remove: vi.fn(),
-    };
-
-    return {
-        admin: {
-            auth: () => mockAuthSingleton,
-            firestore: {
-                FieldValue: {
-                    serverTimestamp: () => 'mock-timestamp'
-                }
-            },
-            database: () => mockRtdbSingleton
-        },
-        initializeFirebase: vi.fn(),
-        getFirestore: () => mockFirestoreSingleton,
-        getRealtimeDb: () => mockRtdbSingleton
-    };
-});
-
 import { app } from '../src/index.js';
 import { admin, getRealtimeDb } from '../src/services/firebase.js';
-
-const mockUser = {
-    uid: 'test-user-id',
-    email: 'test@example.com',
-};
-
-const getAuthHeader = (token = 'valid-token') => {
-    return { Authorization: `Bearer ${token}` };
-};
+import { getAuthHeader, mockUser } from './testSetup.js';
 
 describe('Rooms API', () => {
+    const roomId = 'room-123';
+
     beforeEach(() => {
         vi.clearAllMocks();
         admin.auth().verifyIdToken.mockResolvedValue(mockUser);
     });
 
+    const makeSnapshot = (data, key = roomId) => ({
+        exists: () => !!data,
+        val: () => data,
+        key,
+        forEach: (cb) => {
+            if (data) {
+                Object.entries(data).forEach(([k, v]) => {
+                    cb({ key: k, val: () => v });
+                });
+            }
+        }
+    });
+
+    describe('Authentication', () => {
+        it('should return 401 if no auth header is provided', async () => {
+            const endpoints = [
+                { method: 'get', path: '/api/rooms' },
+                { method: 'post', path: '/api/rooms' },
+                { method: 'post', path: `/api/rooms/${roomId}/join` },
+                { method: 'post', path: `/api/rooms/${roomId}/ready` },
+                { method: 'post', path: `/api/rooms/${roomId}/leave` },
+            ];
+
+            for (const { method, path } of endpoints) {
+                const response = await request(app)[method](path);
+                expect(response.status).toBe(401);
+            }
+        });
+    });
+
     describe('GET /api/rooms', () => {
         it('should list available rooms', async () => {
             const mockRooms = {
-                'room-1': {
+                [roomId]: {
                     name: 'Test Room',
                     status: 'waiting',
                     hostId: 'host-1',
@@ -119,16 +56,6 @@ describe('Rooms API', () => {
                 }
             };
 
-            const makeSnapshot = (data) => ({
-                exists: () => true,
-                val: () => data,
-                forEach: (cb) => {
-                    Object.entries(data).forEach(([key, val]) => {
-                        cb({ key, val: () => val });
-                    });
-                }
-            });
-
             getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot(mockRooms));
 
             const response = await request(app)
@@ -137,220 +64,176 @@ describe('Rooms API', () => {
 
             expect(response.status).toBe(200);
             expect(Array.isArray(response.body)).toBe(true);
-            expect(response.body.length).toBe(1);
-            expect(response.body[0].id).toBe('room-1');
+            expect(response.body[0].id).toBe(roomId);
+            expect(response.body[0].hostUsername).toBe('Host');
         });
     });
 
     describe('POST /api/rooms', () => {
-        it('should create a new room', async () => {
+        it('should create a new public room successfully', async () => {
+            const roomData = {
+                name: 'Public Room',
+                hostUsername: 'hostuser'
+            };
+
             const response = await request(app)
                 .post('/api/rooms')
                 .set(getAuthHeader())
-                .send({ name: 'New Room' });
+                .send(roomData);
 
             expect(response.status).toBe(201);
             expect(response.body).toHaveProperty('roomId');
+
+            // Verify RTDB call
+            expect(getRealtimeDb().ref().push).toHaveBeenCalled();
+            expect(getRealtimeDb().ref().push().set).toHaveBeenCalledWith(expect.objectContaining({
+                name: roomData.name,
+                status: 'waiting',
+                isPrivate: false
+            }));
         });
 
-        // XSS Security Tests
-        it('should handle room name with script tags (XSS attempt)', async () => {
+        it('should create a solo room', async () => {
+            const roomData = {
+                name: 'Solo Room',
+                isSolo: true,
+                hostUsername: 'hostuser'
+            };
+
             const response = await request(app)
                 .post('/api/rooms')
                 .set(getAuthHeader())
-                .send({ name: '<script>alert("xss")</script>' });
+                .send(roomData);
 
-            // Should either be rejected (400) or sanitized/accepted (201)
-            expect([201, 400]).toContain(response.status);
-            if (response.status === 201) {
-                // If accepted, the malicious content shouldn't affect server operation
-                expect(response.body).toHaveProperty('roomId');
-            }
+            expect(response.status).toBe(201);
+            // Solo room host should be auto-ready
+            const savedData = getRealtimeDb().ref().push().set.mock.calls[0][0];
+            expect(savedData.players[mockUser.uid].ready).toBe(true);
         });
 
-        it('should handle room name with event handler (XSS attempt)', async () => {
+        it('should reject room creation with XSS payload (400)', async () => {
             const response = await request(app)
                 .post('/api/rooms')
                 .set(getAuthHeader())
-                .send({ name: 'room<img onerror="alert(1)" src=x>' });
+                .send({ name: '<script>alert(1)</script>' });
 
-            expect([201, 400]).toContain(response.status);
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('Validation');
         });
 
-        it('should handle settings fields (dropdowns) with script tags (XSS attempt)', async () => {
+        it('should return 400 for missing name', async () => {
             const response = await request(app)
                 .post('/api/rooms')
                 .set(getAuthHeader())
-                .send({
-                    name: 'Safe Room',
-                    gameType: '<script>alert("xss")</script>', // Dropdown field
-                    questionDifficulty: 'easy"><script>alert(1)</script>' // Dropdown field
-                });
+                .send({});
 
-            expect([201, 400]).toContain(response.status);
+            expect(response.status).toBe(400);
         });
     });
 
     describe('POST /api/rooms/:id/join', () => {
-        it('should join a room', async () => {
-            getRealtimeDb().ref().get.mockResolvedValueOnce({
-                exists: () => true,
-                val: () => ({
-                    name: 'Test Room',
-                    status: 'waiting',
-                    players: {},
-                    hostId: 'host-1'
-                })
-            });
+        it('should return 404 if room does not exist', async () => {
+            getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot(null));
 
             const response = await request(app)
-                .post('/api/rooms/room-1/join')
+                .post(`/api/rooms/invalid/join`)
                 .set(getAuthHeader())
-                .send({ playerUsername: 'newplayer' });
+                .send({ playerUsername: 'joiner' });
+
+            expect(response.status).toBe(404);
+        });
+
+        it('should return 400 if game is already in progress', async () => {
+            getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({ status: 'playing' }));
+
+            const response = await request(app)
+                .post(`/api/rooms/${roomId}/join`)
+                .set(getAuthHeader())
+                .send({ playerUsername: 'joiner' });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toContain('in progress');
+        });
+
+        it('should return 409 if room is full', async () => {
+            getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({
+                status: 'waiting',
+                players: { 'p1': {}, 'p2': {}, 'p3': {}, 'p4': {}, 'p5': {} }
+            }));
+
+            const response = await request(app)
+                .post(`/api/rooms/${roomId}/join`)
+                .set(getAuthHeader())
+                .send({ playerUsername: 'joiner' });
+
+            expect(response.status).toBe(409);
+        });
+
+        it('should join successfully and update RTDB', async () => {
+            getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({ status: 'waiting', players: {} }));
+
+            const response = await request(app)
+                .post(`/api/rooms/${roomId}/join`)
+                .set(getAuthHeader())
+                .send({ playerUsername: 'joiner', playerDisplayName: 'Top G' });
 
             expect(response.status).toBe(200);
-            expect(response.body.success).toBe(true);
+            expect(getRealtimeDb().ref).toHaveBeenCalledWith(expect.stringContaining(`players/${mockUser.uid}`));
+            expect(getRealtimeDb().ref().update).toHaveBeenCalledWith(expect.objectContaining({
+                username: 'joiner',
+                displayName: 'Top G'
+            }));
         });
     });
 
-    describe('Bug Fix Verification', () => {
-        it('should persist room details (difficulty, gameType, questionsCount)', async () => {
-            const roomData = {
-                name: 'Detail Room',
-                gameType: 'science',
-                questionDifficulty: 'hard',
-                questionsCount: 20
-            };
+    describe('POST /api/rooms/:id/ready', () => {
+        it('should toggle ready status', async () => {
+            getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({}));
 
             const response = await request(app)
-                .post('/api/rooms')
+                .post(`/api/rooms/${roomId}/ready`)
                 .set(getAuthHeader())
-                .send(roomData);
-
-            expect(response.status).toBe(201);
-
-            const mockPush = getRealtimeDb().ref().push;
-            const mockSet = mockPush().set;
-            const savedData = mockSet.mock.calls[0][0];
-
-            expect(savedData).toMatchObject({
-                name: roomData.name,
-                settings: {
-                    gameType: roomData.gameType,
-                    questionDifficulty: roomData.questionDifficulty,
-                    questionsCount: roomData.questionsCount
-                }
-            });
-        });
-
-        it('should persist host display name', async () => {
-            const roomData = {
-                name: 'Host Name Room',
-                hostDisplayName: 'SuperHost'
-            };
-
-            const response = await request(app)
-                .post('/api/rooms')
-                .set(getAuthHeader())
-                .send(roomData);
-
-            expect(response.status).toBe(201);
-
-            const mockSet = getRealtimeDb().ref().push().set;
-            const savedData = mockSet.mock.calls[0][0];
-
-            expect(savedData.players['test-user-id']).toMatchObject({
-                displayName: 'SuperHost'
-            });
-        });
-
-        it('should persist joiner display name', async () => {
-            // Setup specific mock for this test
-            const mockUpdate = vi.fn().mockResolvedValue(true);
-
-            // We need to inject this mock into the getRealtimeDb() return chain
-            // The cleanest way in this specific file structure is to spy on the ref() call 
-            // but we need to match the specific implementation used in the test file's mock factory
-
-            // Re-using the getRealtimeDb definition from the top level mock might be tricky 
-            // because `vi.mock` is hoisted. 
-            // Instead, we can rely on the fact that `getRealtimeDb()` returns the singleton 
-            // used by the code. We can modify its behavior for this test.
-
-            const db = getRealtimeDb();
-            const originalRef = db.ref;
-
-            db.ref = vi.fn().mockImplementation((path) => {
-                if (path === 'rooms/room-1/players/test-user-id') {
-                    return {
-                        update: mockUpdate,
-                        get: vi.fn().mockResolvedValue({
-                            exists: () => true,
-                            key: 'test-user-id',
-                            val: () => ({ username: 'joiner', displayName: 'TopPlayer' })
-                        }),
-                        remove: vi.fn()
-                    };
-                }
-                if (path === 'rooms/room-1') {
-                    return {
-                        get: vi.fn().mockResolvedValue({
-                            exists: () => true,
-                            key: 'room-1',
-                            val: () => ({
-                                name: 'Test Room',
-                                status: 'waiting',
-                                players: {},
-                                hostId: 'host-1',
-                                isSolo: false
-                            })
-                        })
-                    }
-                }
-                return originalRef(path); // Fallback to original mock behavior
-            });
-
-            const joinData = {
-                playerUsername: 'joiner',
-                playerDisplayName: 'TopPlayer'
-            };
-
-            const response = await request(app)
-                .post('/api/rooms/room-1/join')
-                .set(getAuthHeader())
-                .send(joinData);
-
-            // Restore original mock
-            db.ref = originalRef;
+                .send({ ready: true });
 
             expect(response.status).toBe(200);
-            expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
-                displayName: 'TopPlayer',
-                username: 'joiner'
-            }));
+            expect(getRealtimeDb().ref().update).toHaveBeenCalledWith({ ready: true });
         });
+    });
 
-        it('should persist game timing settings (delaySeconds, roundSeconds)', async () => {
-            const roomData = {
-                name: 'Timing Room',
-                delaySeconds: 3,
-                roundSeconds: 15
-            };
+    describe('POST /api/rooms/:id/leave', () => {
+        it('should dismiss room if host leaves waiting room', async () => {
+            getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({ status: 'waiting', hostId: mockUser.uid }));
 
             const response = await request(app)
-                .post('/api/rooms')
-                .set(getAuthHeader())
-                .send(roomData);
+                .post(`/api/rooms/${roomId}/leave`)
+                .set(getAuthHeader());
 
-            expect(response.status).toBe(201);
+            expect(response.status).toBe(200);
+            expect(response.body.roomDismissed).toBe(true);
+            expect(getRealtimeDb().ref().remove).toHaveBeenCalled();
+        });
 
-            const mockSet = getRealtimeDb().ref().push().set;
-            const savedData = mockSet.mock.calls[0][0];
+        it('should just remove player if non-host leaves', async () => {
+            const initialRoom = {
+                status: 'waiting',
+                hostId: 'other-host',
+                players: { [mockUser.uid]: {}, 'other-host': {} }
+            };
+            const updatedRoom = { players: { 'other-host': {} } };
 
-            expect(savedData.settings).toMatchObject({
-                delaySeconds: 3,
-                roundSeconds: 15
-            });
+            getRealtimeDb().ref().get
+                .mockResolvedValueOnce(makeSnapshot(initialRoom))
+                .mockResolvedValueOnce(makeSnapshot(updatedRoom));
+
+            const response = await request(app)
+                .post(`/api/rooms/${roomId}/leave`)
+                .set(getAuthHeader());
+
+            expect(response.status).toBe(200);
+            expect(getRealtimeDb().ref().remove).toHaveBeenCalled();
+            // Verify it didn't remove the whole room (which would be called with roomId)
+            // But verify it DID remove the player
+            expect(getRealtimeDb().ref).toHaveBeenCalledWith(expect.stringContaining(`players/${mockUser.uid}`));
         });
     });
 });

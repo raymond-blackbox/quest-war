@@ -1,129 +1,44 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import './testSetup.js';
 import request from 'supertest';
+import { app } from '../src/index.js';
+import { admin, getFirestore } from '../src/services/firebase.js';
+import { getAuthHeader, mockUser } from './testSetup.js';
+import userRepository from '../src/repositories/user.repository.js';
 
-// Mock Firebase BEFORE importing app or routes
-vi.mock('../src/services/firebase.js', () => {
-    const mockAuthSingleton = {
-        verifyIdToken: vi.fn(),
-        createCustomToken: vi.fn().mockResolvedValue('mock-custom-token'),
-    };
-
-    const makeMockDoc = (id = 'test-id', data = {}) => ({
-        exists: true,
-        id,
-        data: vi.fn().mockReturnValue({
-            uid: id,
-            username: 'testuser',
-            displayName: 'Test User',
-            tokens: 1000,
-            ...data
-        }),
-        get: vi.fn().mockResolvedValue({
-            exists: true,
-            id,
-            data: () => ({
-                uid: id,
-                username: 'testuser',
-                displayName: 'Test User',
-                tokens: 1000,
-                ...data
-            })
-        }),
-        update: vi.fn().mockResolvedValue(true),
-        set: vi.fn().mockResolvedValue(true),
-    });
-
-    const mockCollection = {
-        doc: vi.fn().mockImplementation((id) => makeMockDoc(id)),
-        where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockReturnThis(),
-        orderBy: vi.fn().mockReturnThis(),
-        startAfter: vi.fn().mockReturnThis(),
-        get: vi.fn().mockResolvedValue({
-            empty: true,
-            docs: [],
-            forEach: vi.fn()
-        }),
-        add: vi.fn().mockResolvedValue({ id: 'new-doc-id' })
-    };
-
-    const mockFirestore = {
-        collection: vi.fn().mockReturnValue(mockCollection),
-        doc: vi.fn().mockImplementation((id) => makeMockDoc(id)),
-        runTransaction: vi.fn().mockImplementation(async (cb) => {
-            return cb({
-                get: vi.fn().mockImplementation((ref) => ref.get()),
-                update: vi.fn(),
-                set: vi.fn(),
-                delete: vi.fn()
-            });
-        }),
-        constructor: {
-            FieldValue: {
-                serverTimestamp: () => 'mock-timestamp'
-            }
-        }
-    };
-
-    const mockRtdb = {
-        ref: vi.fn().mockReturnThis(),
-        get: vi.fn().mockResolvedValue({
-            exists: () => true,
-            val: () => ({})
-        }),
-        update: vi.fn().mockResolvedValue(true),
-        set: vi.fn().mockResolvedValue(true),
-        push: vi.fn().mockReturnThis(),
-        key: 'mock-key',
-        child: vi.fn().mockReturnThis(),
-        transaction: vi.fn().mockImplementation((fn) => {
-            const result = fn(0);
-            return Promise.resolve({ committed: true, snapshot: { val: () => result } });
-        }),
-        on: vi.fn(),
-        off: vi.fn(),
-        remove: vi.fn(),
-    };
-
+vi.mock('../src/repositories/user.repository.js', async () => {
+    const actual = await vi.importActual('../src/repositories/user.repository.js');
     return {
-        admin: {
-            auth: () => mockAuthSingleton,
-            firestore: {
-                FieldValue: {
-                    serverTimestamp: () => 'mock-timestamp'
-                }
-            },
-            database: () => mockRtdb
-        },
-        initializeFirebase: vi.fn(),
-        getFirestore: () => mockFirestore,
-        getRealtimeDb: () => mockRtdb
+        ...actual,
+        default: {
+            findById: vi.fn(),
+            findByField: vi.fn(),
+            runTransaction: vi.fn(),
+            create: vi.fn(),
+            update: vi.fn(),
+            toPlayerResponse: vi.fn()
+        }
     };
 });
 
-import { app } from '../src/index.js';
-import { admin } from '../src/services/firebase.js';
-
-const mockUser = {
-    uid: 'test-user-id',
-    email: 'test@example.com',
-    username: 'testuser',
-    displayName: 'Test User'
-};
-
-const getAuthHeader = (token = 'valid-token') => {
-    return { Authorization: `Bearer ${token}` };
-};
-
 describe('Auth API', () => {
+    const otherPlayerId = 'other-player-id';
+
     beforeEach(() => {
         vi.clearAllMocks();
-        // Access the singleton mock through the imported admin
         admin.auth().verifyIdToken.mockResolvedValue(mockUser);
+
+        // Base mock for getProfile
+        userRepository.findById.mockResolvedValue({ id: mockUser.uid, ...mockUser, tokens: 1000 });
+        userRepository.findByField.mockResolvedValue(null);
     });
 
     describe('POST /api/auth/firebase', () => {
         it('should login successfully with valid token', async () => {
+            const newUser = { id: mockUser.uid, ...mockUser, tokens: 0 };
+            userRepository.findById.mockResolvedValueOnce(null); // New user
+            userRepository.create.mockResolvedValueOnce(newUser); // Return new user on create
+
             const response = await request(app)
                 .post('/api/auth/firebase')
                 .send({ idToken: 'valid-token' });
@@ -164,6 +79,20 @@ describe('Auth API', () => {
 
     describe('PATCH /api/auth/profile/:playerId', () => {
         it('should update profile successfully', async () => {
+            const updatedProfile = { id: mockUser.uid, ...mockUser, displayName: 'NewName', tokens: 500 };
+
+            userRepository.runTransaction.mockImplementationOnce(async (callback) => {
+                return callback({
+                    get: vi.fn().mockResolvedValue({
+                        exists: true,
+                        id: mockUser.uid,
+                        data: () => ({ ...mockUser, tokens: 1000 })
+                    }),
+                    update: vi.fn(),
+                    set: vi.fn()
+                });
+            });
+
             const response = await request(app)
                 .patch(`/api/auth/profile/${mockUser.uid}`)
                 .set(getAuthHeader())
@@ -171,6 +100,39 @@ describe('Auth API', () => {
 
             expect(response.status).toBe(200);
             expect(response.body.id).toBe(mockUser.uid);
+            expect(response.body.displayName).toBe('NewName');
+        });
+
+        it('should return 403 if user attempts to update another player\'s profile', async () => {
+            const response = await request(app)
+                .patch(`/api/auth/profile/${otherPlayerId}`)
+                .set(getAuthHeader())
+                .send({ displayName: 'HackerName' });
+
+            expect(response.status).toBe(403);
+            expect(response.body.error).toContain('own profile');
+        });
+
+        it('should return 402 if tokens are insufficient', async () => {
+            userRepository.runTransaction.mockImplementationOnce(async (callback) => {
+                return callback({
+                    get: vi.fn().mockResolvedValue({
+                        exists: true,
+                        id: mockUser.uid,
+                        data: () => ({ ...mockUser, tokens: 100 })
+                    }),
+                    update: vi.fn(),
+                    set: vi.fn()
+                });
+            });
+
+            const response = await request(app)
+                .patch(`/api/auth/profile/${mockUser.uid}`)
+                .set(getAuthHeader())
+                .send({ displayName: 'RichName' });
+
+            expect(response.status).toBe(402);
+            expect(response.body.error).toContain('Insufficient');
         });
 
         it('should return 400 if displayName is invalid', async () => {
@@ -182,31 +144,14 @@ describe('Auth API', () => {
             expect(response.status).toBe(400);
         });
 
-        // XSS Security Tests
-        it('should reject displayName with script tags (XSS attempt)', async () => {
+        it('should reject XSS payloads in updates via validation', async () => {
+            const xssPayload = '<script>alert(1)</script>';
             const response = await request(app)
                 .patch(`/api/auth/profile/${mockUser.uid}`)
                 .set(getAuthHeader())
-                .send({ displayName: '<script>alert("xss")</script>' });
+                .send({ displayName: xssPayload });
 
-            // Should either be rejected (400) or sanitized (200 with cleaned content)
-            expect([200, 400]).toContain(response.status);
-            if (response.status === 200) {
-                // If accepted, ensure no script tags in the response
-                expect(response.body.displayName).not.toContain('<script>');
-            }
-        });
-
-        it('should reject displayName with event handler (XSS attempt)', async () => {
-            const response = await request(app)
-                .patch(`/api/auth/profile/${mockUser.uid}`)
-                .set(getAuthHeader())
-                .send({ displayName: 'test<img onerror="alert(1)" src=x>' });
-
-            expect([200, 400]).toContain(response.status);
-            if (response.status === 200) {
-                expect(response.body.displayName).not.toContain('onerror');
-            }
+            expect(response.status).toBe(400);
         });
     });
 });

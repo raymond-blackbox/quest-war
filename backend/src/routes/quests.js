@@ -6,16 +6,18 @@ import { validate } from '../middlewares/validation.middleware.js';
 
 const router = express.Router();
 
+const safeId = z.string().min(1).regex(/^[a-zA-Z0-9_-]+$/);
+
 const questParamsSchema = z.object({
     params: z.object({
-        playerId: z.string().min(1),
+        playerId: safeId,
     }),
 });
 
 const claimQuestSchema = z.object({
     params: z.object({
-        playerId: z.string().min(1),
-        questId: z.string().min(1),
+        playerId: safeId,
+        questId: safeId,
     }),
 });
 

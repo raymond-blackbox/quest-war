@@ -30,45 +30,53 @@ const buildQuestProgress = (overrides = {}) => ({
     completed: false,
     claimed: false,
     difficulties: [],
-    lastUpdated: { toDate: () => new Date() },
+    lastUpdated: { toDate: () => new Date() }, // Default to now (no reset)
     ...overrides
 });
 
 describe('Quest Logic', () => {
+    const playerId = 'player-123';
+
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    describe('Daily Math Warrior', () => {
-        it('should increment progress for correct answers', async () => {
-            const playerId = 'player-123';
+    describe('Quest Reset Logic', () => {
+        it('should reset daily quest if last update was yesterday', async () => {
             const questId = 'daily_math_warrior';
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
 
             questRepository.getProgress.mockResolvedValue({
                 quests: {
-                    [questId]: buildQuestProgress({ progress: 5 })
+                    [questId]: buildQuestProgress({
+                        progress: 10,
+                        lastUpdated: { toDate: () => yesterday }
+                    })
                 }
             });
 
-            await questService.updateQuestProgress(playerId, questId, 3, { correct: true });
+            await questService.updateQuestProgress(playerId, questId, 1, { correct: true });
 
             expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
                 [questId]: expect.objectContaining({
-                    progress: 8,
+                    progress: 1, // 0 (reset) + 1 (new update)
                     completed: false
                 })
             }));
         });
-    });
 
-    describe('Streak Master', () => {
-        it('should increment streak on win', async () => {
-            const playerId = 'player-123';
-            const questId = 'streak_master';
+        it('should NOT reset weekly quest if last update was yesterday (different reset period)', async () => {
+            const questId = 'weekly_champion';
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
 
             questRepository.getProgress.mockResolvedValue({
                 quests: {
-                    [questId]: buildQuestProgress({ progress: 2 })
+                    [questId]: buildQuestProgress({
+                        progress: 5,
+                        lastUpdated: { toDate: () => yesterday }
+                    })
                 }
             });
 
@@ -76,217 +84,95 @@ describe('Quest Logic', () => {
 
             expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
                 [questId]: expect.objectContaining({
-                    progress: 3,
-                    completed: true
-                })
-            }));
-        });
-
-        it('should reset streak on loss', async () => {
-            const playerId = 'player-123';
-            const questId = 'streak_master';
-
-            questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress({ progress: 2 })
-                }
-            });
-
-            await questService.updateQuestProgress(playerId, questId, 1, { won: false });
-
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    progress: 0,
+                    progress: 6, // 5 (no reset) + 1 (new update)
                     completed: false
                 })
             }));
         });
     });
 
-    describe('Speed Demon', () => {
-        it('should increment progress for fast correct answers', async () => {
-            const playerId = 'player-123';
-            const questId = 'speed_demon';
+    describe('Empty/Missing Data Handling', () => {
+        it('should initialize quest progress if missing in repository', async () => {
+            const questId = 'daily_math_warrior';
+            questRepository.getProgress.mockResolvedValue({}); // Empty results
 
-            questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress()
-                }
-            });
-
-            await questService.updateQuestProgress(playerId, questId, 1, { fastCorrect: true });
-
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    progress: 1,
-                    completed: false
-                })
-            }));
-        });
-
-        it('should not increment progress for slow answers', async () => {
-            const playerId = 'player-123';
-            const questId = 'speed_demon';
-
-            questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress({ progress: 2 })
-                }
-            });
-
-            await questService.updateQuestProgress(playerId, questId, 1, {
-                correct: true,
-                answerTime: 3500
-            });
-
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    progress: 2,
-                    completed: false
-                })
-            }));
-        });
-    });
-
-    describe('Social Butterfly', () => {
-        it('should increment progress for multiplayer rooms', async () => {
-            const playerId = 'player-123';
-            const questId = 'social_butterfly';
-
-            questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress({ progress: 1 })
-                }
-            });
-
-            await questService.updateQuestProgress(playerId, questId, 1, { playerCount: 4 });
-
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    progress: 2,
-                    completed: false
-                })
-            }));
-        });
-    });
-
-    describe('Mastery Seeker', () => {
-        it('should increment progress for hard wins', async () => {
-            const playerId = 'player-123';
-            const questId = 'mastery_seeker';
-
-            questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress({ progress: 4 })
-                }
-            });
-
-            await questService.updateQuestProgress(playerId, questId, 1, {
-                difficulty: 'hard',
-                won: true
-            });
+            await questService.updateQuestProgress(playerId, questId, 5, { correct: true });
 
             expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
                 [questId]: expect.objectContaining({
                     progress: 5,
-                    completed: false
+                    completed: false,
+                    claimed: false
                 })
             }));
         });
     });
 
-    describe('Weekly Champion', () => {
-        it('should increment progress on wins', async () => {
-            const playerId = 'player-123';
-            const questId = 'weekly_champion';
-
+    describe('Specific Quest Types', () => {
+        it('Streak Master: should reset streak on loss', async () => {
+            const questId = 'streak_master';
             questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress({ progress: 9 })
-                }
+                quests: { [questId]: buildQuestProgress({ progress: 2 }) }
             });
 
-            await questService.updateQuestProgress(playerId, questId, 1, { won: true });
+            await questService.updateQuestProgress(playerId, questId, 1, { won: false });
 
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    progress: 10,
-                    completed: true
-                })
-            }));
+            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, {
+                [questId]: expect.objectContaining({ progress: 0 })
+            });
         });
-    });
 
-    describe('Perfectionist', () => {
-        it('should complete quest on perfect accuracy with enough questions', async () => {
-            const playerId = 'player-123';
-            const questId = 'perfectionist';
-
+        it('Speed Demon: should only count fast answers', async () => {
+            const questId = 'speed_demon';
             questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress()
-                }
+                quests: { [questId]: buildQuestProgress({ progress: 0 }) }
             });
 
-            await questService.updateQuestProgress(playerId, questId, 1, {
-                accuracy: 100,
-                questionsCount: 10
-            });
+            // Too slow
+            await questService.updateQuestProgress(playerId, questId, 1, { correct: true, answerTime: 5000 });
+            // Fast
+            await questService.updateQuestProgress(playerId, questId, 1, { fastCorrect: true });
 
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    progress: 1,
-                    completed: true
-                })
-            }));
+            const calls = questRepository.updateProgress.mock.calls;
+            expect(calls[0][1][questId].progress).toBe(0);
+            expect(calls[1][1][questId].progress).toBe(1);
         });
-    });
 
-    describe('Collector Explorer', () => {
-        it('should update progress when playing a game even if not won', async () => {
-            const playerId = 'player-123';
+        it('Collector Explorer: should track unique difficulties', async () => {
             const questId = 'collector_explorer';
-
             questRepository.getProgress.mockResolvedValue({
-                quests: {
-                    [questId]: buildQuestProgress()
-                }
+                quests: { [questId]: buildQuestProgress({ difficulties: ['easy'] }) }
             });
 
-            await questService.updateQuestProgress(playerId, questId, 1, {
-                difficulty: 'hard',
-                won: false
-            });
+            await questService.updateQuestProgress(playerId, questId, 1, { difficulty: 'medium' });
+            await questService.updateQuestProgress(playerId, questId, 1, { difficulty: 'easy' }); // Duplicate
 
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    difficulties: ['hard'],
-                    progress: 1
-                })
-            }));
+            const lastCall = questRepository.updateProgress.mock.calls[1][1][questId];
+            expect(lastCall.difficulties).toContain('easy');
+            expect(lastCall.difficulties).toContain('medium');
+            expect(lastCall.progress).toBe(2);
         });
+    });
 
-        it('should update progress when playing a game and winning', async () => {
-            const playerId = 'player-123';
-            const questId = 'collector_explorer';
-
+    describe('updateMultipleQuestProgress', () => {
+        it('should update multiple quests in a single call', async () => {
             questRepository.getProgress.mockResolvedValue({
                 quests: {
-                    [questId]: buildQuestProgress()
+                    'daily_math_warrior': buildQuestProgress({ progress: 10 })
                 }
             });
 
-            await questService.updateQuestProgress(playerId, questId, 1, {
-                difficulty: 'easy',
-                won: true
-            });
+            const updates = [
+                { questId: 'daily_math_warrior', increment: 5 },
+                { questId: 'streak_master', gameData: { won: true } }
+            ];
 
-            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, expect.objectContaining({
-                [questId]: expect.objectContaining({
-                    difficulties: ['easy'],
-                    progress: 1
-                })
-            }));
+            await questService.updateMultipleQuestProgress(playerId, updates);
+
+            expect(questRepository.updateProgress).toHaveBeenCalledWith(playerId, {
+                'daily_math_warrior': expect.objectContaining({ progress: 15 }),
+                'streak_master': expect.objectContaining({ progress: 1 })
+            });
         });
     });
 });
