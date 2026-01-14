@@ -25,6 +25,20 @@ export function AuthProvider({ children }) {
                         displayName: user.displayName
                     });
                     api.setToken(idToken);
+
+                    // Clear stale player data if Firebase UID doesn't match stored player
+                    const savedPlayer = sessionStorage.getItem('player');
+                    if (savedPlayer) {
+                        const parsed = JSON.parse(savedPlayer);
+                        if (parsed.id !== user.uid) {
+                            logger.warn('[AUTH DEBUG] Stored player ID mismatch - clearing stale data', {
+                                storedId: parsed.id,
+                                firebaseUid: user.uid
+                            });
+                            sessionStorage.removeItem('player');
+                            setPlayer(null);
+                        }
+                    }
                 } catch (err) {
                     logger.error('Failed to get ID token:', err);
                     api.setToken(null);
@@ -32,6 +46,9 @@ export function AuthProvider({ children }) {
             } else {
                 logger.debug('[AUTH DEBUG] No Firebase user - signed out');
                 api.setToken(null);
+                // Clear player data on sign out
+                sessionStorage.removeItem('player');
+                setPlayer(null);
             }
             setAuthReady(true);
         });

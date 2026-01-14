@@ -18,7 +18,8 @@ function Transactions() {
             setLoading(true);
             setError(null);
             const data = await api.getTransactions(player.id, 15);
-            setTransactions(data.transactions || []);
+            setTransactions(data.data || []);
+
         } catch (err) {
             logger.error('Failed to load transactions:', err);
             setError('Failed to load transactions');

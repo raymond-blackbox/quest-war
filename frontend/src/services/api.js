@@ -77,24 +77,25 @@ class ApiService {
     }
 
     async joinRoom(roomId, data) {
-        return this.request(`/rooms/${roomId}/join`, {
+        return this.request(`/rooms/${roomId}/players`, {
             method: 'POST',
             body: JSON.stringify(data)
         });
     }
 
     async leaveRoom(roomId) {
-        return this.request(`/rooms/${roomId}/leave`, {
-            method: 'POST'
+        return this.request(`/rooms/${roomId}/players/me`, {
+            method: 'DELETE'
         });
     }
 
     async toggleReady(roomId, ready) {
-        return this.request(`/rooms/${roomId}/ready`, {
-            method: 'POST',
+        return this.request(`/rooms/${roomId}/players/me`, {
+            method: 'PATCH',
             body: JSON.stringify({ ready })
         });
     }
+
 
     // Game
     async startGame(roomId) {

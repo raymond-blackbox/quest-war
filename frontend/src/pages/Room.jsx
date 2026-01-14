@@ -132,7 +132,8 @@ function Room() {
 
     const handleToggleReady = async () => {
         try {
-            await api.toggleReady(roomId, player.id, !isReady);
+            await api.toggleReady(roomId, !isReady);
+
         } catch (err) {
             setError(err.message);
         }
@@ -142,7 +143,8 @@ function Room() {
         setLoading(true);
         setError('');
         try {
-            await api.startGame(roomId, player.id);
+            await api.startGame(roomId);
+
         } catch (err) {
             setError(err.message);
         } finally {
@@ -152,7 +154,8 @@ function Room() {
 
     const handleLeaveRoom = async () => {
         try {
-            await api.leaveRoom(roomId, player.id);
+            await api.leaveRoom(roomId);
+
             navigate('/lobby');
         } catch (err) {
             logger.error('Failed to leave room:', err);

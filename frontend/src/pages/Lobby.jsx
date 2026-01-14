@@ -450,7 +450,7 @@ function Lobby() {
                                             🔒
                                         </span>
                                         <input
-                                            type="password"
+                                            type="text"
                                             className="input"
                                             style={{ paddingLeft: '2.5rem' }}
                                             value={roomPassword}

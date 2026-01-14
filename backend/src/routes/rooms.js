@@ -8,33 +8,124 @@ import { createRoomSchema, joinRoomSchema } from '../validations/room.validation
 const router = express.Router();
 
 /**
- * GET /api/rooms
- * List available rooms
+ * @swagger
+ * /api/rooms:
+ *   get:
+ *     summary: List available rooms
+ *     tags: [Rooms]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of rooms.
  */
 router.get('/', authMiddleware, roomController.listRooms);
 
 /**
- * POST /api/rooms
- * Create a new room (protected)
+ * @swagger
+ * /api/rooms:
+ *   post:
+ *     summary: Create a new room
+ *     tags: [Rooms]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               isSolo:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Room created.
  */
 router.post('/', authMiddleware, validate(createRoomSchema), roomController.createRoom);
 
 /**
- * POST /api/rooms/:id/join
- * Join a room
+ * @swagger
+ * /api/rooms/{id}/players:
+ *   post:
+ *     summary: Join a room
+ *     tags: [Rooms]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Joined successfully.
  */
-router.post('/:id/join', authMiddleware, validate(joinRoomSchema), roomController.joinRoom);
+router.post('/:id/players', authMiddleware, validate(joinRoomSchema), roomController.joinRoom);
 
 /**
- * POST /api/rooms/:id/ready
- * Toggle ready status
+ * @swagger
+ * /api/rooms/{id}/players/me:
+ *   patch:
+ *     summary: Toggle ready status
+ *     tags: [Rooms]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ready:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Status updated.
  */
-router.post('/:id/ready', authMiddleware, roomController.toggleReady);
+router.patch('/:id/players/me', authMiddleware, roomController.toggleReady);
 
 /**
- * POST /api/rooms/:id/leave
- * Leave a room
+ * @swagger
+ * /api/rooms/{id}/players/me:
+ *   delete:
+ *     summary: Leave a room
+ *     tags: [Rooms]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Left successfully.
  */
-router.post('/:id/leave', authMiddleware, roomController.leaveRoom);
+router.delete('/:id/players/me', authMiddleware, roomController.leaveRoom);
+
+
 
 export default router;

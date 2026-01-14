@@ -13,6 +13,8 @@ import transactionsRoutes from './routes/transactions.js';
 import questRoutes from './routes/quests.js';
 import logger from './services/logger.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 const app = express();
 const PORT = config.PORT;
@@ -48,6 +50,39 @@ if (process.env.NODE_ENV !== 'test') {
     });
     app.use(globalLimiter);
 }
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Quest War API',
+            version: '1.0.0',
+            description: 'API documentation for the Quest War quiz game'
+        },
+        servers: [
+            {
+                url: `http://localhost:${PORT}`,
+                description: 'Development server'
+            }
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                }
+            }
+        }
+    },
+    apis: ['./src/routes/*.js']
+};
+
+if (process.env.NODE_ENV !== 'test') {
+    const swaggerSpec = swaggerJsdoc(swaggerOptions);
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
+
 
 // Health check
 app.get('/health', (req, res) => {

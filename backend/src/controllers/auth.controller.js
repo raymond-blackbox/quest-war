@@ -1,7 +1,7 @@
 import userService from '../services/user.service.js';
 import { admin } from '../services/firebase.js';
 import { asyncHandler } from '../middlewares/error.middleware.js';
-import { logTransaction, TRANSACTION_TYPES, TRANSACTION_REASONS } from '../routes/transactions.js';
+import { transactionService, TRANSACTION_TYPES, TRANSACTION_REASONS } from '../services/transaction.service.js';
 import { getFirestore } from '../services/firebase.js';
 import { ForbiddenError } from '../utils/errors.js';
 
@@ -46,7 +46,7 @@ export class AuthController {
         const updatedProfile = await userService.updateDisplayName(playerId, displayName);
 
         // Log transaction if name changed (tokens were spent)
-        await logTransaction(getFirestore(), {
+        await transactionService.logTransaction(getFirestore(), {
             playerId,
             type: TRANSACTION_TYPES.SPEND,
             amount: 500,

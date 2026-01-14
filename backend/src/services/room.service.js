@@ -11,6 +11,7 @@ export class RoomService {
         const roomData = {
             name,
             password: hashedPassword,
+            hostPassword: isSolo ? null : (password || null),
             isPrivate: !isSolo && !!password,
             isSolo,
             hostId,

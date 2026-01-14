@@ -31,9 +31,9 @@ describe('Rooms API', () => {
             const endpoints = [
                 { method: 'get', path: '/api/rooms' },
                 { method: 'post', path: '/api/rooms' },
-                { method: 'post', path: `/api/rooms/${roomId}/join` },
-                { method: 'post', path: `/api/rooms/${roomId}/ready` },
-                { method: 'post', path: `/api/rooms/${roomId}/leave` },
+                { method: 'post', path: `/api/rooms/${roomId}/players` },
+                { method: 'patch', path: `/api/rooms/${roomId}/players/me` },
+                { method: 'delete', path: `/api/rooms/${roomId}/players/me` },
             ];
 
             for (const { method, path } of endpoints) {
@@ -136,7 +136,7 @@ describe('Rooms API', () => {
             getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot(null));
 
             const response = await request(app)
-                .post(`/api/rooms/invalid/join`)
+                .post(`/api/rooms/invalid/players`)
                 .set(getAuthHeader())
                 .send({ playerUsername: 'joiner' });
 
@@ -147,7 +147,7 @@ describe('Rooms API', () => {
             getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({ status: 'playing' }));
 
             const response = await request(app)
-                .post(`/api/rooms/${roomId}/join`)
+                .post(`/api/rooms/${roomId}/players`)
                 .set(getAuthHeader())
                 .send({ playerUsername: 'joiner' });
 
@@ -162,7 +162,7 @@ describe('Rooms API', () => {
             }));
 
             const response = await request(app)
-                .post(`/api/rooms/${roomId}/join`)
+                .post(`/api/rooms/${roomId}/players`)
                 .set(getAuthHeader())
                 .send({ playerUsername: 'joiner' });
 
@@ -173,7 +173,7 @@ describe('Rooms API', () => {
             getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({ status: 'waiting', players: {} }));
 
             const response = await request(app)
-                .post(`/api/rooms/${roomId}/join`)
+                .post(`/api/rooms/${roomId}/players`)
                 .set(getAuthHeader())
                 .send({ playerUsername: 'joiner', playerDisplayName: 'Top G' });
 
@@ -186,12 +186,12 @@ describe('Rooms API', () => {
         });
     });
 
-    describe('POST /api/rooms/:id/ready', () => {
+    describe('PATCH /api/rooms/:id/players/me', () => {
         it('should toggle ready status', async () => {
             getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({}));
 
             const response = await request(app)
-                .post(`/api/rooms/${roomId}/ready`)
+                .patch(`/api/rooms/${roomId}/players/me`)
                 .set(getAuthHeader())
                 .send({ ready: true });
 
@@ -200,12 +200,12 @@ describe('Rooms API', () => {
         });
     });
 
-    describe('POST /api/rooms/:id/leave', () => {
+    describe('DELETE /api/rooms/:id/players/me', () => {
         it('should dismiss room if host leaves waiting room', async () => {
             getRealtimeDb().ref().get.mockResolvedValueOnce(makeSnapshot({ status: 'waiting', hostId: mockUser.uid }));
 
             const response = await request(app)
-                .post(`/api/rooms/${roomId}/leave`)
+                .delete(`/api/rooms/${roomId}/players/me`)
                 .set(getAuthHeader());
 
             expect(response.status).toBe(200);
@@ -226,7 +226,7 @@ describe('Rooms API', () => {
                 .mockResolvedValueOnce(makeSnapshot(updatedRoom));
 
             const response = await request(app)
-                .post(`/api/rooms/${roomId}/leave`)
+                .delete(`/api/rooms/${roomId}/players/me`)
                 .set(getAuthHeader());
 
             expect(response.status).toBe(200);
@@ -236,4 +236,5 @@ describe('Rooms API', () => {
             expect(getRealtimeDb().ref).toHaveBeenCalledWith(expect.stringContaining(`players/${mockUser.uid}`));
         });
     });
+
 });

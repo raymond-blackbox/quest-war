@@ -9,7 +9,7 @@ vi.mock('../src/services/firebase.js', () => ({
     admin: {
         firestore: {
             FieldValue: {
-                serverTimestamp: () => 'MOCK_TIMESTAMP'
+                serverTimestamp: () => ({ toDate: () => new Date() })
             }
         }
     },
@@ -140,17 +140,26 @@ describe('Quest Logic', () => {
 
         it('Collector Explorer: should track unique difficulties', async () => {
             const questId = 'collector_explorer';
-            questRepository.getProgress.mockResolvedValue({
-                quests: { [questId]: buildQuestProgress({ difficulties: ['easy'] }) }
+            let currentQuestState = buildQuestProgress({ difficulties: ['easy'], progress: 1 }); // Initial state
+
+            // Stateful mock implementation
+            questRepository.getProgress.mockImplementation(async () => ({
+                quests: { [questId]: currentQuestState }
+            }));
+
+            questRepository.updateProgress.mockImplementation(async (pid, updates) => {
+                if (updates[questId]) {
+                    // Update internal state with what was passed to updateProgress
+                    currentQuestState = { ...currentQuestState, ...updates[questId] };
+                }
             });
 
             await questService.updateQuestProgress(playerId, questId, 1, { difficulty: 'medium' });
             await questService.updateQuestProgress(playerId, questId, 1, { difficulty: 'easy' }); // Duplicate
 
-            const lastCall = questRepository.updateProgress.mock.calls[1][1][questId];
-            expect(lastCall.difficulties).toContain('easy');
-            expect(lastCall.difficulties).toContain('medium');
-            expect(lastCall.progress).toBe(2);
+            expect(currentQuestState.difficulties).toContain('easy');
+            expect(currentQuestState.difficulties).toContain('medium');
+            expect(currentQuestState.progress).toBe(2);
         });
     });
 

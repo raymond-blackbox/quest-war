@@ -58,6 +58,40 @@ export class LeaderboardService {
 
         transaction.set(leaderboardRef, updatePayload, { merge: true });
     }
+
+    /**
+
+     * Fetch the top players for a specific category.
+     * @param {string} category - 'balance' | 'earnings'
+     * @param {number} limit 
+     */
+    async getLeaderboard(category = 'balance', limit = 100) {
+        try {
+            const db = getFirestore();
+            const leaderboardRef = db.collection('leaderboard');
+            const sortField = category === 'earnings' ? 'totalTokensEarned' : 'tokens';
+
+            const snapshot = await leaderboardRef
+                .orderBy(sortField, 'desc')
+                .limit(Math.min(limit, 100))
+                .get();
+
+            return snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    displayValue: category === 'earnings'
+                        ? (data.totalTokensEarned || 0)
+                        : (data.tokens || 0)
+                };
+            });
+        } catch (error) {
+            logger.error('[LEADERBOARD] Fetch error:', error);
+            throw error;
+        }
+    }
 }
+
 
 export default new LeaderboardService();

@@ -69,26 +69,41 @@ describe('Transactions API', () => {
     });
 
     describe('GET /api/transactions/:playerId', () => {
-        it('should return player transactions', async () => {
+        it('should return player transactions with pagination metadata', async () => {
             const mockTransDoc = {
                 id: 'trans-1',
-                data: () => ({ type: 'REWARD', amount: 100, timestamp: { toDate: () => new Date() } })
+                data: () => ({ type: 'REWARD', amount: 100, createdAt: { toDate: () => new Date() } })
             };
-            getFirestore().collection('transactions').get.mockResolvedValueOnce({
-                empty: false,
-                docs: [mockTransDoc],
-                forEach: (cb) => cb(mockTransDoc)
-            });
+
+            const mockQuery = {
+                where: vi.fn().mockReturnThis(),
+                orderBy: vi.fn().mockReturnThis(),
+                limit: vi.fn().mockReturnThis(),
+                count: vi.fn().mockReturnValue({
+                    get: vi.fn().mockResolvedValue({
+                        data: () => ({ count: 1 })
+                    })
+                }),
+                get: vi.fn().mockResolvedValue({
+                    empty: false,
+                    docs: [mockTransDoc]
+                })
+            };
+
+            getFirestore().collection.mockReturnValue(mockQuery);
 
             const response = await request(app)
                 .get(`/api/transactions/${mockUser.uid}`)
                 .set(getAuthHeader());
 
             expect(response.status).toBe(200);
-            expect(response.body).toHaveProperty('transactions');
-            expect(Array.isArray(response.body.transactions)).toBe(true);
-            expect(response.body.transactions.length).toBe(1);
+            expect(response.body).toHaveProperty('data');
+            expect(response.body).toHaveProperty('pagination');
+            expect(Array.isArray(response.body.data)).toBe(true);
+            expect(response.body.data.length).toBe(1);
+            expect(response.body.pagination.total).toBe(1);
         });
+
 
         it('should return 403 if accessing other player transactions', async () => {
             const response = await request(app)

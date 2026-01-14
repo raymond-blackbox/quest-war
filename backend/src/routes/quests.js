@@ -22,14 +22,47 @@ const claimQuestSchema = z.object({
 });
 
 /**
- * GET /api/quests/:playerId
- * Get all quests for a player
+ * @swagger
+ * /api/quests/{playerId}:
+ *   get:
+ *     summary: Get all quests for a player
+ *     tags: [Quests]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: playerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of player quests and progress.
  */
 router.get('/:playerId', authMiddleware, validate(questParamsSchema), questController.getPlayerQuests);
 
 /**
- * POST /api/quests/:playerId/claim/:questId
- * Claim quest reward
+ * @swagger
+ * /api/quests/{playerId}/claim/{questId}:
+ *   post:
+ *     summary: Claim quest reward
+ *     tags: [Quests]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: playerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: questId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Reward claimed.
  */
 router.post('/:playerId/claim/:questId', authMiddleware, validate(claimQuestSchema), questController.claimQuestReward);
 
