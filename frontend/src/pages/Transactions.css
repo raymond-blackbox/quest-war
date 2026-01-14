@@ -1,0 +1,35 @@
+/* Transactions.css */
+.transactions-page {
+    padding-bottom: 80px;
+    /* Space for FAB */
+    position: relative;
+    max-width: 600px;
+}
+
+/* FAB Back Button (Copied from Leaderboard.css for consistency) */
+.back-fab {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.back-fab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}

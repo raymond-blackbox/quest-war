@@ -12,7 +12,8 @@ export const QUEST_DEFINITIONS = [
         reward: 100,
         target: 20,
         type: 'count', // progressive count
-        resetType: 'daily'
+        resetType: 'daily',
+        criteria: { type: 'count' }
     },
     {
         id: 'speed_demon',
@@ -21,7 +22,8 @@ export const QUEST_DEFINITIONS = [
         reward: 150,
         target: 5,
         type: 'count',
-        resetType: 'daily'
+        resetType: 'daily',
+        criteria: { type: 'speed', maxTimeMs: 3000 }
     },
     {
         id: 'streak_master',
@@ -30,7 +32,8 @@ export const QUEST_DEFINITIONS = [
         reward: 250,
         target: 3,
         type: 'streak',
-        resetType: 'daily'
+        resetType: 'daily',
+        criteria: { type: 'streak' }
     },
     {
         id: 'perfectionist',
@@ -39,7 +42,8 @@ export const QUEST_DEFINITIONS = [
         reward: 300,
         target: 1,
         type: 'achievement',
-        resetType: 'daily'
+        resetType: 'daily',
+        criteria: { type: 'accuracy', minAccuracy: 100, minQuestions: 10 }
     },
     {
         id: 'collector_explorer',
@@ -48,7 +52,8 @@ export const QUEST_DEFINITIONS = [
         reward: 200,
         target: 3,
         type: 'collection',
-        resetType: 'daily'
+        resetType: 'daily',
+        criteria: { type: 'collection', collectionField: 'difficulty' }
     },
     {
         id: 'social_butterfly',
@@ -57,7 +62,8 @@ export const QUEST_DEFINITIONS = [
         reward: 150,
         target: 1,
         type: 'achievement',
-        resetType: 'weekly'
+        resetType: 'weekly',
+        criteria: { type: 'condition', field: 'playerCount', operator: '>=', value: 4 }
     },
     {
         id: 'weekly_champion',
@@ -66,7 +72,8 @@ export const QUEST_DEFINITIONS = [
         reward: 500,
         target: 15,
         type: 'count', // cumulative count
-        resetType: 'weekly'
+        resetType: 'weekly',
+        criteria: { type: 'count' }
     },
     {
         id: 'mastery_seeker',
@@ -75,7 +82,8 @@ export const QUEST_DEFINITIONS = [
         reward: 1000,
         target: 500,
         type: 'count',
-        resetType: 'weekly'
+        resetType: 'weekly',
+        criteria: { type: 'count' }
     }
 ];
 
@@ -112,6 +120,80 @@ const resetProgressIfNeeded = (p, resetType) => {
         return { ...p, progress: 0, completed: false, claimed: false };
     }
     return p;
+};
+
+// Evaluators for different quest criteria
+const QUEST_EVALUATORS = {
+    // Standard counter: simply adds increment
+    count: (quest, gameData, increment) => {
+        return { progress: (quest.progress || 0) + increment, changed: increment > 0 };
+    },
+
+    // Speed: checks if answerTime < maxTimeMs OR fastCorrect flag
+    speed: (quest, gameData, increment, criteria) => {
+        const passed = gameData.fastCorrect || (gameData.answerTime && gameData.answerTime < criteria.maxTimeMs);
+        if (passed) {
+            return { progress: (quest.progress || 0) + increment, changed: true };
+        }
+        return { progress: quest.progress, changed: false };
+    },
+
+    // Streak: +1 on win, 0 on loss
+    streak: (quest, gameData, increment) => {
+        if (gameData.won === true) {
+            return { progress: (quest.progress || 0) + 1, changed: true };
+        } else if (gameData.won === false) {
+            return { progress: 0, changed: true };
+        }
+        return { progress: quest.progress, changed: false };
+    },
+
+    // Collection: tracks unique values in a list (e.g., difficulties)
+    collection: (quest, gameData, increment, criteria) => {
+        const field = criteria.collectionField;
+        const val = gameData[field];
+        if (val) {
+            const currentList = quest.difficulties || [];
+            if (!currentList.includes(val)) {
+                const newList = [...currentList, val];
+                return {
+                    progress: newList.length,
+                    difficulties: newList, // Updates the storage array
+                    changed: true
+                };
+            }
+        }
+        return { progress: quest.progress, changed: false };
+    },
+
+    // Accuracy: checks if accuracy >= min and count >= min
+    accuracy: (quest, gameData, increment, criteria) => {
+        if (gameData.accuracy >= criteria.minAccuracy && gameData.questionsCount >= criteria.minQuestions) {
+            // Achievement type usually sets progress to target (1) immediately
+            return { progress: 1, changed: true };
+        }
+        return { progress: quest.progress, changed: false };
+    },
+
+    // General Condition: checks specific field against value
+    condition: (quest, gameData, increment, criteria) => {
+        const val = gameData[criteria.field];
+        if (val === undefined) return { progress: quest.progress, changed: false };
+
+        let met = false;
+        switch (criteria.operator) {
+            case '>=': met = val >= criteria.value; break;
+            case '<=': met = val <= criteria.value; break;
+            case '>': met = val > criteria.value; break;
+            case '<': met = val < criteria.value; break;
+            case '===': met = val === criteria.value; break;
+        }
+
+        if (met) {
+            return { progress: 1, changed: true };
+        }
+        return { progress: quest.progress, changed: false };
+    }
 };
 
 
@@ -238,62 +320,26 @@ export const questService = {
 
                 if (qp.completed && !def.resetType) continue;
 
-                let progressChanged = false;
+                // --- DATA DRIVEN APPROACH ---
+                // Find criteria type, default to 'count'
+                const criteriaType = def.criteria?.type || 'count';
+                const evaluator = QUEST_EVALUATORS[criteriaType] || QUEST_EVALUATORS.count;
 
-                // Handle different quest definitions specifically or by type
-                switch (def.id) {
-                    case 'speed_demon':
-                        if (gameData.fastCorrect || (gameData.answerTime && gameData.answerTime < 3000)) {
-                            qp.progress += increment;
-                            progressChanged = true;
-                        }
-                        break;
+                const result = evaluator(qp, gameData, increment, def.criteria);
 
-                    case 'streak_master':
-                        if (gameData.won === true) {
-                            qp.progress += 1;
-                            progressChanged = true;
-                        } else if (gameData.won === false) {
-                            qp.progress = 0;
-                            progressChanged = true;
-                        }
-                        break;
-                    case 'collector_explorer':
-                        const difficulties = qp.difficulties || [];
-                        if (gameData.difficulty && !difficulties.includes(gameData.difficulty)) {
-                            difficulties.push(gameData.difficulty);
-                            qp.difficulties = difficulties;
-                            qp.progress = difficulties.length;
-                            progressChanged = true;
-                        }
-                        break;
-                    case 'perfectionist':
-                        if (gameData.accuracy >= 100 && gameData.questionsCount >= 10) {
-                            qp.progress = 1;
-                            progressChanged = true;
-                        }
-                        break;
-                    case 'social_butterfly':
-                        if (gameData.playerCount >= 4) {
-                            qp.progress = 1;
-                            progressChanged = true;
-                        }
-                        break;
-                    default:
-                        if (def.type === 'count') {
-                            qp.progress += increment;
-                            progressChanged = true;
-                        }
-                        break;
+                if (result.changed) {
+                    qp.progress = result.progress;
+                    // If the evaluator returned extra fields (like 'difficulties' for collection), merge them
+                    if (result.difficulties) qp.difficulties = result.difficulties;
+
+                    if (qp.progress >= def.target) {
+                        qp.progress = def.target;
+                        qp.completed = true;
+                        qp.completedAt = admin.firestore.FieldValue.serverTimestamp();
+                    }
                 }
 
-                if (progressChanged && qp.progress >= def.target) {
-                    qp.progress = def.target;
-                    qp.completed = true;
-                    qp.completedAt = admin.firestore.FieldValue.serverTimestamp();
-                }
-
-                // Always update metadata if processed
+                // Always update metadata if processed (Matches legacy behavior)
                 qp.updatedAt = admin.firestore.FieldValue.serverTimestamp();
                 newQuests[def.id] = qp;
                 processedAtLeastOne = true;

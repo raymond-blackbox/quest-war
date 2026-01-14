@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import logger from '../utils/logger';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, Coins, Swords, ArrowLeft, Crown, Medal, User } from 'lucide-react';
+import './Leaderboard.css';
 
 function Leaderboard() {
     const [leaderboard, setLeaderboard] = useState([]);
@@ -29,123 +32,119 @@ function Leaderboard() {
         }
     };
 
+    const getRankIcon = (index) => {
+        if (index === 0) return <Crown size={18} fill="#000" />; // Gold gets Crown
+        if (index === 1) return <Medal size={18} />;
+        if (index === 2) return <Medal size={18} />;
+        return index + 1;
+    };
+
     const getRankClass = (index) => {
-        if (index === 0) return 'gold';
-        if (index === 1) return 'silver';
-        if (index === 2) return 'bronze';
+        if (index === 0) return 'rank-1';
+        if (index === 1) return 'rank-2';
+        if (index === 2) return 'rank-3';
         return '';
     };
 
     return (
-        <div className="container leaderboard-page" style={{ paddingTop: 'var(--spacing-xl)' }}>
-            <h1 className="title">🏆 Leaderboard</h1>
+        <div className="container leaderboard-page">
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="leaderboard-header"
+            >
+                <h1 className="leaderboard-title">
+                    <Trophy size={42} className="text-accent" />
+                    <span>Leaderboard</span>
+                </h1>
+                <p className="leaderboard-subtitle">
+                    {category === 'balance' ? 'Top High Rollers' : 'Question Mastery'}
+                </p>
+            </motion.div>
 
-            {/* Category Tabs */}
-            <div className="leaderboard-tabs" style={{
-                display: 'flex',
-                gap: 'var(--spacing-sm)',
-                marginBottom: 'var(--spacing-lg)',
-                justifyContent: 'center'
-            }}>
-                <button
-                    className={`tab-button ${category === 'balance' ? 'active' : ''}`}
-                    onClick={() => setCategory('balance')}
+            {/* Custom Toggle Switch */}
+            <div className="category-toggle-container" data-active={category}>
+                <div
+                    className="toggle-bg"
                     style={{
-                        padding: 'var(--spacing-sm) var(--spacing-lg)',
-                        borderRadius: 'var(--radius-md)',
-                        border: category === 'balance' ? '2px solid var(--primary)' : '2px solid var(--border-primary)',
-                        background: category === 'balance' ? 'var(--primary)' : 'var(--surface-elevated)',
-                        color: category === 'balance' ? 'white' : 'var(--text-secondary)',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
+                        width: '50%',
+                        transform: category === 'balance' ? 'translateX(0)' : 'translateX(100%)'
                     }}
+                />
+                <button
+                    className={`category-toggle ${category === 'balance' ? 'active' : ''}`}
+                    onClick={() => setCategory('balance')}
                 >
-                    💰 Token Balance
+                    <Coins size={16} /> Wealth
                 </button>
                 <button
-                    className={`tab-button ${category === 'earnings' ? 'active' : ''}`}
+                    className={`category-toggle ${category === 'earnings' ? 'active' : ''}`}
                     onClick={() => setCategory('earnings')}
-                    style={{
-                        padding: 'var(--spacing-sm) var(--spacing-lg)',
-                        borderRadius: 'var(--radius-md)',
-                        border: category === 'earnings' ? '2px solid var(--success)' : '2px solid var(--border-primary)',
-                        background: category === 'earnings' ? 'var(--success)' : 'var(--surface-elevated)',
-                        color: category === 'earnings' ? 'white' : 'var(--text-secondary)',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease'
-                    }}
                 >
-                    ⚔️ Quest Earnings
+                    <Swords size={16} /> Valor
                 </button>
             </div>
 
-            <p className="subtitle" style={{ marginBottom: 'var(--spacing-md)', textAlign: 'center' }}>
-                {category === 'balance'
-                    ? 'Top 100 by Current Token Holdings'
-                    : 'Top 100 by Lifetime Quest Earnings'}
-            </p>
-
             {loading ? (
-                <div className="card" style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
-                    <div className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>
-                        Loading...
-                    </div>
+                <div className="leaderboard-list">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="skeleton" style={{ opacity: 1 - i * 0.15 }} />
+                    ))}
                 </div>
             ) : leaderboard.length === 0 ? (
-                <div className="card" style={{ textAlign: 'center', padding: 'var(--spacing-2xl)' }}>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--spacing-md)' }}>
-                        No players on the leaderboard yet
-                    </p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-                        Win a game to get on the board!
-                    </p>
-                </div>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="empty-state"
+                >
+                    <div className="empty-icon">
+                        <Trophy size={64} strokeWidth={1} />
+                    </div>
+                    <h3>No Legends Yet</h3>
+                    <p>Be the first to claim your spot on the leaderboard!</p>
+                </motion.div>
             ) : (
-                <ul className="leaderboard-list">
-                    {leaderboard.map((player, index) => (
-                        <li
-                            key={player.id}
-                            className={`leaderboard-item animate-fade-in ${player.id === currentPlayer?.id ? 'me' : ''}`}
-                            style={{ animationDelay: `${index * 0.05}s` }}
-                        >
-                            <div className={`leaderboard-rank ${getRankClass(index)}`}>
-                                {index + 1}
-                            </div>
-                            <div className="leaderboard-name">
-                                {player.displayName || player.username}
-                            </div>
-                            <div className="leaderboard-tokens">
-                                {category === 'balance' ? '🪙' : '⚔️'} {player.displayValue ?? player.tokens}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                <motion.div layout className="leaderboard-list">
+                    <AnimatePresence mode='popLayout'>
+                        {leaderboard.map((player, index) => (
+                            <motion.div
+                                key={player.id}
+                                layoutId={player.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ delay: index * 0.05 }}
+                                className={`leaderboard-card ${player.id === currentPlayer?.id ? 'current-user' : ''}`}
+                            >
+                                <div className={`rank-badge ${getRankClass(index)}`}>
+                                    {getRankIcon(index)}
+                                </div>
+
+                                <div className="player-info">
+                                    <div className="player-name">
+                                        {player.displayName || player.username || `Player ${player.id.substr(0, 4)}`}
+                                    </div>
+                                    <div className="player-sub">
+                                        Rank #{index + 1}
+                                    </div>
+                                </div>
+
+                                <div className={`score-badge ${category}`}>
+                                    {category === 'balance' ? <Coins size={14} /> : <Swords size={14} />}
+                                    {player.displayValue ?? player.tokens?.toLocaleString() ?? 0}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </motion.div>
             )}
 
             <button
-
+                className="back-fab"
                 onClick={() => navigate('/lobby')}
-                style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 1000,
-                    backgroundColor: '#b9b9b9ff',
-                    border: '2px solid #333',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                    padding: '12px 24px',
-                    minWidth: '150px',
-                    color: '#333',
-                    fontWeight: '500',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                }}
             >
-                ← Back to Lobby
+                <ArrowLeft size={20} />
+                <span>Lobby</span>
             </button>
         </div>
     );

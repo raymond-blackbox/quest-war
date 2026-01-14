@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import logger from '../utils/logger';
+import { ArrowLeft } from 'lucide-react';
+import './Transactions.css';
 
 function Transactions() {
     const { player, authReady } = useAuth();
@@ -127,14 +129,13 @@ function Transactions() {
                 </div>
             )}
 
-            <div className="transactions-footer">
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => navigate('/lobby')}
-                >
-                    ← Back to Lobby
-                </button>
-            </div>
+            <button
+                className="back-fab"
+                onClick={() => navigate('/lobby')}
+            >
+                <ArrowLeft size={20} />
+                <span>Lobby</span>
+            </button>
         </div>
     );
 }

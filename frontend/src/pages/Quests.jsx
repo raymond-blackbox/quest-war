@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { playQuestClaimSound } from '../utils/audio';
 import logger from '../utils/logger';
+import { ArrowLeft } from 'lucide-react';
+import './Quests.css';
 
 function Quests() {
     const [quests, setQuests] = useState([]);
@@ -257,28 +259,13 @@ function Quests() {
             )}
 
             <button
+                className="back-fab"
                 onClick={() => navigate('/lobby')}
-                style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 1000,
-                    backgroundColor: '#b9b9b9ff',
-                    border: '2px solid #333',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-                    padding: '12px 24px',
-                    minWidth: '150px',
-                    color: '#333',
-                    fontWeight: '500',
-                    fontSize: '16px',
-                    cursor: 'pointer'
-                }}
             >
-                Back to Lobby
+                <ArrowLeft size={20} />
+                <span>Lobby</span>
             </button>
-        </div>
+        </div >
     );
 }
 
